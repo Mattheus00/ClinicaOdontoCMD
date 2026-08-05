@@ -148,9 +148,6 @@ public class AppointmentController {
         if ("CANCELLED".equals(value.getStatus())) {
             throw new IllegalArgumentException("Não é possível confirmar um agendamento cancelado.");
         }
-        if ("COMPLETED".equals(value.getStatus())) {
-            return ResponseEntity.ok(AppointmentResponse.from(value));
-        }
         if (value.getProcedure() == null) {
             throw new IllegalArgumentException("Este agendamento não possui procedimento vinculado.");
         }
@@ -158,10 +155,9 @@ public class AppointmentController {
             if (!value.getProfessional().getId().equals(SecurityUtils.requireProfessionalId())) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
             }
-            value.setStatus("COMPLETED");
-            return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+        } else {
+            SecurityUtils.requireAdminOrSecretary();
         }
-        SecurityUtils.requireAdminOrSecretary();
 
         payments.findByAppointmentId(id).orElseGet(() -> {
             PatientPayment payment = new PatientPayment();
@@ -175,8 +171,11 @@ public class AppointmentController {
             return payments.save(payment);
         });
 
-        value.setStatus("COMPLETED");
-        return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+        if (!"COMPLETED".equals(value.getStatus())) {
+            value.setStatus("COMPLETED");
+            appointments.save(value);
+        }
+        return ResponseEntity.ok(AppointmentResponse.from(value));
     }
 
     private UUID tenant() {
