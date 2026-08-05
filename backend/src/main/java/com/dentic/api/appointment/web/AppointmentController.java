@@ -10,6 +10,7 @@ import com.dentic.api.patient.repository.PatientRepository;
 import com.dentic.api.procedure.repository.ProcedureRepository;
 import com.dentic.api.professional.repository.ProfessionalRepository;
 import com.dentic.api.security.SecurityUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ public class AppointmentController {
     private final ProcedureRepository procedures;
     private final PatientPaymentRepository payments;
     private final ClinicRepository clinics;
+    private final ZoneId clinicTimeZone;
 
     public AppointmentController(
             AppointmentRepository appointments,
@@ -37,7 +39,8 @@ public class AppointmentController {
             ProfessionalRepository professionals,
             ProcedureRepository procedures,
             PatientPaymentRepository payments,
-            ClinicRepository clinics
+            ClinicRepository clinics,
+            @Value("${dentic.clinic-time-zone:America/Sao_Paulo}") String clinicTimeZone
     ) {
         this.appointments = appointments;
         this.patients = patients;
@@ -45,6 +48,7 @@ public class AppointmentController {
         this.procedures = procedures;
         this.payments = payments;
         this.clinics = clinics;
+        this.clinicTimeZone = ZoneId.of(clinicTimeZone);
     }
 
     @GetMapping
@@ -62,8 +66,8 @@ public class AppointmentController {
         LocalDate endDayExclusive = to != null ? LocalDate.parse(to).plusDays(1) : (date != null ? LocalDate.parse(date).plusDays(1) : startDay.plusDays(1));
         List<Appointment> found = appointments.findByClinicIdAndScheduledAtBetween(
                 tenant(),
-                startDay.atStartOfDay().atOffset(ZoneOffset.UTC),
-                endDayExclusive.atStartOfDay().atOffset(ZoneOffset.UTC)
+                startDay.atStartOfDay(clinicTimeZone).toOffsetDateTime(),
+                endDayExclusive.atStartOfDay(clinicTimeZone).toOffsetDateTime()
         );
         List<AppointmentResponse> data = found.stream()
                 .filter(v -> scopedProfessionalId == null || v.getProfessional().getId().equals(scopedProfessionalId))
@@ -86,7 +90,7 @@ public class AppointmentController {
         var procedure = procedures.findByIdAndClinicId(request.procedureId(), clinic)
                 .orElseThrow(() -> new IllegalArgumentException("Procedimento não encontrado"));
 
-        OffsetDateTime start = LocalDateTime.parse(request.startsAt()).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        OffsetDateTime start = localAppointmentTime(request.startsAt());
         Appointment value = new Appointment();
         value.setClinic(clinics.getReferenceById(clinic));
         value.setPatient(patient);
@@ -108,7 +112,7 @@ public class AppointmentController {
         if ("CANCELLED".equals(value.getStatus())) {
             throw new IllegalArgumentException("Não é possível remarcar um agendamento cancelado.");
         }
-        OffsetDateTime start = LocalDateTime.parse(request.startsAt()).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        OffsetDateTime start = localAppointmentTime(request.startsAt());
         value.setScheduledAt(start);
         if (request.durationMinutes() != null) {
             value.setDurationMinutes(resolveDurationMinutes(request.durationMinutes()));
@@ -187,6 +191,10 @@ public class AppointmentController {
             throw new IllegalArgumentException("Informe uma duração entre 15 minutos e 8 horas.");
         }
         return (short) value;
+    }
+
+    private OffsetDateTime localAppointmentTime(String value) {
+        return LocalDateTime.parse(value).atZone(clinicTimeZone).toOffsetDateTime();
     }
 
     public record AppointmentRequest(UUID patientId, UUID professionalId, UUID procedureId, String startsAt, Integer durationMinutes) {}
