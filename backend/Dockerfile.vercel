@@ -13,4 +13,4 @@ WORKDIR /app
 COPY --from=build /workspace/build/libs/*.jar app.jar
 ENV PORT=8080
 EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "exec java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
+ENTRYPOINT ["sh", "-c", "exec /opt/java/openjdk/bin/java -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
