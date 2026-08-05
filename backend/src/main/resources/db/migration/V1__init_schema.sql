@@ -4,6 +4,8 @@
 -- Migração: V1 - Init Schema + Fase 0
 -- ============================================
 
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE plans (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
