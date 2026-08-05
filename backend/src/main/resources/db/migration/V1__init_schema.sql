@@ -10,7 +10,7 @@ CREATE TABLE plans (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
     price_cents INTEGER NOT NULL,
-    max_professionals SMALLINT NOT NULL DEFAULT 1,
+    max_professionals INTEGER NOT NULL DEFAULT 1,
     includes_whatsapp BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

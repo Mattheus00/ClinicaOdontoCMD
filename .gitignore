@@ -15,3 +15,7 @@
 .codex/
 .vscode/
 .idea/
+.vercel/
+
+.vercel
+.env*
