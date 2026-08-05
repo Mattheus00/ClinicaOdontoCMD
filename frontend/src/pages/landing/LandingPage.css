@@ -723,16 +723,45 @@
     width: min(1200px, calc(100% - 32px));
   }
 
+  .landing-nav-bar {
+    height: 72px;
+  }
+
   .landing-nav-inner {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
   }
 
   .landing-menu {
     display: none;
   }
 
+  .landing-brand img {
+    height: 48px;
+    max-width: 132px;
+  }
+
+  .landing-nav-actions {
+    gap: 8px;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .landing-nav-actions .landing-btn-primary {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
   .landing-portal-link {
-    display: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 600;
   }
 
   .landing-hero-copy {
