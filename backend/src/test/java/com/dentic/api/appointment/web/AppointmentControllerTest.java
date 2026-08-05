@@ -26,7 +26,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -106,6 +108,7 @@ class AppointmentControllerTest {
         verify(payments).save(payment.capture());
         assertEquals(new BigDecimal("150.00"), payment.getValue().getAmount());
         assertEquals("PAID", payment.getValue().getStatus());
+        assertEquals(LocalDate.now(ZoneId.of("America/Sao_Paulo")), payment.getValue().getPaidAt());
         assertEquals(appointment, payment.getValue().getAppointment());
         verify(appointments).save(appointment);
     }

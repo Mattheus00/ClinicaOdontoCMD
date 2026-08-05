@@ -167,7 +167,7 @@ public class AppointmentController {
             payment.setMethod("CASH");
             payment.setStatus("PAID");
             payment.setNotes("Pagamento do procedimento: " + value.getProcedure().getName());
-            payment.setPaidAt(LocalDate.now());
+            payment.setPaidAt(LocalDate.now(clinicTimeZone));
             return payments.save(payment);
         });
 
