@@ -92,12 +92,13 @@ export default function LandingPage() {
           </nav>
 
           <div className="landing-nav-actions">
-            <a href="#contato" className="landing-btn landing-btn-primary">
-              Agendar consulta
-            </a>
-            <Link to="/login" className="landing-portal-link">
+            <Link to="/login" className="landing-btn landing-btn-outline landing-portal-link">
               Área da clínica
             </Link>
+            <a href="#contato" className="landing-btn landing-btn-primary">
+              <span className="landing-cta-full">Agendar consulta</span>
+              <span className="landing-cta-short">Agendar</span>
+            </a>
           </div>
         </div>
       </header>

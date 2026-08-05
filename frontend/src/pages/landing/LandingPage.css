@@ -71,26 +71,30 @@
 .landing-nav-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
 }
 
-.landing-nav-actions .landing-btn-primary {
+.landing-nav-actions .landing-btn {
   min-height: 44px;
-  padding: 0 22px;
+  padding: 0 18px;
   font-size: 11px;
+}
+
+.landing-cta-short {
+  display: none;
 }
 
 .landing-portal-link {
-  color: #8a8a8a;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-decoration: none;
+  background: transparent;
+  color: var(--ink);
+  border-color: rgba(0, 0, 0, 0.16);
   white-space: nowrap;
 }
 
 .landing-portal-link:hover {
-  color: var(--gold);
+  background: var(--cream-dark);
+  border-color: var(--gold);
+  color: var(--ink);
 }
 
 /* Buttons */
@@ -724,12 +728,12 @@
   }
 
   .landing-nav-bar {
-    height: 72px;
+    height: 68px;
   }
 
   .landing-nav-inner {
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 12px;
+    gap: 10px;
   }
 
   .landing-menu {
@@ -737,31 +741,32 @@
   }
 
   .landing-brand img {
-    height: 48px;
-    max-width: 132px;
+    height: 44px;
+    max-width: 118px;
   }
 
   .landing-nav-actions {
     gap: 8px;
     flex-shrink: 0;
-    flex-direction: column;
-    align-items: flex-end;
   }
 
-  .landing-nav-actions .landing-btn-primary {
-    min-height: 36px;
+  .landing-nav-actions .landing-btn {
+    min-height: 40px;
     padding: 0 12px;
     font-size: 10px;
     letter-spacing: 0.08em;
   }
 
+  .landing-cta-full {
+    display: none;
+  }
+
+  .landing-cta-short {
+    display: inline;
+  }
+
   .landing-portal-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 24px;
-    color: var(--gold);
-    font-size: 11px;
-    font-weight: 600;
+    padding: 0 10px;
   }
 
   .landing-hero-copy {
