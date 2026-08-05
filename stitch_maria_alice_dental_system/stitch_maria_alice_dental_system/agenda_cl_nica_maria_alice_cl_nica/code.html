@@ -1,0 +1,408 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Clinical Calendar | SMILE ARCHITECTURE</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#93000a",
+                    "secondary": "#5f5e5e",
+                    "secondary-container": "#e2dfde",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "on-primary": "#ffffff",
+                    "bone-ivory": "#EFECE7",
+                    "on-surface-variant": "#4d463a",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed": "#271900",
+                    "on-secondary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#f4f3f1",
+                    "primary": "#755a25",
+                    "primary-fixed-dim": "#e6c182",
+                    "surface": "#faf9f7",
+                    "on-secondary-fixed-variant": "#474746",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#1a1c1b",
+                    "primary-container": "#c5a367",
+                    "muted-gold": "#D4BC8E",
+                    "tertiary-fixed": "#d8e2ff",
+                    "surface-dim": "#dadad8",
+                    "inverse-primary": "#e6c182",
+                    "surface-tint": "#755a25",
+                    "on-tertiary-container": "#2c3d60",
+                    "soft-white": "#F9F8F6",
+                    "tertiary": "#4d5e83",
+                    "tertiary-container": "#97a8d1",
+                    "outline": "#7f7668",
+                    "surface-container": "#efeeec",
+                    "surface-variant": "#e3e2e0",
+                    "on-surface": "#1a1c1b",
+                    "on-primary-fixed-variant": "#5b430f",
+                    "on-tertiary-fixed-variant": "#35466a",
+                    "primary-fixed": "#ffdea7",
+                    "surface-container-high": "#e9e8e6",
+                    "on-secondary-container": "#636262",
+                    "surface-bright": "#faf9f7",
+                    "surface-container-highest": "#e3e2e0",
+                    "on-primary-container": "#503906",
+                    "inverse-on-surface": "#f1f1ef",
+                    "tertiary-fixed-dim": "#b5c6f1",
+                    "deep-charcoal": "#1A1A1A",
+                    "secondary-fixed": "#e5e2e1",
+                    "champagne-gold": "#C5A367",
+                    "outline-variant": "#d1c5b5",
+                    "background": "#faf9f7",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "inverse-surface": "#2f3130",
+                    "on-tertiary-fixed": "#061a3c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter": "32px",
+                    "margin-mobile": "20px",
+                    "container-max": "1280px",
+                    "stack-space": "16px",
+                    "section-gap-lg": "120px",
+                    "section-gap-sm": "64px"
+            },
+            "fontFamily": {
+                    "title-md": ["Hanken Grotesk"],
+                    "display-sm": ["Playfair Display"],
+                    "headline-lg": ["Playfair Display"],
+                    "label-caps": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Playfair Display"],
+                    "display-lg": ["Playfair Display"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "title-md": ["20px", {"lineHeight": "28px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-sm": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "30px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "26px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #faf9f7;
+            overflow-x: hidden;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            grid-template-rows: auto repeat(12, 80px);
+        }
+        .glass-panel {
+            background: rgba(249, 248, 246, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .appointment-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+        }
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(26, 26, 26, 0.05);
+        }
+        /* Custom scrollbar for premium feel */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #EFECE7; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4BC8E; }
+    </style>
+</head>
+<body class="font-body-md text-on-background selection:bg-muted-gold selection:text-white">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-bone-ivory border-r border-outline/10 flex flex-col p-6 z-50">
+<div class="mb-12">
+<div class="w-32 mb-2"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU1dwFzCQKcO3YKEiAOTR6tKvFFq31whBetEhIVVtcdFtQ6jkE5OmyPkb0esNUr4HnoYguHB9ZjGGy7ApZ3busvbaK4tIITtcUxL1EeV1UOj7DUuTbMRx6On6LCiCTm4CKg4FuTwHJ8Pj7w31BQ3fysBgpHdWxdZlAquMsZRIOBOsP1oIHzal_TP5O3vilSviJiD_EeKZVnvfuOBGfSQmmxCQDg3MTKnHLfAXjtuuBcrZ6sMLUtIcJzD_1pfT6lji2-9Zj_MnAIXg" alt="Maria Alice Odontologia Especializada" class="w-full h-auto object-contain"></div>
+<p class="text-secondary font-label-caps tracking-widest mt-1 opacity-70">DR. JULIAN THORNE</p>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-variant hover:bg-white/40 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<!-- Patient Records -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-variant hover:bg-white/40 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">patient_list</span>
+<span class="font-body-md">Patient Records</span>
+</a>
+<!-- Clinical Calendar (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 bg-white/50 text-primary font-semibold border-r-2 border-primary rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+<span class="font-body-md">Clinical Calendar</span>
+</a>
+<!-- Billing -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-variant hover:bg-white/40 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">payments</span>
+<span class="font-body-md">Billing</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-variant hover:bg-white/40 transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline/10">
+<button class="w-full py-4 bg-deep-charcoal text-white font-label-caps rounded-lg hover:bg-primary transition-colors duration-300 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span>
+                New Appointment
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen flex">
+<!-- Calendar View Section -->
+<section class="flex-1 p-gutter bg-surface">
+<!-- Calendar Header -->
+<header class="flex justify-between items-end mb-10">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-deep-charcoal">October 21 - 25</h2>
+<div class="flex items-center gap-4 mt-2">
+<button class="p-1 hover:text-primary transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="font-label-caps text-secondary tracking-widest hover:text-primary">TODAY</button>
+<button class="p-1 hover:text-primary transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="flex bg-surface-container p-1 rounded-lg">
+<button class="px-6 py-2 text-secondary font-label-caps hover:text-primary transition-all">DAY</button>
+<button class="px-6 py-2 bg-white shadow-sm text-primary font-label-caps transition-all">WEEK</button>
+<button class="px-6 py-2 text-secondary font-label-caps hover:text-primary transition-all">MONTH</button>
+</div>
+</header>
+<!-- Calendar Grid -->
+<div class="calendar-grid border-l border-t border-outline/10 rounded-xl overflow-hidden shadow-sm bg-white">
+<!-- Header: Days -->
+<div class="bg-surface-container-low border-b border-r border-outline/10"></div>
+<div class="bg-surface-container-low border-b border-r border-outline/10 p-4 text-center">
+<p class="font-label-caps text-secondary">MON</p>
+<p class="font-title-md text-deep-charcoal">21</p>
+</div>
+<div class="bg-surface-container-low border-b border-r border-outline/10 p-4 text-center">
+<p class="font-label-caps text-secondary">TUE</p>
+<p class="font-title-md text-deep-charcoal">22</p>
+</div>
+<div class="bg-surface-container-low border-b border-r border-outline/10 p-4 text-center bg-muted-gold/5">
+<p class="font-label-caps text-primary">WED</p>
+<p class="font-title-md text-primary">23</p>
+</div>
+<div class="bg-surface-container-low border-b border-r border-outline/10 p-4 text-center">
+<p class="font-label-caps text-secondary">THU</p>
+<p class="font-title-md text-deep-charcoal">24</p>
+</div>
+<div class="bg-surface-container-low border-b border-r border-outline/10 p-4 text-center">
+<p class="font-label-caps text-secondary">FRI</p>
+<p class="font-title-md text-deep-charcoal">25</p>
+</div>
+<!-- Time Rows & Appointment Slots -->
+<!-- 08:00 -->
+<div class="border-b border-r border-outline/10 p-2 text-right text-xs font-label-caps text-secondary flex items-start justify-end">08:00</div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1 bg-muted-gold/5"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<!-- 09:00 -->
+<div class="border-b border-r border-outline/10 p-2 text-right text-xs font-label-caps text-secondary flex items-start justify-end">09:00</div>
+<div class="border-b border-r border-outline/10 relative p-1">
+<div class="appointment-card absolute inset-x-1 top-0 h-[150px] bg-primary-container/15 border-l-4 border-primary p-3 rounded-r-md cursor-pointer z-10" onclick="showDetails('Alexander Vane', 'Veneer Preparation', '09:00 - 10:45', 'Treatment Stage 2/4')">
+<p class="font-label-caps text-primary text-[10px] uppercase">Veneers</p>
+<h4 class="font-semibold text-sm text-on-primary-container truncate">Alexander Vane</h4>
+<p class="text-[11px] text-on-primary-container/70">Room 04</p>
+</div>
+</div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1 bg-muted-gold/5">
+<div class="appointment-card absolute inset-x-1 top-0 h-[70px] bg-tertiary-container/15 border-l-4 border-tertiary p-3 rounded-r-md cursor-pointer z-10" onclick="showDetails('Elena Rossi', 'Initial Consultation', '09:00 - 09:45', 'New Patient Assessment')">
+<p class="font-label-caps text-tertiary text-[10px] uppercase">Consult</p>
+<h4 class="font-semibold text-sm text-on-tertiary-container truncate">Elena Rossi</h4>
+</div>
+</div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<!-- 10:00 -->
+<div class="border-b border-r border-outline/10 p-2 text-right text-xs font-label-caps text-secondary flex items-start justify-end">10:00</div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1">
+<div class="appointment-card absolute inset-x-1 top-0 h-[230px] bg-muted-gold/20 border-l-4 border-muted-gold p-3 rounded-r-md cursor-pointer z-10" onclick="showDetails('Julianne Moore', 'Invisalign Fitting', '10:00 - 12:45', 'Arch Scan &amp; Set 1')">
+<p class="font-label-caps text-primary text-[10px] uppercase">Invisalign</p>
+<h4 class="font-semibold text-sm text-deep-charcoal truncate">Julianne Moore</h4>
+<p class="text-[11px] text-secondary">Room 01</p>
+</div>
+</div>
+<div class="border-b border-r border-outline/10 relative p-1 bg-muted-gold/5"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<!-- 11:00 -->
+<div class="border-b border-r border-outline/10 p-2 text-right text-xs font-label-caps text-secondary flex items-start justify-end">11:00</div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1 bg-muted-gold/5">
+<div class="appointment-card absolute inset-x-1 top-0 h-[70px] bg-primary-container/15 border-l-4 border-primary p-3 rounded-r-md cursor-pointer z-10" onclick="showDetails('Sebastian Cross', 'Implant Follow-up', '11:00 - 11:45', 'Post-Op Review')">
+<p class="font-label-caps text-primary text-[10px] uppercase">Implant</p>
+<h4 class="font-semibold text-sm text-on-primary-container truncate">Sebastian Cross</h4>
+</div>
+</div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<!-- 12:00 -->
+<div class="border-b border-r border-outline/10 p-2 text-right text-xs font-label-caps text-secondary flex items-start justify-end">12:00</div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1 bg-muted-gold/5"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<!-- 13:00 (Break) -->
+<div class="border-b border-r border-outline/10 p-2 text-right text-xs font-label-caps text-secondary flex items-start justify-end bg-surface-container-low">13:00</div>
+<div class="border-b border-r border-outline/10 bg-surface-container-lowest/50 col-span-5 flex items-center justify-center" colspan="5">
+<span class="font-label-caps text-secondary opacity-40 tracking-widest text-[10px]">CLINICAL BREAK</span>
+</div>
+<!-- 14:00 -->
+<div class="border-b border-r border-outline/10 p-2 text-right text-xs font-label-caps text-secondary flex items-start justify-end">14:00</div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1 bg-muted-gold/5">
+<div class="appointment-card absolute inset-x-1 top-0 h-[150px] bg-primary-container/15 border-l-4 border-primary p-3 rounded-r-md cursor-pointer z-10" onclick="showDetails('Oliver Sterling', 'Full Arch Design', '14:00 - 15:45', 'Smile Design Studio')">
+<p class="font-label-caps text-primary text-[10px] uppercase">Architecture</p>
+<h4 class="font-semibold text-sm text-on-primary-container truncate">Oliver Sterling</h4>
+</div>
+</div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+<div class="border-b border-r border-outline/10 relative p-1"></div>
+</div>
+</section>
+<!-- Details Panel Section -->
+<aside class="w-[400px] bg-white border-l border-outline/10 p-8 flex flex-col gap-8 sticky top-0 h-screen overflow-y-auto" id="details-panel">
+<div class="h-full flex flex-col items-center justify-center text-center px-4" id="no-selection">
+<span class="material-symbols-outlined text-outline/30 text-6xl mb-4">event_note</span>
+<h3 class="font-title-md text-deep-charcoal">No Appointment Selected</h3>
+<p class="text-secondary text-sm mt-2">Click on a calendar slot to view detailed patient information and treatment progress.</p>
+</div>
+<div class="hidden" id="selection-content">
+<div class="flex justify-between items-start mb-6">
+<div class="w-16 h-16 rounded-full overflow-hidden border border-outline/10">
+<img class="w-full h-full object-cover" data-alt="A clean, professional studio headshot of a high-end dental patient in a bright, modern setting with soft lighting, reflecting the premium Smile Architecture brand aesthetic. The portrait should have a neutral palette and editorial photography quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-W-aFUJa9v4Qzw0z3MrnLxhD8sbndm_sbu19eyp6wKdra8joWi7_8Vz4clbMzYmDMU_IuFC7wDNY6We8UxICUsC2012EPjjat2QU809eEJrtVRTogvnXrGN_curi-Ws-Avy7lR84Rs6Tiy02WnYRlNwJiWHZLBCpnJ_Osiwj2wUNVZMcIBt1FTgUFCre2fJKPVZDnqUwDBeuKkI4dRgBrv_mZtRgh2ehUqnHChPYVYCInbr5wdzYDXfqQSqXQjMWfncL3RUgpoAE">
+</div>
+<div class="flex gap-2">
+<button class="p-2 border border-outline/20 rounded-full hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-sm">edit</span></button>
+<button class="p-2 border border-outline/20 rounded-full hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-sm">more_vert</span></button>
+</div>
+</div>
+<div class="mb-8">
+<h2 class="font-display-sm text-3xl text-deep-charcoal leading-tight" id="detail-patient-name">Alexander Vane</h2>
+<p class="text-primary font-label-caps tracking-wider mt-1" id="detail-treatment-type">VENEER PREPARATION</p>
+</div>
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary">schedule</span>
+<div>
+<p class="text-xs font-label-caps text-secondary">TIME &amp; DURATION</p>
+<p class="text-on-background font-medium" id="detail-time">09:00 AM - 10:45 AM (1h 45m)</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary">clinical_notes</span>
+<div>
+<p class="text-xs font-label-caps text-secondary">CURRENT STATUS</p>
+<p class="text-on-background font-medium" id="detail-status">Treatment Stage 2/4</p>
+</div>
+</div>
+<div class="pt-6 border-t border-outline/10">
+<h4 class="font-label-caps text-deep-charcoal mb-4">TREATMENT TIMELINE</h4>
+<div class="space-y-4">
+<div class="flex gap-4 relative">
+<div class="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0"></div>
+<div class="absolute top-4 left-[3px] w-px h-full bg-outline/20"></div>
+<div>
+<p class="text-sm font-semibold">Initial Consultation</p>
+<p class="text-xs text-secondary">Completed • Sep 12, 2023</p>
+</div>
+</div>
+<div class="flex gap-4 relative">
+<div class="w-2 h-2 rounded-full border-2 border-primary mt-1.5 shrink-0 bg-white z-10"></div>
+<div class="absolute top-4 left-[3px] w-px h-full bg-outline/20"></div>
+<div>
+<p class="text-sm font-semibold text-primary">Prep &amp; Shade Matching</p>
+<p class="text-xs text-secondary">Active Appointment</p>
+</div>
+</div>
+<div class="flex gap-4 relative opacity-40">
+<div class="w-2 h-2 rounded-full bg-outline/40 mt-1.5 shrink-0"></div>
+<div>
+<p class="text-sm font-semibold">Final Fit &amp; Polishing</p>
+<p class="text-xs text-secondary">Scheduled • Nov 02, 2023</p>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-8">
+<button class="w-full py-4 bg-primary text-white font-label-caps rounded hover:bg-on-primary-container transition-all flex items-center justify-center gap-2">
+                            OPEN CLINICAL CHART
+                            <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<script>
+        function showDetails(name, treatment, time, status) {
+            const noSelection = document.getElementById('no-selection');
+            const selectionContent = document.getElementById('selection-content');
+            const patientName = document.getElementById('detail-patient-name');
+            const treatmentType = document.getElementById('detail-treatment-type');
+            const detailTime = document.getElementById('detail-time');
+            const detailStatus = document.getElementById('detail-status');
+
+            noSelection.classList.add('hidden');
+            selectionContent.classList.remove('hidden');
+
+            patientName.textContent = name;
+            treatmentType.textContent = treatment.toUpperCase();
+            detailTime.textContent = time;
+            detailStatus.textContent = status;
+
+            // Simple entry animation
+            selectionContent.style.opacity = '0';
+            selectionContent.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                selectionContent.style.transition = 'all 0.4s ease-out';
+                selectionContent.style.opacity = '1';
+                selectionContent.style.transform = 'translateY(0)';
+            }, 50);
+        }
+
+        // Close details if clicking outside (optional UX)
+        window.addEventListener('click', function(e) {
+            // This is just a boilerplate for expansion. Real UI would handle specific target logic.
+        });
+    </script>
+
+
+</body></html>

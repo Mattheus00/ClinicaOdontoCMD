@@ -1,0 +1,296 @@
+.patient-detail {
+  display: grid;
+  gap: 18px;
+}
+
+.patient-back {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #587084;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.patient-back:hover {
+  color: var(--color-secondary);
+}
+
+.patient-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.patient-summary-cards article {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.patient-summary-cards span {
+  display: block;
+  color: #6f8798;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.patient-summary-cards strong {
+  color: #17394f;
+  font-size: 20px;
+}
+
+.patient-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.patient-tab {
+  border: 0;
+  background: transparent;
+  color: #587084;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.patient-tab:hover {
+  background: var(--color-surface);
+  color: var(--color-secondary);
+}
+
+.patient-tab.is-active {
+  background: var(--color-secondary-container);
+  color: var(--color-secondary);
+}
+
+.patient-panel {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: #fff;
+  padding: 20px;
+}
+
+.patient-form {
+  max-width: 920px;
+}
+
+.section-title {
+  margin: 8px 0 0;
+  color: #1b3447;
+  font-size: 15px;
+}
+
+.checkbox-field {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.checkbox-field input {
+  width: auto;
+}
+
+.patient-form textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #cfddea;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-text);
+  font: inherit;
+  resize: vertical;
+}
+
+.split-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.history-list {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.history-list article {
+  padding: 12px 14px;
+  border: 1px solid #e7eef5;
+  border-radius: 10px;
+  background: #f8fbfe;
+}
+
+.history-list strong {
+  display: block;
+  color: #17394f;
+  margin-bottom: 4px;
+}
+
+.history-list span,
+.history-list p {
+  color: #6f8798;
+  font-size: 13px;
+}
+
+.odontogram {
+  display: grid;
+  gap: 18px;
+}
+
+.odontogram-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.odo-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.odo-chip.status-healthy {
+  background: #e7f6f0;
+  color: #147251;
+  border-color: #b7e2cc;
+}
+
+.odo-chip.status-caries {
+  background: #fff3de;
+  color: #9a620b;
+  border-color: #f0c3a0;
+}
+
+.odo-chip.status-restored {
+  background: #e6f2fc;
+  color: #1767a4;
+  border-color: #b8d9f0;
+}
+
+.odo-chip.status-extracted {
+  background: #eef1f4;
+  color: #5b6b78;
+  border-color: #d7dee5;
+}
+
+.odo-chip.status-implant {
+  background: #efe9ff;
+  color: #6b4fc4;
+  border-color: #cbbef0;
+}
+
+.odo-chip.status-root_canal {
+  background: #fcebed;
+  color: #ae3443;
+  border-color: #f0c0c7;
+}
+
+.odontogram-arch {
+  display: grid;
+  gap: 8px;
+}
+
+.arch-label {
+  color: #698196;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tooth-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tooth {
+  width: 42px;
+  height: 48px;
+  border: 1px solid #cfddea;
+  border-radius: 8px 8px 12px 12px;
+  background: #fff;
+  color: #33556e;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tooth.is-selected {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 1px;
+}
+
+.tooth.status-healthy { background: #eef8f3; border-color: #b7e2cc; }
+.tooth.status-caries { background: #fff1e8; border-color: #f0c3a0; color: #a96808; }
+.tooth.status-restored { background: #e8f4fd; border-color: #b8d9f0; }
+.tooth.status-extracted { background: #f3f5f7; border-color: #d7dee5; opacity: 0.7; }
+.tooth.status-implant { background: #efe9ff; border-color: #cbbef0; }
+.tooth.status-root_canal { background: #fcebed; border-color: #f0c0c7; }
+
+.tooth-editor {
+  display: grid;
+  gap: 12px;
+  max-width: 360px;
+  padding: 16px;
+  border: 1px solid #d7e7f3;
+  border-radius: 12px;
+  background: #f7fbfe;
+}
+
+.tooth-editor label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 650;
+  color: #39566c;
+}
+
+.tooth-editor select,
+.tooth-editor input {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #cfddea;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+}
+
+.consultas-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.consultas-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.finance-panel,
+.lgpd-panel {
+  display: grid;
+  gap: 18px;
+}
+
+@media (max-width: 900px) {
+  .split-panel {
+    grid-template-columns: 1fr;
+  }
+}

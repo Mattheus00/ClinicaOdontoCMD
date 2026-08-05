@@ -1,0 +1,75 @@
+.odo-svg-wrap {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #d7e7f3;
+  background: #2a2a2a;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.odo-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 280px;
+  max-height: min(560px, 62vh);
+}
+
+.odo-svg-bg {
+  pointer-events: none;
+  user-select: none;
+}
+
+.dente-hotspot {
+  cursor: pointer;
+  outline: none;
+}
+
+.dente-hotspot-hit {
+  fill: transparent;
+  stroke: transparent;
+  transition: fill 0.12s ease;
+}
+
+.dente-hotspot:hover .dente-hotspot-hit {
+  fill: rgba(79, 154, 216, 0.18);
+  stroke: rgba(79, 154, 216, 0.55);
+  stroke-width: 2;
+}
+
+.dente-hotspot:focus-visible .dente-hotspot-hit {
+  fill: rgba(79, 154, 216, 0.15);
+  stroke: #2b7ec7;
+  stroke-width: 2.5;
+}
+
+.dente-hotspot.is-marked .dente-hotspot-tint {
+  opacity: 0.68;
+}
+
+.dente-hotspot.is-selected .dente-hotspot-tint {
+  opacity: 0.75;
+}
+
+.dente-hotspot-num {
+  font-size: 11px;
+  font-weight: 800;
+  fill: #fff;
+  stroke: #17394f;
+  stroke-width: 0.4px;
+  paint-order: stroke fill;
+  user-select: none;
+}
+
+.dente-hotspot-icon {
+  font-size: 16px;
+  font-weight: 700;
+  fill: #17394f;
+  user-select: none;
+}
+
+@media (max-width: 640px) {
+  .odo-svg {
+    min-height: 220px;
+  }
+}

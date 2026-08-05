@@ -1,0 +1,69 @@
+.odo3d-shell {
+  display: grid;
+  gap: 10px;
+}
+
+.odo3d-hint {
+  padding: 10px 12px;
+  border: 1px solid #d7e7f3;
+  border-radius: 8px;
+  background: #f7fbfe;
+  color: #587084;
+  font-size: 13px;
+}
+
+.odo3d-canvas-wrap {
+  position: relative;
+  height: min(520px, 62vh);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.odo3d-anatomy {
+  border: 1px solid #d7e7f3;
+  background: #eef4f8;
+  box-shadow: inset 0 0 24px rgba(23, 57, 79, 0.06);
+}
+
+.odo3d-anatomy.odo3d-dark {
+  border: 1px solid #111;
+  background: #000;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+.odo3d-label {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #17394f;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.odo3d-tooltip {
+  display: grid;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #17394f;
+  font-size: 11px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  border: 1px solid #d7e7f3;
+  pointer-events: none;
+  min-width: 72px;
+}
+
+.odo3d-tooltip strong {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.odo3d-tooltip span {
+  color: #587084;
+  font-weight: 600;
+}

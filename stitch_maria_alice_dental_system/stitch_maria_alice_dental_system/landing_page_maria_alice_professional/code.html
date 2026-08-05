@@ -1,0 +1,366 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Maria Alice Odontologia | Smile Architecture</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#1b1c1c",
+                    "inverse-primary": "#c8c6c5",
+                    "on-background": "#1b1c1c",
+                    "inverse-surface": "#303031",
+                    "surface-container-highest": "#e4e2e2",
+                    "surface-container-high": "#e9e8e7",
+                    "secondary-fixed-dim": "#e6c182",
+                    "on-secondary-fixed-variant": "#5b430f",
+                    "on-secondary-fixed": "#271900",
+                    "surface-container": "#efeded",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#000000",
+                    "on-secondary-container": "#785c28",
+                    "surface-dim": "#dbdad9",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "outline-variant": "#c4c7c7",
+                    "primary-container": "#1c1b1b",
+                    "on-primary-fixed-variant": "#474746",
+                    "surface-variant": "#e4e2e2",
+                    "surface-tint": "#5f5e5e",
+                    "secondary-fixed": "#ffdea7",
+                    "secondary": "#755a25",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "on-primary-fixed": "#1c1b1b",
+                    "on-tertiary-container": "#838484",
+                    "tertiary": "#000000",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#444748",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#fdd897",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#1a1c1c",
+                    "surface-container-low": "#f5f3f3",
+                    "tertiary-fixed": "#e2e2e2",
+                    "on-error-container": "#93000a",
+                    "surface": "#fbf9f8",
+                    "inverse-on-surface": "#f2f0f0",
+                    "background": "#fbf9f8",
+                    "on-primary-container": "#858383",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#e5e2e1",
+                    "outline": "#747878",
+                    "surface-bright": "#fbf9f8",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#c8c6c5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px",
+                    "unit": "8px",
+                    "gutter": "24px",
+                    "container-max": "1200px",
+                    "section-gap": "120px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "headline-md": ["Playfair Display"],
+                    "headline-sm": ["Playfair Display"],
+                    "label-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Playfair Display"],
+                    "body-md": ["Inter"],
+                    "display-lg-mobile": ["Playfair Display"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-sm": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .signature-shadow { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04); }
+        .mask-overlay { background: linear-gradient(to right, rgba(251, 249, 248, 1) 40%, rgba(251, 249, 248, 0) 100%); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+        .transition-slow { transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bg-gold-subtle { background-color: rgba(197, 163, 103, 0.1); }
+        .border-gold-subtle { border-color: rgba(197, 163, 103, 0.3); }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<nav class="bg-surface docked full-width top-0 z-50 border-b border-outline-variant/30 fixed">
+<div class="flex justify-between items-center w-full px-margin-desktop h-20 max-w-container-max mx-auto">
+<div class="flex items-center gap-4"><img alt="Maria Alice Odontologia Logo" class="h-12 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnwZVtVGvfjDP_Mue7jIWJnRLlodrUCGvUTthHu2PrIS7lcQkCZqU957FaX_fPSh8dUeRQIQ1HU5QfPhWRCRsgywEVpbPPsShbaHs1V5YNB8ubrghixT6RdaWSM3DfQegzNYAJWisW_FIs3UbwJmouSuwkMO2TcHtlChcvipt6AI2RqqeY-7dk98yv6lYG8HsW68We8Y4vfh5L28w5CVig42MJDNZBTqvFFQEntsUnQRfc7r8uXUppy9PPEAl4IQjR-mhx3lAkOds"></div>
+<div class="hidden md:flex items-center gap-10">
+<a class="font-label-md text-label-md uppercase tracking-widest text-secondary border-b-2 border-secondary pb-1 active:opacity-80 transition-opacity" href="#treatments">Treatments</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors transition-slow" href="#technology">Technology</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors transition-slow" href="#results">Results</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors transition-slow" href="#contact">Contact</a>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 hover:bg-secondary transition-all duration-300">
+                Book Appointment
+            </button>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex items-center pt-20 overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 mask-overlay z-10"></div>
+<img class="w-full h-full object-cover" data-alt="A high-end, bright, and airy modern dental office interior with minimalist decor, champagne gold accents, and expansive windows. The lighting is soft and professional, creating a clean luxury boutique feel. In the background, a state-of-the-art dental chair is visible in a blurred, elegant clinical suite." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXZ3KHfsZidIZQVQP-7Ghs0DI6CbbLq2JXNdK9fw9eOnyOmSPedMgAu0Z772AF9l9Mu7a3mRugEyWkIKEqXWrxFJOg4nuu9nTclIjt9RZPolbBbtagZxWUz8y1repQEqLGhXXGTKmaJJVpiZ8J6zblY_LZ0uZx83BK3Z3FbNbYsRMefFknIGbkwjajkjc3oApuAGONUgE_ZtWDj5QE5hcRWZpXgGpSutxizIJj481jSrtXSvmuJs8j4v36Cwal4nUGYJjk0iwWmw4">
+</div>
+<div class="relative z-20 w-full max-w-container-max mx-auto px-margin-desktop">
+<div class="max-w-2xl animate-fade-in-up">
+<span class="inline-block font-label-md text-label-md uppercase tracking-[0.2em] text-secondary mb-6">High-End Smile Architecture</span>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-8">
+                    Elevating Dental Excellence to <br class="hidden md:block"> <span class="italic text-secondary">Artistic Precision.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-lg">
+                    Discover a boutique clinical experience where cutting-edge 3D technology meets the refined touch of artisanal smile design.
+                </p>
+<div class="flex gap-6">
+<button class="bg-primary text-on-primary font-label-md text-label-md px-8 py-4 hover:bg-secondary transition-all duration-300">
+                        View Signature Services
+                    </button>
+<button class="border border-primary text-primary font-label-md text-label-md px-8 py-4 hover:bg-surface-container transition-all duration-300">
+                        Our Technology
+                    </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Signature Treatments Section -->
+<section class="py-section-gap px-margin-desktop max-w-container-max mx-auto" id="treatments">
+<div class="text-center mb-16">
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Signature Smile Architecture</h2>
+<div class="w-24 h-1 bg-secondary mx-auto"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<!-- Treatment 1: Porcelain Veneers -->
+<div class="group cursor-pointer">
+<div class="relative overflow-hidden mb-6 aspect-[4/3] signature-shadow">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Extreme close-up of a perfect, natural-looking smile featuring high-quality porcelain veneers. The lighting highlights the subtle translucency and texture of the ceramic work, emphasizing a high-end luxury aesthetic with soft warm tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkMGfDTIqdsjKqUcWeZtdftWcEDmNDf6gjhW-PDClaQJL6OQ5JxSUmIM4lh5iMPGRiXMQxaHUJnn-a245Rsvwq7M_7EeYeUkFaVY0XqbU5D_XvlW91D3OX1C23pWdHZkTZqWQ8RFakcNIiRlV-Qc7UjjiUC738khN5wTqB1PAfcKfAiDslu3frl6-SfCq6jwa_462-U9qz3s-58Z9Y7B5_ZG_vreL8YSErPLI_FAaycTAW5bIrhrvSPM57mbBNMQQJ_ydJQqNC2E0">
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="text-white font-label-md text-label-md border border-white px-6 py-2 uppercase">Explore Veneers</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-3">Artisanal Porcelain Veneers</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                    Custom-crafted shells designed with precision to enhance shape, color, and alignment while maintaining structural integrity and natural aesthetics.
+                </p>
+</div>
+<!-- Treatment 2: Invisalign -->
+<div class="group cursor-pointer">
+<div class="relative overflow-hidden mb-6 aspect-[4/3] signature-shadow">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A minimalist and clean lifestyle photograph of an Invisalign clear aligner resting on a textured white surface next to a gold designer tool. The mood is sophisticated, clinical yet artistic, showcasing the transparency and modern nature of the treatment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoNYAfGerOyxqlqW3_t5EvsOVGgQpOWyrotLoB4S4gbGGExFDZNG-b2naJS9jHLpD8KTaMdDDTYMNbqtAzbH14jBcXAu1hDv2nfOyxrmJlK17fIwtXuaWXKGRzu3pZ5QtUQ-i9UnkakGdSssB7Wz-vwAc7R0kQWfhUyBGUqkKrhRItjquq4_Lld66ceo31NVuWiNFxCYcJN37NwO2sri265WUFn_aEnrVt675D-HJoXw2WZdWBdFJim-TW913y0m7udhpxDbAx880">
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="text-white font-label-md text-label-md border border-white px-6 py-2 uppercase">Discover Invisalign</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-3">Advanced Invisalign® Therapy</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                    Virtually invisible orthodontic solutions leveraging 3D digital planning for a comfortable, discreet path to your ideal smile alignment.
+                </p>
+</div>
+</div>
+</section>
+<!-- Digital Technology (The Lab) -->
+<section class="bg-surface-container-low py-section-gap" id="technology">
+<div class="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+<div class="lg:col-span-5">
+<span class="font-label-md text-label-md uppercase tracking-widest text-secondary mb-4 block">The Digital Edge</span>
+<h2 class="font-headline-md text-headline-md text-primary mb-8">Digital Smile Planning &amp; 3D Integration</h2>
+<div class="space-y-8">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-secondary text-3xl">biotech</span>
+<div>
+<h4 class="font-label-md text-label-md uppercase mb-2">3D Intraoral Scanning</h4>
+<p class="font-body-md text-on-surface-variant">Precision digital impressions without the discomfort of traditional molds.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-secondary text-3xl">visibility</span>
+<div>
+<h4 class="font-label-md text-label-md uppercase mb-2">Smile Simulation</h4>
+<p class="font-body-md text-on-surface-variant">Visualize your final results before the first treatment session begins.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-secondary text-3xl">precision_manufacturing</span>
+<div>
+<h4 class="font-label-md text-label-md uppercase mb-2">CAD/CAM Restoration</h4>
+<p class="font-body-md text-on-surface-variant">In-house design and milling for same-day precision crowns and veneers.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-7">
+<div class="relative">
+<div class="absolute -top-10 -right-10 w-64 h-64 border-gold-subtle border-2 rounded-full z-0 opacity-50"></div>
+<div class="relative z-10 bg-white p-2 signature-shadow">
+<img class="w-full aspect-video object-cover" data-alt="A professional medical photograph of a high-resolution dental scanner monitor displaying a detailed 3D color model of a human jaw. The surrounding clinical environment is dimly lit, focusing on the vibrant digital model and the advanced technology being used in a luxury dental office." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXbClWrepNlPLCHgGj1IZQvp8FD9P2hN3utAnhcAlgkOqyqXpkl8L1JQ-K_HVaQt614NUurZh4ebE0eTO19k5qm-4tog7EbuLN-m6X-e43-Fj924jIdIDJW7vo8avQCW6NekbIrI4rolZDN4htBFE6fMRgCmwg8ALwDJUUjOQ8runEkaSgMjs7npxo4J8oYb3ujjybQi_Gh92twdUdXJzHnD1skXo2aOTp2Pjyh54tazbOhYUGihGQx2KXhjNHDtCId7j6NanPWVQ">
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- About Dra. Maria Alice -->
+<section class="py-section-gap px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-col md:flex-row items-center gap-16">
+<div class="w-full md:w-1/2">
+<div class="relative">
+<div class="absolute -bottom-6 -left-6 bg-secondary-fixed-dim w-full h-full -z-10"></div>
+<img class="w-full aspect-[3/4] object-cover" data-alt="A professional portrait of Dra. Maria Alice, a sophisticated female dentist in her early 40s wearing a tailored charcoal medical coat. She is smiling confidently in a modern, luxury dental clinic setting. The lighting is soft-key and editorial, emphasizing authority, warmth, and surgical precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIL63TFEv0hxaRvzU6dmpLgJP51jncFAyhxWe9rwK9qBC0CqSbZf3DrwUBP3GKFM8qPegVR6WWnRzjQJZUU0wyaI1DThD86doyI8GtBvicz_gi-kEytR2Qc5KBNyuHilWlFCcgwxDBvNqTPVJ6gm_NiPPTUnxcYleibGTPGUp28_ap47wSKMnVGNXptq-qODF_8Ps946ms3glSZuAUeJlp6gAZWpsDD7A8yEwwbCsW4odOHLCtr_5YKTAmfXCTPZ3T4wXdavEX538">
+</div>
+</div>
+<div class="w-full md:w-1/2">
+<h2 class="font-headline-md text-headline-md text-primary mb-6">Dra. Maria Alice <br><span class="text-secondary font-light">Lead Smile Architect</span></h2>
+<p class="font-body-lg text-body-lg text-on-surface mb-6 leading-relaxed">
+                    With over 15 years of specialized experience in restorative and cosmetic dentistry, Dra. Maria Alice combines surgical expertise with a refined artistic eye.
+                </p>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">
+                    Her philosophy centers on "conservative restoration," ensuring that every intervention preserves as much natural tooth structure as possible while achieving world-class aesthetic results.
+                </p>
+<div class="grid grid-cols-2 gap-8 border-t border-gold-subtle pt-8">
+<div>
+<h5 class="font-label-md text-label-md text-secondary mb-1">MSc Dentistry</h5>
+<p class="text-xs uppercase tracking-tighter opacity-70">Aesthetic Restoration</p>
+</div>
+<div>
+<h5 class="font-label-md text-label-md text-secondary mb-1">Board Certified</h5>
+<p class="text-xs uppercase tracking-tighter opacity-70">Cosmetic Dentistry</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Results / Testimonials Bento -->
+<section class="bg-primary text-on-primary py-section-gap overflow-hidden" id="results">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="flex justify-between items-end mb-16">
+<div>
+<span class="font-label-md text-label-md uppercase tracking-[0.2em] text-secondary-fixed-dim mb-4 block">Proven Outcomes</span>
+<h2 class="font-display-lg text-headline-md md:text-display-lg text-white">The Art of the Result</h2>
+</div>
+<button class="hidden md:block font-label-md text-label-md text-white border-b border-white pb-1 hover:text-secondary-fixed-dim transition-colors">See all Case Studies</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-[600px]">
+<div class="md:col-span-2 md:row-span-2 bg-on-background overflow-hidden relative group">
+<img class="w-full h-full object-cover transition-slow group-hover:scale-110" data-alt="A dramatic 'After' photograph of a complete smile transformation using porcelain veneers. The lighting is focused on the teeth, showcasing perfect symmetry and a naturally bright shade. The background is dark, giving it a premium gallery feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX99VjoN03pZxCZEGoQ5C-SRmAOs7gOs2YxNoUAyHqdKwtmSmSfo4rTfYbfgmLtp-HI0YmKfryYk0Xtr-wogGfN0MoMAb06pKPjO4u47P3SDfi6CxJmfQ1O8kyd6x712B2JV3uZKBj7_3CoMovW7ib-nUOIpvOWMPaWBgRc5Z9LyDuR-EMs7gDFM6Q3k4Nno0CL77UBf_AXxYouX8sShOT0d4M0NYPGGKPiyaOPoKFdeCnysAw2pXkx8cNMvA-x3KU3hTlb4o6KjQ">
+<div class="absolute bottom-6 left-6">
+<span class="bg-secondary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">Case Study 042</span>
+</div>
+</div>
+<div class="md:col-span-1 md:row-span-1 bg-on-background overflow-hidden relative group">
+<img class="w-full h-full object-cover transition-slow group-hover:scale-110" data-alt="Professional clinical photo showing Invisalign results in progress. Crystal clear aligners on a perfect row of teeth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHzbhwa-M2Dsfltcg3g4Sd7w4tAOOPwCrTfAhR3kQbaBp_qM6jBKIbhy4M2kXA4C9jsM5uM2O08GNTgkRuVUGEYTj6D-_C2wAOolxnPUoOsNxiTV_Qht1iFOo88V8vUHkHAiaVgqCjO-wLdJoMEB4lt5XANzq-L8mv5wYS_eHguutQBMp8d5eHlB7GaEf4q8KVo3mzxW2BMOOlkHwlvnfnVHRsCQ6hMtUmKB3vwVw2zHrn-LdyrPFdGWdxaRzAfwgn7JUiHlFq31Y">
+</div>
+<div class="md:col-span-1 md:row-span-2 bg-on-background overflow-hidden relative group">
+<img class="w-full h-full object-cover transition-slow group-hover:scale-110" data-alt="A portrait of a happy patient with a radiant, natural-looking smile in a bright outdoor setting, reflecting the confidence boost from high-end dental work." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyaIFUPt2QrxKNgrDuvJermTY1ys8_YYSjJ39JDelutsw0DgKsmCZSzSCUgF81Dsyvye68w0JHg3OhwnvYUTBaqu22WFVd1aY6AbIiuib2RQcOQxFVuE45_FEon3uFoGvYI4lXpRe3MZbVMeT9bzjHHTgOtaPk13lM15g9xxp-JVTtav5fA5UyqEvQHT8962olPsOZrcA1lKbF_wDOq4ZYWkoUAfnPHDYCKcl14dCOvEAwLyuAPqCHdbY6SIMCPC75JOtAMqPYBkk">
+</div>
+<div class="md:col-span-1 md:row-span-1 bg-on-background overflow-hidden relative group">
+<img class="w-full h-full object-cover transition-slow group-hover:scale-110" data-alt="Macro detail of a precision-milled ceramic crown under a microscope, emphasizing medical excellence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh7N_RNHz5e6hmDCqzRJFOETXZ7ctLP43ETrjlfOHhAPLi-F1cWR9a5N3-ih9JLkke7l7K41DtTKig3RnA8_lBhlg4Z3o79vDtfvcLqHkuny0VQ6WZ1pjls8-PWcZK_JD70nRvd9bYunS8O0XvG8qdcRieZfI-vt-ZNhSocoXERZZqiDuVrkJvTQH8__VbniXfeYyUwigIjDOCb4e3HcMhWFFkGbVN1USk4JF7JuXxFxOHg8jjMADWHN-YV4N9KvnHn51YqF0xsAs">
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant/30 w-full py-section-gap px-margin-desktop max-w-container-max mx-auto" id="contact">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Brand & Logo -->
+<div class="flex flex-col gap-6">
+<img alt="Maria Alice Odontologia Logo" class="h-16 w-fit mb-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnwZVtVGvfjDP_Mue7jIWJnRLlodrUCGvUTthHu2PrIS7lcQkCZqU957FaX_fPSh8dUeRQIQ1HU5QfPhWRCRsgywEVpbPPsShbaHs1V5YNB8ubrghixT6RdaWSM3DfQegzNYAJWisW_FIs3UbwJmouSuwkMO2TcHtlChcvipt6AI2RqqeY-7dk98yv6lYG8HsW68We8Y4vfh5L28w5CVig42MJDNZBTqvFFQEntsUnQRfc7r8uXUppy9PPEAl4IQjR-mhx3lAkOds">
+<p class="font-body-md text-on-surface-variant max-w-xs">
+                    Redefining the dental experience through luxury boutique service and surgical precision.
+                </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 border border-outline rounded-full flex items-center justify-center hover:bg-secondary hover:text-white transition-all transition-slow" href="#">
+<span class="material-symbols-outlined text-lg">public</span>
+</a>
+<a class="w-10 h-10 border border-outline rounded-full flex items-center justify-center hover:bg-secondary hover:text-white transition-all transition-slow" href="#">
+<span class="material-symbols-outlined text-lg">camera</span>
+</a>
+</div>
+</div>
+<!-- Contact Information -->
+<div class="flex flex-col gap-6">
+<h4 class="font-label-md text-label-md uppercase tracking-widest text-primary">Contact Us</h4>
+<ul class="space-y-4">
+<li class="flex items-start gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary">location_on</span>
+<span class="font-body-md">Av. Luxury Street, 1000 - Suite 502<br>São Paulo, Brazil</span>
+</li>
+<li class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary">call</span>
+<span class="font-body-md">+55 (11) 9999-0000</span>
+</li>
+<li class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary">mail</span>
+<span class="font-body-md">concierge@mariaalice.com</span>
+</li>
+</ul>
+</div>
+<!-- Links -->
+<div class="flex flex-col gap-6">
+<h4 class="font-label-md text-label-md uppercase tracking-widest text-primary">Quick Links</h4>
+<div class="grid grid-cols-1 gap-3">
+<a class="font-body-md text-on-surface-variant hover:text-secondary transition-colors transition-slow" href="#">Privacy Policy</a>
+<a class="font-body-md text-on-surface-variant hover:text-secondary transition-colors transition-slow" href="#">Terms of Service</a>
+<a class="font-body-md text-on-surface-variant hover:text-secondary transition-colors transition-slow" href="#">Dental Ethics</a>
+<a class="font-body-md text-on-surface-variant hover:text-secondary transition-colors transition-slow" href="#">Contact Support</a>
+</div>
+</div>
+</div>
+<div class="mt-20 pt-8 border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Maria Alice Odontologia Especializada. All rights reserved.</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-50 uppercase tracking-widest">Designed for Excellence</p>
+</div>
+</footer>
+<!-- Simple Scroll Interaction -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navbar = document.querySelector('nav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('signature-shadow', 'h-16');
+                    navbar.classList.remove('h-20');
+                } else {
+                    navbar.classList.remove('signature-shadow', 'h-16');
+                    navbar.classList.add('h-20');
+                }
+            });
+
+            // Smooth Scroll for Navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+
+
+</body></html>

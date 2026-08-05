@@ -1,0 +1,424 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Patient Records | SMILE ARCHITECTURE</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "secondary": "#5f5e5e",
+                        "secondary-container": "#e2dfde",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary": "#ffffff",
+                        "bone-ivory": "#EFECE7",
+                        "on-surface-variant": "#4d463a",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#271900",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f4f3f1",
+                        "primary": "#755a25",
+                        "primary-fixed-dim": "#e6c182",
+                        "surface": "#faf9f7",
+                        "on-secondary-fixed-variant": "#474746",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1a1c1b",
+                        "primary-container": "#c5a367",
+                        "muted-gold": "#D4BC8E",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface-dim": "#dadad8",
+                        "inverse-primary": "#e6c182",
+                        "surface-tint": "#755a25",
+                        "on-tertiary-container": "#2c3d60",
+                        "soft-white": "#F9F8F6",
+                        "tertiary": "#4d5e83",
+                        "tertiary-container": "#97a8d1",
+                        "outline": "#7f7668",
+                        "surface-container": "#efeeec",
+                        "surface-variant": "#e3e2e0",
+                        "on-surface": "#1a1c1b",
+                        "on-primary-fixed-variant": "#5b430f",
+                        "on-tertiary-fixed-variant": "#35466a",
+                        "primary-fixed": "#ffdea7",
+                        "surface-container-high": "#e9e8e6",
+                        "on-secondary-container": "#636262",
+                        "surface-bright": "#faf9f7",
+                        "surface-container-highest": "#e3e2e0",
+                        "on-primary-container": "#503906",
+                        "inverse-on-surface": "#f1f1ef",
+                        "tertiary-fixed-dim": "#b5c6f1",
+                        "deep-charcoal": "#1A1A1A",
+                        "secondary-fixed": "#e5e2e1",
+                        "champagne-gold": "#C5A367",
+                        "outline-variant": "#d1c5b5",
+                        "background": "#faf9f7",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "inverse-surface": "#2f3130",
+                        "on-tertiary-fixed": "#061a3c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "32px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "stack-space": "16px",
+                        "section-gap-lg": "120px",
+                        "section-gap-sm": "64px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Hanken Grotesk"],
+                        "display-sm": ["Playfair Display"],
+                        "headline-lg": ["Playfair Display"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "display-lg": ["Playfair Display"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", {"lineHeight": "28px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-sm": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+                        "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "30px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "26px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-border {
+            border-right: 2px solid #755a25;
+        }
+        .glass-panel {
+            background: rgba(249, 248, 246, 0.7);
+            backdrop-filter: blur(12px);
+        }
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: #D4BC8E;
+            opacity: 0.3;
+        }
+        .before-after-handle {
+            cursor: ew-resize;
+            transition: transform 0.2s ease;
+        }
+        .before-after-handle:hover {
+            transform: scale(1.1);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #EFECE7; }
+        ::-webkit-scrollbar-thumb { background: #C5A367; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden">
+<!-- SideNavBar (Execution from JSON) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-bone-ivory dark:bg-deep-charcoal border-r border-outline/10 flex flex-col p-6 z-40">
+<div class="mb-10">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU1dwFzCQKcO3YKEiAOTR6tKvFFq31whBetEhIVVtcdFtQ6jkE5OmyPkb0esNUr4HnoYguHB9ZjGGy7ApZ3busvbaK4tIITtcUxL1EeV1UOj7DUuTbMRx6On6LCiCTm4CKg4FuTwHJ8Pj7w31BQ3fysBgpHdWxdZlAquMsZRIOBOsP1oIHzal_TP5O3vilSviJiD_EeKZVnvfuOBGfSQmmxCQDg3MTKnHLfAXjtuuBcrZ6sMLUtIcJzD_1pfT6lji2-9Zj_MnAIXg" alt="Clinical Suite Logo" class="h-16 w-auto object-contain">
+<p class="text-secondary text-xs tracking-wider uppercase mt-1">Dr. Julian Thorne</p>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary-fixed-variant hover:bg-white/30 hover:bg-white/40 transition-all scale-98 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<!-- Patient Records (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/50 dark:bg-white/5 text-primary font-semibold border-r-2 border-primary scale-98 active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">patient_list</span>
+<span class="font-body-md text-body-md">Patient Records</span>
+</a>
+<!-- Clinical Calendar -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary-fixed-variant hover:bg-white/30 hover:bg-white/40 transition-all scale-98 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">calendar_month</span>
+<span class="font-body-md text-body-md">Clinical Calendar</span>
+</a>
+<!-- Billing -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary-fixed-variant hover:bg-white/30 hover:bg-white/40 transition-all scale-98 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">payments</span>
+<span class="font-body-md text-body-md">Billing</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary-fixed-variant hover:bg-white/30 hover:bg-white/40 transition-all scale-98 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<button class="mt-auto w-full py-4 bg-deep-charcoal text-white font-label-caps text-label-caps tracking-widest hover:bg-primary transition-colors duration-300">
+            New Appointment
+        </button>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen p-gutter max-w-container-max">
+<!-- Top Bar: Search & Identity -->
+<header class="flex justify-between items-end mb-section-gap-sm">
+<div class="space-y-2">
+<h2 class="font-headline-lg text-headline-lg text-deep-charcoal">Patient Records</h2>
+<nav class="flex gap-2 text-label-caps font-label-caps text-secondary uppercase">
+<span class="">Archive</span> / <span class="text-primary">Active Cases</span> / <span class="">Aesthetics</span>
+</nav>
+</div>
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline/50">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-transparent border-b border-outline/20 focus:border-muted-gold focus:ring-0 outline-none font-body-md transition-colors placeholder:text-outline/40" placeholder="Search Patient Records..." type="text">
+</div>
+</header>
+<!-- Bento Grid Layout for Patient Data -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Column Left: Profile & History (4 Cols) -->
+<section class="col-span-12 lg:col-span-4 space-y-gutter">
+<!-- Patient Profile Card -->
+<div class="bg-bone-ivory p-8 shadow-[0_20px_40px_rgba(26,26,26,0.05)] relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4">
+<span class="text-[10px] font-label-caps text-muted-gold tracking-widest bg-white px-2 py-1">ELITE TIER</span>
+</div>
+<div class="flex items-center gap-6 mb-8">
+<div class="w-24 h-24 rounded-full overflow-hidden border border-outline/10">
+<img class="w-full h-full object-cover" data-alt="A professional high-end studio portrait of a woman in her 40s with a confident, brilliant smile. The lighting is soft and ethereal, using a light-mode aesthetic with soft white and bone-ivory backgrounds. Her features are elegant and clean, reflecting a luxury clinical outcome in a minimalist architectural dental studio setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOCCQZCDuB05XNPbwiIfmrEvyOT4ibj5Dmp583oNiznQEHLXeCnsnfY2UGg0YlghtGauHRbB6mXiyw2_mg37jlPhUnw0T1o58S5QmJu7ZJJQ4ny7qWlQC22GL6_ciEqIGCijwxFcdwzp5iOFtbQrgINqWP2SFJpSyEroBTT5Jq6x5pNWnBYNKxH-J-lnfs-cuzg5UN3q_x5eq3O7DE8MsQBTB_zCAGXfPY4NxS96aAf22c7IRSJnFgE9ax-BJwMutIUSwFpEOXJgA">
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-deep-charcoal">Eleanor Vance</h3>
+<p class="text-secondary font-label-caps text-label-caps mt-1">Patient ID: SA-99203</p>
+</div>
+</div>
+<div class="space-y-4 pt-4 border-t border-outline/10">
+<div class="flex justify-between">
+<span class="text-label-caps text-secondary">Age</span>
+<span class="font-body-md text-deep-charcoal">42</span>
+</div>
+<div class="flex justify-between">
+<span class="text-label-caps text-secondary">Primary Consultant</span>
+<span class="font-body-md text-deep-charcoal">Dr. J. Thorne</span>
+</div>
+<div class="flex justify-between">
+<span class="text-label-caps text-secondary">Last Treatment</span>
+<span class="font-body-md text-deep-charcoal">Upper Arch Alignment</span>
+</div>
+<div class="flex justify-between">
+<span class="text-label-caps text-secondary">Condition</span>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded">STABILIZED</span>
+</div>
+</div>
+<button class="w-full mt-8 border border-muted-gold py-3 text-deep-charcoal font-label-caps text-label-caps hover:bg-muted-gold hover:text-white transition-all">
+                        Edit Profile
+                    </button>
+</div>
+<!-- Dental History Summary -->
+<div class="bg-white p-8 shadow-[0_20px_40px_rgba(26,26,26,0.05)] border-l-4 border-muted-gold">
+<h4 class="font-title-md text-title-md text-deep-charcoal mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history_edu</span>
+                        Clinical Brief
+                    </h4>
+<p class="text-body-md text-secondary leading-relaxed mb-6">
+                        Patient presents with desire for "Smile Re-Architecture." Focused on midline correction and shade brightness (BL1). Previous treatments include ceramic veneers (11-21) and localized periodontal refinement.
+                    </p>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 text-body-md text-on-surface">
+<span class="text-muted-gold font-bold">+</span>
+<span class="">Allergic to penicillin variants.</span>
+</li>
+<li class="flex items-start gap-3 text-body-md text-on-surface">
+<span class="text-muted-gold font-bold">+</span>
+<span class="">High aesthetic sensitivity; prefers natural translucency.</span>
+</li>
+<li class="flex items-start gap-3 text-body-md text-on-surface">
+<span class="text-muted-gold font-bold">+</span>
+<span class="">Consistent hygiene compliance (9/10).</span>
+</li>
+</ul>
+</div>
+</section>
+<!-- Column Right: Gallery & Timeline (8 Cols) -->
+<section class="col-span-12 lg:col-span-8 space-y-gutter">
+<!-- Interactive Before & After Gallery -->
+<div class="bg-white p-8 shadow-[0_20px_40px_rgba(26,26,26,0.05)]">
+<div class="flex justify-between items-center mb-8">
+<h4 class="font-title-md text-title-md text-deep-charcoal">Transformation Gallery</h4>
+<div class="flex gap-4">
+<button class="p-2 border border-outline/10 text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="p-2 border border-outline/10 text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">fullscreen</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- B&A Comparison Card 1 -->
+<div class="relative group aspect-[4/3] overflow-hidden bg-bone-ivory">
+<div class="absolute inset-0 flex">
+<div class="w-full h-full relative" id="ba-image-1">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A detailed clinical close-up showing a 'before' dental state with slight misalignment and natural enamel discoloration. The lighting is medical-grade but soft, emphasizing texture and dental topography. The surrounding skin is clean, and the composition is symmetrical in a luxury architectural dental context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQtovCa6FUQ0hqilypWlddBnvLRHJwcDeb--qhqcucGwOMGBEXOiSB0QKj9fknvkdNBxFqYCnUtXTkfbkOqD6BfPzjdmty_VPhvZCFdC-QNFIQxFTudnx4sXXNROye0-bTOH51vkCWXAD5mo4W2aowPRQKOIX5s53Rdlh414Om4csvpF3HVkllNR6eyxZbuwoIWfYvrXDU-VRC1YGbN6fPpeJhqccNdOhW3_4vjw-Bfs4Q6aI7Mvc-NNAsCtAdUc0k7qCjPXflcxc">
+<div class="absolute inset-0 w-1/2 overflow-hidden border-r-2 border-white/80" style="clip-path: inset(0 0 0 0);">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A detailed clinical close-up showing an 'after' dental state with perfect white ceramic veneers, flawless alignment, and high-gloss finish. The lighting is brilliant and clean, showcasing the 'Smile Architecture' boutique aesthetic. The result is natural yet impeccably refined." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxCyk5BD1mPvHgipNBgqB4gFHL6NnUNMFnu-8PCI_ouoRerN2d1yOX1UacM6Jl9wobAsnHrmPEND5bFsq-HlbYXxYISS4dWe2yGEL1-yIVhS0gUEPiVJLw4-srXBvlzWwYl3tqRvH9Le47RMBi9E8yg-QH1UZWVK8oz0LbTL-ijpLRN4NENQLLOkwgLxBvrvnJLAwtg5MLHcViIw8srX_1ivVyR-9dsUpUBx5aprD9CCqYMM_KnfZikb-Ds4rV2RU5OwO2twg9JXc">
+</div>
+<!-- Simple handle simulator -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-lg before-after-handle z-10">
+<span class="material-symbols-outlined text-primary text-sm">unfold_more</span>
+</div>
+<span class="absolute bottom-4 left-4 bg-deep-charcoal/80 text-white text-[10px] px-2 py-1 font-label-caps">AFTER</span>
+<span class="absolute bottom-4 right-4 bg-white/80 text-deep-charcoal text-[10px] px-2 py-1 font-label-caps">BEFORE</span>
+</div>
+</div>
+</div>
+<!-- Gallery Thumbnails Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div class="aspect-square bg-bone-ivory overflow-hidden relative group">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A high-resolution macro photograph of a porcelain veneer being held by dental forceps. The veneer is translucent and catches the light, demonstrating architectural precision. The background is a soft-focus minimalist clinical setting with bone-ivory and champagne-gold tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmphbrA6coRt1B6K-U0U_9lpudJQvW_P4oho41zBsJfuQpu6aQVKFLy56wUTG7guG4q35snSGSBg3wPMqfJaIi5st2CBO6YOkfHI8YgAe5APnmmFIEjNgb3MEFqo81Iub47Ubm2zLYxjknMvTc-BJgkjME6CR5A3GD6Dbr_VsbrUcw4lOBuRAfZOTW8YtZgm82RLicMwxGJA5sti0lua1ypdF86zDjc4iqYt1O1-JMvbf2nrEVqtbQ70hHf9yClC8vXoLHfNI1mRk">
+<div class="absolute inset-0 bg-deep-charcoal/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">visibility</span>
+</div>
+</div>
+<div class="aspect-square bg-bone-ivory overflow-hidden relative group">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A high-key architectural photograph of a patient's bite alignment from a lateral view. The teeth are perfectly shaped and the image has a fashion-editorial quality. Clean white lighting and high contrast emphasize the boutique dental experience of Smile Architecture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIJpRDl61hGcYm9o7I3R5B6SyriR_fJgV-Qsp3gnYY2_I5kpPONeU-UPnUpLOfQl0I-2U3BIsVxhg4GFvHxKg6BR_fnICH2UQ3Rk9bZdab0OTZPmjcSnZoVs_5q9GvzJWZ2_mUn1WAthAX_wyiES4agowqg_H9o24v2-UnbejXrAmNyLNilUwmzZ_AMA9-1MXA3pgsYQnxqZVJTg2La9GIvz-IaSuBvpFV29zcaXk2nkuvaW5GvDRwF85wMkvWAsRY2TpTwpGccQs">
+<div class="absolute inset-0 bg-deep-charcoal/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">visibility</span>
+</div>
+</div>
+<div class="aspect-square bg-bone-ivory overflow-hidden relative group">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A top-down view of a designer dental tray with gold-plated clinical tools arranged with surgical precision. The tray is white marble, reflecting a minimalist and luxury medical-grade aesthetic. The lighting is crisp and clean, avoiding any harsh medical shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBy-NRsODQocQFb2V_aaddRImklTLIWs5Z6a8n7mFZbrx-irN60aC09MgcDfZ8G7AYWL8RRugBKs4305lUhQ9h8a1KXyMEP8GvJ97kT9S3k8QUQmhaKWvBQp8mK-BwuVTnUvBTRBhkVBtFxLnK-oxlnD3iZG4q20lGyBgVEJwgiFZ7UbyQBcuqjrnfDcigAAeQm4Fz-FU5F2Qou8ZhhYDkwR0Cm7X33x2IBFKOk1kbaN_Or12U1_ti5Nxew24DMnVpmNna-U1cAMk">
+<div class="absolute inset-0 bg-deep-charcoal/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white">visibility</span>
+</div>
+</div>
+<div class="aspect-square bg-bone-ivory flex flex-col items-center justify-center border-2 border-dashed border-outline/20 hover:border-muted-gold transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-outline/40 group-hover:text-primary mb-2">add_a_photo</span>
+<span class="text-label-caps text-outline/60 group-hover:text-primary">UPLOAD</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Treatment Timeline (Past & Future) -->
+<div class="bg-bone-ivory p-8 shadow-[0_20px_40px_rgba(26,26,26,0.05)]">
+<div class="flex justify-between items-center mb-10">
+<h4 class="font-title-md text-title-md text-deep-charcoal">Treatment Journey</h4>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 bg-primary rounded-full"></span>
+<span class="text-label-caps text-secondary uppercase">Next Event: Oct 12</span>
+</div>
+</div>
+<div class="relative timeline-line pl-10 space-y-12">
+<!-- Future Appointment -->
+<div class="relative">
+<div class="absolute -left-[37px] top-1 w-2.5 h-2.5 rounded-full border-2 border-primary bg-white z-10 ring-4 ring-primary/10"></div>
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+<div>
+<span class="text-label-caps text-primary font-bold">UPCOMING</span>
+<h5 class="font-body-lg text-body-lg text-deep-charcoal mt-1">Final Polishing &amp; Guard Fitting</h5>
+<p class="text-secondary text-sm mt-1">Refining the occlusal contact and finalizing the night guard architecture.</p>
+</div>
+<div class="text-right shrink-0">
+<p class="font-title-md text-deep-charcoal">Oct 12, 2024</p>
+<p class="text-label-caps text-secondary">09:30 AM — Room 04</p>
+</div>
+</div>
+</div>
+<!-- Past Appointment 1 -->
+<div class="relative opacity-60">
+<div class="absolute -left-[37px] top-1 w-2.5 h-2.5 rounded-full bg-outline z-10"></div>
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+<div>
+<span class="text-label-caps text-secondary">COMPLETED</span>
+<h5 class="font-body-lg text-body-lg text-deep-charcoal mt-1">Veneer Placement (Arch Upper)</h5>
+<p class="text-secondary text-sm mt-1">Bonding session for teeth 13 to 23. Shade BL1 successfully applied.</p>
+</div>
+<div class="text-right shrink-0">
+<p class="font-title-md text-deep-charcoal">Sep 28, 2024</p>
+<p class="text-label-caps text-secondary">Dr. Julian Thorne</p>
+</div>
+</div>
+</div>
+<!-- Past Appointment 2 -->
+<div class="relative opacity-60">
+<div class="absolute -left-[37px] top-1 w-2.5 h-2.5 rounded-full bg-outline z-10"></div>
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+<div>
+<span class="text-label-caps text-secondary">COMPLETED</span>
+<h5 class="font-body-lg text-body-lg text-deep-charcoal mt-1">Diagnostic Digital Sculpt</h5>
+<p class="text-secondary text-sm mt-1">3D intraoral scanning and preview of final smile geometry.</p>
+</div>
+<div class="text-right shrink-0">
+<p class="font-title-md text-deep-charcoal">Sep 10, 2024</p>
+<p class="text-label-caps text-secondary">Studio Lab A</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-12 flex justify-center">
+<button class="flex items-center gap-2 text-label-caps text-secondary hover:text-primary transition-all group">
+                            VIEW ALL RECORDS
+                            <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer (Execution from JSON) -->
+<footer class="mt-section-gap-sm w-full py-section-gap-sm flex flex-col items-center gap-stack-space border-t border-outline/10 bg-surface dark:bg-deep-charcoal">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU1dwFzCQKcO3YKEiAOTR6tKvFFq31whBetEhIVVtcdFtQ6jkE5OmyPkb0esNUr4HnoYguHB9ZjGGy7ApZ3busvbaK4tIITtcUxL1EeV1UOj7DUuTbMRx6On6LCiCTm4CKg4FuTwHJ8Pj7w31BQ3fysBgpHdWxdZlAquMsZRIOBOsP1oIHzal_TP5O3vilSviJiD_EeKZVnvfuOBGfSQmmxCQDg3MTKnHLfAXjtuuBcrZ6sMLUtIcJzD_1pfT6lji2-9Zj_MnAIXg" alt="Smile Architecture Logo" class="h-24 w-auto object-contain">
+<div class="flex gap-8">
+<a class="text-label-caps text-secondary hover:text-primary underline transition-all" href="#">Privacy Policy</a>
+<a class="text-label-caps text-secondary hover:text-primary underline transition-all" href="#">Terms of Service</a>
+<a class="text-label-caps text-secondary hover:text-primary underline transition-all" href="#">Accessibility</a>
+</div>
+<p class="text-label-caps text-primary tracking-widest mt-4">© 2024 SMILE ARCHITECTURE. ALL RIGHTS RESERVED.</p>
+</footer>
+</main>
+<!-- Floating Action Button (Limited Scope) -->
+<div class="fixed bottom-10 right-10 z-50">
+<button class="w-16 h-16 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all group overflow-hidden">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform duration-500">add</span>
+<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</button>
+</div>
+<script>
+        // Simple Micro-interaction for Before/After simulation
+        document.addEventListener('DOMContentLoaded', () => {
+            const baContainer = document.getElementById('ba-image-1');
+            if (baContainer) {
+                const innerImage = baContainer.querySelector('div');
+                const handle = baContainer.querySelector('.before-after-handle');
+                
+                baContainer.addEventListener('mousemove', (e) => {
+                    const rect = baContainer.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    if (x >= 0 && x <= 100) {
+                        innerImage.style.width = x + '%';
+                        handle.style.left = x + '%';
+                    }
+                });
+            }
+        });
+    </script>
+
+
+</body></html>

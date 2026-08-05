@@ -1,0 +1,90 @@
+.financial-dashboard {
+  display: grid;
+  gap: 20px;
+}
+
+.financial-period-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.financial-period-filters label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.financial-period-label {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.financial-period-label strong {
+  color: var(--color-text);
+}
+
+.financial-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.financial-summary-cards article {
+  padding: 18px;
+  border: 1px solid rgba(196, 199, 199, 0.45);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.financial-summary-cards span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.financial-summary-cards strong {
+  font-size: 1.35rem;
+  color: var(--color-text);
+}
+
+.financial-highlight {
+  color: var(--color-success) !important;
+}
+
+.financial-danger {
+  color: var(--color-danger) !important;
+}
+
+.financial-by-dentist {
+  padding: 24px;
+}
+
+.financial-attribution-note {
+  margin: -8px 0 20px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.financial-table th,
+.financial-table td {
+  white-space: nowrap;
+}
+
+@media (max-width: 960px) {
+  .financial-period-filters {
+    width: 100%;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

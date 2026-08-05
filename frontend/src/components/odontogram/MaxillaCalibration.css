@@ -1,0 +1,73 @@
+.maxilla-cal-panel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 20;
+  width: min(300px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #d7e7f3;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  color: #17394f;
+  font-size: 12px;
+}
+
+.maxilla-cal-panel strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.maxilla-cal-panel p {
+  margin: 0 0 12px;
+  color: #587084;
+  line-height: 1.4;
+}
+
+.maxilla-cal-panel label {
+  display: grid;
+  grid-template-columns: 1fr 64px;
+  gap: 6px 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 650;
+}
+
+.maxilla-cal-panel label input[type='range'] {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.maxilla-cal-panel label input[type='number'] {
+  width: 100%;
+  padding: 4px 6px;
+  border: 1px solid #cfddea;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.maxilla-cal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.maxilla-cal-actions .btn {
+  flex: 1;
+  min-height: 34px;
+  font-size: 12px;
+}
+
+.maxilla-cal-fdi {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #ff00aa;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  pointer-events: none;
+}

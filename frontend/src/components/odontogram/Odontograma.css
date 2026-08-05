@@ -1,0 +1,456 @@
+.odontograma {
+  display: grid;
+  gap: 18px;
+}
+
+.odo-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.odo-legend-hint {
+  width: 100%;
+  margin: 0 0 2px;
+  font-size: 12px;
+  color: #587084;
+}
+
+.odo-legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: default;
+}
+
+button.odo-legend-chip {
+  cursor: pointer;
+  font: inherit;
+  background: transparent;
+}
+
+button.odo-legend-chip:hover {
+  filter: brightness(0.97);
+}
+
+button.odo-legend-chip.is-active {
+  box-shadow: 0 0 0 2px var(--color-secondary);
+}
+
+.odo-mark-toolbar {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.odo-mark-modes {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--color-surface);
+  width: fit-content;
+}
+
+.odo-mark-mode {
+  border: none;
+  background: transparent;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.odo-mark-mode:hover {
+  color: var(--color-text);
+}
+
+.odo-mark-mode.is-active {
+  background: #fff;
+  color: var(--color-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.odo-mark-brush {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.odo-field-inline {
+  margin: 0;
+}
+
+.odo-mark-hint {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 12px;
+  color: #587084;
+}
+
+.odontograma-viewport {
+  position: relative;
+}
+
+.odontograma-viewport.is-paint-mode {
+  box-shadow: inset 0 0 0 2px rgba(43, 126, 199, 0.35);
+  border-radius: 14px;
+}
+
+.odo-paint-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(43, 126, 199, 0.92);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.odo-surface-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(23, 57, 79, 0.88);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.odo-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 960px) {
+  .odo-mark-brush {
+    grid-template-columns: 1fr;
+  }
+}
+
+.odo-legend-icon {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.odo-legend-chip.status-healthy {
+  background: #e7f6f0;
+  color: #147251;
+  border-color: #b7e2cc;
+}
+
+.odo-legend-chip.status-caries {
+  background: #fff3de;
+  color: #9a620b;
+  border-color: #f0c3a0;
+}
+
+.odo-legend-chip.status-restored {
+  background: #e6f2fc;
+  color: #1767a4;
+  border-color: #b8d9f0;
+}
+
+.odo-legend-chip.status-missing,
+.odo-legend-chip.status-extracted {
+  background: #eef1f4;
+  color: #5b6b78;
+  border-color: #d7dee5;
+}
+
+.odo-legend-chip.status-extraction_indicated {
+  background: #fce8e8;
+  color: #b42318;
+  border-color: #f5b5b0;
+}
+
+.odo-legend-chip.status-implant {
+  background: #efe9ff;
+  color: #6b4fc4;
+  border-color: #cbbef0;
+}
+
+.odo-legend-chip.status-root_canal {
+  background: #fcebed;
+  color: #ae3443;
+  border-color: #f0c0c7;
+}
+
+.odo-legend-chip.status-crown {
+  background: #fff6dd;
+  color: #8a6a12;
+  border-color: #f0dfa0;
+}
+
+.odo-legend-chip.status-fracture {
+  background: #f5f0ea;
+  color: #6b5a48;
+  border-color: #ddd0c0;
+}
+
+.odo-legend-chip.status-in_treatment {
+  background: #e8f4fc;
+  color: #1767a4;
+  border-color: #b8d9f0;
+}
+
+.odontograma-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .odontograma-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+.odontograma-viewport {
+  outline: none;
+  border-radius: 14px;
+}
+
+.odontograma-viewport:focus-visible {
+  box-shadow: 0 0 0 3px rgba(79, 154, 216, 0.45);
+}
+
+.odo-panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.odo-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.odo-panel-title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #17394f;
+}
+
+.odo-panel-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e6f2fc;
+  color: #1767a4;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.odo-panel-hint {
+  margin: 0;
+  color: #587084;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.odo-panel-hint kbd {
+  padding: 1px 5px;
+  border: 1px solid #cfddea;
+  border-radius: 4px;
+  background: #f7fbfe;
+  font-size: 11px;
+}
+
+.odo-field {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3f5f75;
+}
+
+.odo-field select,
+.odo-field textarea {
+  font-weight: 400;
+}
+
+.odo-list {
+  padding: 16px 18px;
+}
+
+.odo-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.odo-list-title {
+  margin: 0;
+  font-size: 1rem;
+  color: #17394f;
+}
+
+.odo-list-count {
+  min-width: 24px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef4f8;
+  color: #587084;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.odo-list-empty {
+  margin: 0;
+  color: #587084;
+  font-size: 13px;
+}
+
+.odo-list-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.odo-list-item {
+  width: 100%;
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid #d7e7f3;
+  border-radius: 10px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.odo-list-item:hover {
+  border-color: #9ec5e0;
+}
+
+.odo-list-item.is-active {
+  border-color: #4f9ad8;
+  box-shadow: 0 0 0 2px rgba(79, 154, 216, 0.2);
+}
+
+.odo-list-num {
+  font-size: 14px;
+  font-weight: 800;
+  color: #17394f;
+}
+
+.odo-list-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.odo-list-proc,
+.odo-list-notes {
+  font-size: 12px;
+  color: #587084;
+}
+
+.odo-list-notes {
+  font-style: italic;
+}
+
+.odontograma-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.odontograma-feedback {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.odontograma-feedback.is-success {
+  background: #e7f6f0;
+  color: #147251;
+  border: 1px solid #b7e2cc;
+}
+
+.odontograma-feedback.is-error {
+  background: #fce8e8;
+  color: #b42318;
+  border: 1px solid #f5b5b0;
+}
+
+@media (max-width: 960px) {
+  .odontograma-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Chips reutilizados na lista */
+.odo-list-status.status-healthy {
+  background: #e7f6f0;
+  color: #147251;
+}
+.odo-list-status.status-caries {
+  background: #fff3de;
+  color: #9a620b;
+}
+.odo-list-status.status-restored {
+  background: #e6f2fc;
+  color: #1767a4;
+}
+.odo-list-status.status-missing,
+.odo-list-status.status-extracted {
+  background: #eef1f4;
+  color: #5b6b78;
+}
+.odo-list-status.status-extraction_indicated {
+  background: #fce8e8;
+  color: #b42318;
+}
+.odo-list-status.status-implant {
+  background: #efe9ff;
+  color: #6b4fc4;
+}
+.odo-list-status.status-root_canal {
+  background: #fcebed;
+  color: #ae3443;
+}
+.odo-list-status.status-crown {
+  background: #fff6dd;
+  color: #8a6a12;
+}
+.odo-list-status.status-fracture {
+  background: #f5f0ea;
+  color: #6b5a48;
+}
+.odo-list-status.status-in_treatment {
+  background: #e8f4fc;
+  color: #1767a4;
+}

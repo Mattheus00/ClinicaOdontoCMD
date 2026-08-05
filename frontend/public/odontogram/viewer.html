@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Odontograma visual</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#27272a}
+.viewer{position:relative;width:100%;line-height:0}
+.viewer img{display:block;width:100%;height:auto;user-select:none}
+.tooth{position:absolute;margin:0;padding:0;transform:translate(-50%,-50%);border:2px solid transparent;background:transparent;border-radius:45%;cursor:pointer;transition:.15s;font:inherit;appearance:none}
+.tooth:hover{border-color:#38bdf8;background:#38bdf844;box-shadow:0 0 0 4px #38bdf822}
+.tooth.selected{border-color:#2b7ec7;background:#4f9ad866;box-shadow:0 0 0 4px #2b7ec733}
+.tooth.marked{border-color:rgba(23,57,79,.35)}
+.tooth .icon{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:12px;font-weight:700;color:#17394f;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="viewer" id="viewer">
+<img src="/odontogram/odontograma-visual.png" width="1402" height="1122" alt="Odontograma">
+</div>
+<script>
+const originalW=1402, originalH=1122;
+const viewer=document.getElementById('viewer');
+const hotspots=[[18,126,110,44,48],[17,123,145,44,48],[16,126,180,44,48],[15,136,215,40,44],[14,153,245,40,44],[13,178,272,38,46],[12,212,292,36,42],[11,248,302,36,42],[21,282,302,36,42],[22,318,292,36,42],[23,350,272,38,46],[24,375,245,40,44],[25,392,215,40,44],[26,402,180,44,48],[27,402,145,44,48],[28,400,110,44,48],[48,550,292,44,48],[47,554,255,44,48],[46,568,220,44,48],[45,585,185,40,44],[44,605,155,40,44],[43,630,128,38,46],[42,660,112,36,42],[41,690,103,36,42],[31,720,103,36,42],[32,750,112,36,42],[33,778,128,38,46],[34,800,155,40,44],[35,820,185,40,44],[36,836,220,44,48],[37,846,255,44,48],[38,850,292,44,48]];
+const tints={HEALTHY:'#fbf8f1',CARIES:'#e8b07a',RESTORED:'#b7d4ea',MISSING:'#9aa3ab',EXTRACTION_INDICATED:'#f0a8a8',EXTRACTED:'#9aa3ab',IMPLANT:'#e9e4f8',ROOT_CANAL:'#e8a0aa',CROWN:'#e8d48a',FRACTURE:'#d4c4b0',IN_TREATMENT:'#a8d4f0'};
+const icons={HEALTHY:'✓',CARIES:'●',RESTORED:'◆',MISSING:'○',EXTRACTION_INDICATED:'✕',EXTRACTED:'—',IMPLANT:'⬡',ROOT_CANAL:'◎',CROWN:'♛',FRACTURE:'⚡',IN_TREATMENT:'↻'};
+const els=new Map();
+let statuses={}, selected=new Set(), focused=null;
+
+hotspots.forEach(([id,x,y,width,height])=>{
+ const el=document.createElement('button');
+ el.type='button';
+ el.className='tooth';
+ el.dataset.id=id;
+ el.title='Dente '+id;
+ el.setAttribute('aria-label','Dente '+id);
+ el.style.left=(x/originalW*100)+'%';
+ el.style.top=(y/originalH*100)+'%';
+ el.style.width=(width/originalW*100)+'%';
+ el.style.height=(height/originalH*100)+'%';
+ el.onclick=()=>parent.postMessage({type:'odontogram-tooth-select',fdi:String(id)},window.location.origin);
+ viewer.appendChild(el);
+ els.set(String(id),el);
+});
+
+function paint(){
+ els.forEach((el,id)=>{
+  const st=statuses[id]||'HEALTHY';
+  const marked=st!=='HEALTHY';
+  el.classList.toggle('marked',marked);
+  el.classList.toggle('selected',selected.has(id)||focused===id);
+  el.style.background=marked?`color-mix(in srgb, ${tints[st]||tints.HEALTHY} 78%, transparent)`:'';
+  let icon=el.querySelector('.icon');
+  if(marked){
+   if(!icon){icon=document.createElement('span');icon.className='icon';el.appendChild(icon);}
+   icon.textContent=icons[st]||'';
+  } else if(icon){icon.remove();}
+ });
+}
+
+window.addEventListener('message',(e)=>{
+ if(e.source!==parent||e.origin!==window.location.origin)return;
+ const d=e.data;
+ if(!d||d.type!=='odontogram-sync')return;
+ statuses=d.statuses||{};
+ selected=new Set(d.selected||[]);
+ focused=d.focused||null;
+ paint();
+});
+
+parent.postMessage({type:'odontogram-ready'},window.location.origin);
+</script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+package com.dentic.api.appointment.web;
+
+import com.dentic.api.appointment.domain.Appointment;
+import com.dentic.api.appointment.repository.AppointmentRepository;
+import com.dentic.api.multitenant.TenantContext;
+import com.dentic.api.onboarding.repository.ClinicRepository;
+import com.dentic.api.patient.domain.PatientPayment;
+import com.dentic.api.patient.repository.PatientPaymentRepository;
+import com.dentic.api.patient.repository.PatientRepository;
+import com.dentic.api.procedure.repository.ProcedureRepository;
+import com.dentic.api.professional.repository.ProfessionalRepository;
+import com.dentic.api.security.SecurityUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.*;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/appointments")
+public class AppointmentController {
+
+    private final AppointmentRepository appointments;
+    private final PatientRepository patients;
+    private final ProfessionalRepository professionals;
+    private final ProcedureRepository procedures;
+    private final PatientPaymentRepository payments;
+    private final ClinicRepository clinics;
+
+    public AppointmentController(
+            AppointmentRepository appointments,
+            PatientRepository patients,
+            ProfessionalRepository professionals,
+            ProcedureRepository procedures,
+            PatientPaymentRepository payments,
+            ClinicRepository clinics
+    ) {
+        this.appointments = appointments;
+        this.patients = patients;
+        this.professionals = professionals;
+        this.procedures = procedures;
+        this.payments = payments;
+        this.clinics = clinics;
+    }
+
+    @GetMapping
+    @Transactional(readOnly = true)
+    public PageResponse<AppointmentResponse> list(
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) UUID professionalId
+    ) {
+        UUID scopedProfessionalId = SecurityUtils.isDentist()
+                ? SecurityUtils.requireProfessionalId()
+                : professionalId;
+        LocalDate startDay = from != null ? LocalDate.parse(from) : (date != null ? LocalDate.parse(date) : LocalDate.now());
+        LocalDate endDayExclusive = to != null ? LocalDate.parse(to).plusDays(1) : (date != null ? LocalDate.parse(date).plusDays(1) : startDay.plusDays(1));
+        List<Appointment> found = appointments.findByClinicIdAndScheduledAtBetween(
+                tenant(),
+                startDay.atStartOfDay().atOffset(ZoneOffset.UTC),
+                endDayExclusive.atStartOfDay().atOffset(ZoneOffset.UTC)
+        );
+        List<AppointmentResponse> data = found.stream()
+                .filter(v -> scopedProfessionalId == null || v.getProfessional().getId().equals(scopedProfessionalId))
+                .map(AppointmentResponse::from)
+                .toList();
+        return new PageResponse<>(data, data.isEmpty() ? 0 : 1, data.size(), 0, 500);
+    }
+
+    @PostMapping
+    @Transactional
+    public ResponseEntity<AppointmentResponse> create(@RequestBody AppointmentRequest request) {
+        SecurityUtils.requireAdmin();
+        UUID clinic = tenant();
+        var patient = patients.findById(request.patientId())
+                .filter(v -> v.getClinic().getId().equals(clinic))
+                .orElseThrow(() -> new IllegalArgumentException("Paciente não encontrado"));
+        var professional = professionals.findById(request.professionalId())
+                .filter(v -> v.getClinic().getId().equals(clinic))
+                .orElseThrow(() -> new IllegalArgumentException("Profissional não encontrado"));
+        var procedure = procedures.findByIdAndClinicId(request.procedureId(), clinic)
+                .orElseThrow(() -> new IllegalArgumentException("Procedimento não encontrado"));
+
+        OffsetDateTime start = LocalDateTime.parse(request.startsAt()).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        Appointment value = new Appointment();
+        value.setClinic(clinics.getReferenceById(clinic));
+        value.setPatient(patient);
+        value.setProfessional(professional);
+        value.setProcedure(procedure);
+        value.setScheduledAt(start);
+        value.setDurationMinutes(resolveDurationMinutes(request.durationMinutes()));
+        value.setStatus("SCHEDULED");
+        return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+    }
+
+    @PatchMapping("/{id}/reschedule")
+    @Transactional
+    public ResponseEntity<AppointmentResponse> reschedule(@PathVariable UUID id, @RequestBody RescheduleRequest request) {
+        SecurityUtils.requireAdmin();
+        Appointment value = appointments.findById(id)
+                .filter(v -> v.getClinic().getId().equals(tenant()))
+                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
+        if ("CANCELLED".equals(value.getStatus())) {
+            throw new IllegalArgumentException("Não é possível remarcar um agendamento cancelado.");
+        }
+        OffsetDateTime start = LocalDateTime.parse(request.startsAt()).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        value.setScheduledAt(start);
+        if (request.durationMinutes() != null) {
+            value.setDurationMinutes(resolveDurationMinutes(request.durationMinutes()));
+        }
+        if (request.professionalId() != null) {
+            var professional = professionals.findById(request.professionalId())
+                    .filter(v -> v.getClinic().getId().equals(tenant()))
+                    .orElseThrow(() -> new IllegalArgumentException("Profissional não encontrado"));
+            value.setProfessional(professional);
+        }
+        return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+    }
+
+    @PostMapping("/{id}/cancel")
+    @Transactional
+    public ResponseEntity<Void> cancel(@PathVariable UUID id) {
+        SecurityUtils.requireAdmin();
+        Appointment value = appointments.findById(id)
+                .filter(v -> v.getClinic().getId().equals(tenant()))
+                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
+        value.setStatus("CANCELLED");
+        appointments.save(value);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/confirm")
+    @Transactional
+    public ResponseEntity<AppointmentResponse> confirm(@PathVariable UUID id) {
+        Appointment value = appointments.findById(id)
+                .filter(v -> v.getClinic().getId().equals(tenant()))
+                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
+
+        if ("CANCELLED".equals(value.getStatus())) {
+            throw new IllegalArgumentException("Não é possível confirmar um agendamento cancelado.");
+        }
+        if ("COMPLETED".equals(value.getStatus())) {
+            return ResponseEntity.ok(AppointmentResponse.from(value));
+        }
+        if (value.getProcedure() == null) {
+            throw new IllegalArgumentException("Este agendamento não possui procedimento vinculado.");
+        }
+        if (SecurityUtils.isDentist()) {
+            if (!value.getProfessional().getId().equals(SecurityUtils.requireProfessionalId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
+            }
+            value.setStatus("COMPLETED");
+            return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+        }
+        SecurityUtils.requireAdminOrSecretary();
+
+        payments.findByAppointmentId(id).orElseGet(() -> {
+            PatientPayment payment = new PatientPayment();
+            payment.setPatient(value.getPatient());
+            payment.setAppointment(value);
+            payment.setAmount(value.getProcedure().getPrice());
+            payment.setMethod("CASH");
+            payment.setStatus("PAID");
+            payment.setNotes("Pagamento do procedimento: " + value.getProcedure().getName());
+            payment.setPaidAt(LocalDate.now());
+            return payments.save(payment);
+        });
+
+        value.setStatus("COMPLETED");
+        return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+    }
+
+    private UUID tenant() {
+        UUID id = TenantContext.getCurrentTenant();
+        if (id == null) throw new IllegalStateException("Sessão inválida");
+        return id;
+    }
+
+    private short resolveDurationMinutes(Integer durationMinutes) {
+        int value = durationMinutes == null ? 30 : durationMinutes;
+        if (value < 15 || value > 480 || value % 15 != 0) {
+            throw new IllegalArgumentException("Informe uma duração entre 15 minutos e 8 horas.");
+        }
+        return (short) value;
+    }
+
+    public record AppointmentRequest(UUID patientId, UUID professionalId, UUID procedureId, String startsAt, Integer durationMinutes) {}
+
+    public record RescheduleRequest(String startsAt, UUID professionalId, Integer durationMinutes) {}
+
+    public record PatientData(UUID id, String name) {}
+
+    public record ProfessionalData(UUID id, String name) {}
+
+    public record ProcedureData(UUID id, String name, java.math.BigDecimal price) {}
+
+    public record AppointmentResponse(
+            UUID id,
+            PatientData patient,
+            ProfessionalData professional,
+            ProcedureData procedure,
+            OffsetDateTime startsAt,
+            OffsetDateTime endsAt,
+            short durationMinutes,
+            String status
+    ) {
+        static AppointmentResponse from(Appointment value) {
+            var procedure = value.getProcedure();
+            return new AppointmentResponse(
+                    value.getId(),
+                    new PatientData(value.getPatient().getId(), value.getPatient().getName()),
+                    new ProfessionalData(value.getProfessional().getId(), value.getProfessional().getName()),
+                    procedure == null ? null : new ProcedureData(procedure.getId(), procedure.getName(), procedure.getPrice()),
+                    value.getScheduledAt(),
+                    value.getScheduledAt().plusMinutes(value.getDurationMinutes()),
+                    value.getDurationMinutes(),
+                    value.getStatus()
+            );
+        }
+    }
+
+    public record PageResponse<T>(List<T> content, int totalPages, int totalElements, int number, int size) {}
+}

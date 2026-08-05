@@ -1,0 +1,126 @@
+.odo-pro-wrap {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #d7e7f3;
+  background: #f8fafc;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.odo-pro-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.odo-pro-bg {
+  fill: #f4f7fb;
+}
+
+.odo-pro-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  fill: #587084;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.odo-section-line {
+  stroke: #dbe7f3;
+  stroke-width: 1;
+}
+
+.odo-palate,
+.odo-floor {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.odo-tooth {
+  cursor: pointer;
+}
+
+.odo-tooth-label {
+  font-size: 9px;
+  font-weight: 800;
+  fill: #17394f;
+  pointer-events: none;
+  user-select: none;
+}
+
+.odo-surface {
+  cursor: pointer;
+  transition: fill 0.12s ease, opacity 0.12s ease;
+}
+
+.odo-surface:hover,
+.odo-surface.is-hovered {
+  filter: brightness(0.97);
+}
+
+.odo-crown {
+  cursor: pointer;
+  transition: fill 0.12s ease;
+}
+
+.odo-fissure {
+  pointer-events: none;
+}
+
+.odo-enamel-outline {
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.odo-root {
+  pointer-events: none;
+}
+
+.odo-tooth.is-selected .odo-surface,
+.odo-tooth.is-selected .odo-crown {
+  filter: drop-shadow(0 0 2px rgba(43, 126, 199, 0.45));
+}
+
+.odo-tooth-absent {
+  pointer-events: none;
+}
+
+.odo-implant-mark,
+.odo-implant-cap {
+  pointer-events: none;
+}
+
+.odo-status-caries .odo-surface {
+  stroke: #dc2626;
+}
+
+.odo-status-restored .odo-surface,
+.odo-status-in_treatment .odo-surface {
+  stroke: #2563eb;
+}
+
+.odo-status-implant .odo-crown,
+.odo-status-implant .odo-surface {
+  stroke: #7c3aed;
+}
+
+.odo-status-extracted .odo-tooth-label,
+.odo-status-missing .odo-tooth-label {
+  fill: #9ca3af;
+}
+
+.odo-legend-hint {
+  font-size: 10px;
+  fill: #587084;
+}
+
+@media (max-width: 640px) {
+  .odo-pro-section-title {
+    font-size: 9px;
+  }
+
+  .odo-tooth-label {
+    font-size: 8px;
+  }
+}

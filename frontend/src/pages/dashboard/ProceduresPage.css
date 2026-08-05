@@ -1,0 +1,31 @@
+.procedures-page {
+  display: grid;
+  gap: 20px;
+}
+
+.procedures-form-card {
+  margin-bottom: 4px;
+}
+
+.procedures-table-wrap {
+  margin-top: 4px;
+}
+
+.procedure-name {
+  font-weight: 600;
+}
+
+.procedure-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.procedure-delete {
+  color: var(--color-danger);
+}
+
+.col-actions {
+  width: 180px;
+  text-align: right;
+}

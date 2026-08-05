@@ -1,0 +1,430 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>SMILE ARCHITECTURE | Management Suite</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(249, 248, 246, 0.7);
+            backdrop-filter: blur(12px);
+        }
+        .card-shadow {
+            box-shadow: 0 20px 40px rgba(26, 26, 26, 0.05);
+        }
+        body {
+            background-color: #faf9f7;
+            color: #1a1c1b;
+        }
+        /* Custom scrollbar for premium feel */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #EFECE7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C5A367;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "secondary": "#5f5e5e",
+                        "secondary-container": "#e2dfde",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary": "#ffffff",
+                        "bone-ivory": "#EFECE7",
+                        "on-surface-variant": "#4d463a",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#271900",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f4f3f1",
+                        "primary": "#755a25",
+                        "primary-fixed-dim": "#e6c182",
+                        "surface": "#faf9f7",
+                        "on-secondary-fixed-variant": "#474746",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1a1c1b",
+                        "primary-container": "#c5a367",
+                        "muted-gold": "#D4BC8E",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface-dim": "#dadad8",
+                        "inverse-primary": "#e6c182",
+                        "surface-tint": "#755a25",
+                        "on-tertiary-container": "#2c3d60",
+                        "soft-white": "#F9F8F6",
+                        "tertiary": "#4d5e83",
+                        "tertiary-container": "#97a8d1",
+                        "outline": "#7f7668",
+                        "surface-container": "#efeeec",
+                        "surface-variant": "#e3e2e0",
+                        "on-surface": "#1a1c1b",
+                        "on-primary-fixed-variant": "#5b430f",
+                        "on-tertiary-fixed-variant": "#35466a",
+                        "primary-fixed": "#ffdea7",
+                        "surface-container-high": "#e9e8e6",
+                        "on-secondary-container": "#636262",
+                        "surface-bright": "#faf9f7",
+                        "surface-container-highest": "#e3e2e0",
+                        "on-primary-container": "#503906",
+                        "inverse-on-surface": "#f1f1ef",
+                        "tertiary-fixed-dim": "#b5c6f1",
+                        "deep-charcoal": "#1A1A1A",
+                        "secondary-fixed": "#e5e2e1",
+                        "champagne-gold": "#C5A367",
+                        "outline-variant": "#d1c5b5",
+                        "background": "#faf9f7",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "inverse-surface": "#2f3130",
+                        "on-tertiary-fixed": "#061a3c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "32px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "stack-space": "16px",
+                        "section-gap-lg": "120px",
+                        "section-gap-sm": "64px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Hanken Grotesk"],
+                        "display-sm": ["Playfair Display"],
+                        "headline-lg": ["Playfair Display"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "display-lg": ["Playfair Display"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", {"lineHeight": "28px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-sm": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "500"}],
+                        "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "30px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "26px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-body-md text-on-background selection:bg-muted-gold/30">
+<!-- SIDE NAVIGATION BAR (As per JSON) -->
+<nav class="bg-bone-ivory dark:bg-deep-charcoal h-screen w-64 fixed left-0 top-0 border-r border-outline/10 flex flex-col h-full p-6 z-50">
+<div class="mb-12">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU1dwFzCQKcO3YKEiAOTR6tKvFFq31whBetEhIVVtcdFtQ6jkE5OmyPkb0esNUr4HnoYguHB9ZjGGy7ApZ3busvbaK4tIITtcUxL1EeV1UOj7DUuTbMRx6On6LCiCTm4CKg4FuTwHJ8Pj7w31BQ3fysBgpHdWxdZlAquMsZRIOBOsP1oIHzal_TP5O3vilSviJiD_EeKZVnvfuOBGfSQmmxCQDg3MTKnHLfAXjtuuBcrZ6sMLUtIcJzD_1pfT6lji2-9Zj_MnAIXg" alt="Maria Alice Odontologia Especializada" class="h-12 w-auto object-contain">
+<p class="font-label-caps text-label-caps text-secondary uppercase tracking-widest mt-1 opacity-70">
+                Dr. Julian Thorne
+            </p>
+</div>
+<ul class="flex-grow space-y-2">
+<li class="group">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg bg-white/50 dark:bg-white/5 text-primary font-semibold border-r-2 border-primary transition-all scale-98 active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+</li>
+<li class="group">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary-fixed-variant hover:bg-white/40 transition-all hover:text-primary active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="patient_list">patient_list</span>
+<span class="font-body-md text-body-md">Patient Records</span>
+</a>
+</li>
+<li class="group">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary-fixed-variant hover:bg-white/40 transition-all hover:text-primary active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="calendar_month">calendar_month</span>
+<span class="font-body-md text-body-md">Clinical Calendar</span>
+</a>
+</li>
+<li class="group">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary-fixed-variant hover:bg-white/40 transition-all hover:text-primary active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="payments">payments</span>
+<span class="font-body-md text-body-md">Billing</span>
+</a>
+</li>
+<li class="group">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary-fixed-variant hover:bg-white/40 transition-all hover:text-primary active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto pt-6 border-t border-outline/10">
+<button class="w-full bg-deep-charcoal text-white py-4 font-label-caps text-label-caps tracking-widest hover:bg-primary transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Appointment
+            </button>
+</div>
+</nav>
+<!-- MAIN CONTENT AREA -->
+<main class="ml-64 min-h-screen px-gutter py-12 max-w-container-max mx-auto">
+<!-- HEADER -->
+<header class="flex flex-col md:flex-row md:items-end justify-between mb-section-gap-sm gap-6">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-deep-charcoal">
+                    Welcome back, Dra. Maria Alice
+                </h2>
+<p class="font-body-lg text-body-lg text-secondary mt-2">
+                    Your architecture for today: 8 procedures scheduled.
+                </p>
+</div>
+<div class="flex gap-4">
+<button class="px-8 py-3 bg-bone-ivory border border-outline/10 font-label-caps text-label-caps hover:bg-surface-container transition-all">
+                    VIEW ANALYTICS
+                </button>
+<button class="px-8 py-3 bg-deep-charcoal text-white font-label-caps text-label-caps hover:bg-primary transition-all">
+                    QUICK ACTION
+                </button>
+</div>
+</header>
+<!-- STATS GRID -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-stack-space mb-section-gap-sm">
+<div class="bg-bone-ivory p-8 card-shadow flex flex-col justify-between min-h-[160px] group hover:bg-white transition-all cursor-default">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-secondary opacity-60">MONTHLY BILLING</span>
+<span class="material-symbols-outlined text-primary" data-icon="trending_up">trending_up</span>
+</div>
+<div class="mt-4">
+<span class="font-headline-lg text-headline-lg text-deep-charcoal">€42,850.00</span>
+<p class="text-xs text-primary mt-1 font-semibold">+12.5% from last month</p>
+</div>
+</div>
+<div class="bg-bone-ivory p-8 card-shadow flex flex-col justify-between min-h-[160px] group hover:bg-white transition-all cursor-default border-l-4 border-primary">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-secondary opacity-60">APPOINTMENTS TODAY</span>
+<span class="material-symbols-outlined text-primary" data-icon="event_available">event_available</span>
+</div>
+<div class="mt-4">
+<span class="font-headline-lg text-headline-lg text-deep-charcoal">08</span>
+<p class="text-xs text-secondary mt-1">Next: Mr. Alistair Cook (10:30)</p>
+</div>
+</div>
+<div class="bg-bone-ivory p-8 card-shadow flex flex-col justify-between min-h-[160px] group hover:bg-white transition-all cursor-default">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-secondary opacity-60">NEW PATIENTS</span>
+<span class="material-symbols-outlined text-primary" data-icon="person_add">person_add</span>
+</div>
+<div class="mt-4">
+<span class="font-headline-lg text-headline-lg text-deep-charcoal">24</span>
+<p class="text-xs text-secondary mt-1">This clinical quarter</p>
+</div>
+</div>
+</section>
+<!-- MAIN DASHBOARD CONTENT (Schedule & Visuals) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- DAILY SCHEDULE TABLE -->
+<section class="lg:col-span-8 bg-white card-shadow overflow-hidden">
+<div class="p-8 border-b border-outline/5 flex justify-between items-center">
+<h3 class="font-title-md text-title-md text-deep-charcoal">Daily Schedule</h3>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-bone-ivory transition-all">
+<span class="material-symbols-outlined text-lg" data-icon="chevron_left">chevron_left</span>
+</button>
+<span class="font-label-caps text-label-caps self-center">OCT 24, 2023</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-bone-ivory transition-all">
+<span class="material-symbols-outlined text-lg" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-bone-ivory/30">
+<th class="p-6 font-label-caps text-label-caps text-secondary opacity-70">TIME</th>
+<th class="p-6 font-label-caps text-label-caps text-secondary opacity-70">PATIENT</th>
+<th class="p-6 font-label-caps text-label-caps text-secondary opacity-70">PROCEDURE</th>
+<th class="p-6 font-label-caps text-label-caps text-secondary opacity-70">STATUS</th>
+<th class="p-6"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline/5">
+<tr class="hover:bg-bone-ivory/10 transition-colors group">
+<td class="p-6 font-title-md text-title-md text-primary">09:00</td>
+<td class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline/10 flex items-center justify-center font-bold text-xs">SM</div>
+<div>
+<p class="font-semibold text-deep-charcoal">Sophia Moretti</p>
+<p class="text-xs text-secondary">Record #2944</p>
+</div>
+</div>
+</td>
+<td class="p-6 text-sm">Veneer Placement (Final)</td>
+<td class="p-6">
+<span class="inline-block px-3 py-1 bg-green-100 text-green-800 text-[10px] font-bold uppercase tracking-widest rounded-full">Completed</span>
+</td>
+<td class="p-6 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-bone-ivory/10 transition-colors group">
+<td class="p-6 font-title-md text-title-md text-primary">10:30</td>
+<td class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 border border-outline/10 flex items-center justify-center font-bold text-xs text-primary">AC</div>
+<div>
+<p class="font-semibold text-deep-charcoal">Alistair Cook</p>
+<p class="text-xs text-secondary">Record #3102</p>
+</div>
+</div>
+</td>
+<td class="p-6 text-sm">Full Arch Assessment</td>
+<td class="p-6">
+<span class="inline-block px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest rounded-full italic">In Session</span>
+</td>
+<td class="p-6 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-bone-ivory/10 transition-colors group">
+<td class="p-6 font-title-md text-title-md text-primary">13:00</td>
+<td class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline/10 flex items-center justify-center font-bold text-xs">EL</div>
+<div>
+<p class="font-semibold text-deep-charcoal">Elena Laurent</p>
+<p class="text-xs text-secondary">Record #2855</p>
+</div>
+</div>
+</td>
+<td class="p-6 text-sm">Digital Impressioning</td>
+<td class="p-6">
+<span class="inline-block px-3 py-1 bg-bone-ivory text-secondary text-[10px] font-bold uppercase tracking-widest rounded-full">Pending</span>
+</td>
+<td class="p-6 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-bone-ivory/10 transition-colors group">
+<td class="p-6 font-title-md text-title-md text-primary">14:30</td>
+<td class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline/10 flex items-center justify-center font-bold text-xs">JB</div>
+<div>
+<p class="font-semibold text-deep-charcoal">Julianna Banks</p>
+<p class="text-xs text-secondary">Record #3001</p>
+</div>
+</div>
+</td>
+<td class="p-6 text-sm">Gingival Contouring</td>
+<td class="p-6">
+<span class="inline-block px-3 py-1 bg-bone-ivory text-secondary text-[10px] font-bold uppercase tracking-widest rounded-full">Pending</span>
+</td>
+<td class="p-6 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-6 text-center border-t border-outline/5">
+<button class="font-label-caps text-label-caps text-primary hover:tracking-widest transition-all">VIEW FULL CALENDAR</button>
+</div>
+</section>
+<!-- VISUAL RECORD PREVIEW (Bento-style Sidebar) -->
+<aside class="lg:col-span-4 space-y-gutter">
+<div class="bg-deep-charcoal text-bone-ivory p-8 card-shadow relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h3 class="font-title-md text-title-md mb-4">Latest Results</h3>
+<p class="text-sm opacity-70 mb-8 max-w-[200px]">Review the most recent transformations from the 3D Design lab.</p>
+<div class="grid grid-cols-2 gap-2">
+<div class="relative aspect-square bg-white/10 group/img overflow-hidden">
+<img class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700" data-alt="A macro close-up of a high-end cosmetic dentistry result, focusing on perfect white porcelain veneers in bright, architectural gallery lighting. The style is editorial and clinical, with soft bone-ivory tones and deep charcoal contrasts. The image is framed with precision, emphasizing symmetry and the boutique aesthetic of the clinic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTHcas2gQg5kinaC_K0Rge21gpH1BykbLBiTcVVJ1p8jMt96-EuEu8kpZsZ3_-TXmnoJHAW2eHm66t89H3YvpYUuo_yPDKXwk9TPnhY4TLY8pdVTRVfOyUesfs7ApYUgS6dAqY-4kNkzedO-e8MgPwuvSHoVkECg4IpcXBAqXHYrRIhYxKOgnLrFUicA4PCmOUFOt_jIUPxVRf4uyZ9eQqzsOgM_zqupQk8Hg8KWyraHzxY7AAtGgxkRPOSXh2pJrQSd0RmnXz0Ko">
+<div class="absolute inset-0 bg-deep-charcoal/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="visibility">visibility</span>
+</div>
+</div>
+<div class="relative aspect-square bg-white/10 group/img overflow-hidden">
+<img class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700" data-alt="A before and after comparison showing the architectural reconstruction of a smile using modern dental technology. The lighting is soft and professional, with a clean minimalist background that reflects a luxury clinic environment. Deep gold accents highlight the precision of the work, presented in a high-fashion editorial photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA75jTNCV9W88qgFmmeq08ywI98qVhkK0jvHrm-ldscp_GJ8loX3jHSgKokC__6nWasxPSpdR5cHb_fll89wfMKLPxDsWJT_Lv59rstsNhL48drJjbjF0L9NlZyfyQZkMnP9bUn2KpRIeZ4acBMM659gq3ZCzQlFTLn_A1avNyqPn7I69J9y5EXZ6oOdBTv5Iy_UAsE0i-KGlOLXIN9vUAx50zndDzT42JmEepJmVXFUJCcjy0D49j2bgjkurwEgYKOZdWB3IF4ypg">
+<div class="absolute inset-0 bg-deep-charcoal/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="visibility">visibility</span>
+</div>
+</div>
+</div>
+<button class="mt-8 w-full border border-bone-ivory/20 py-3 font-label-caps text-label-caps hover:bg-white/10 transition-colors uppercase tracking-widest">
+                        Case Library
+                    </button>
+</div>
+<div class="bg-bone-ivory p-8 card-shadow">
+<h3 class="font-title-md text-title-md text-deep-charcoal mb-6">Patient Flow</h3>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary">CHECKED IN</span>
+<span class="font-headline-lg text-headline-lg text-primary">02</span>
+</div>
+<div class="w-full h-[1px] bg-outline/10"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary">WAITING ROOM</span>
+<span class="font-headline-lg text-headline-lg text-deep-charcoal">01</span>
+</div>
+<div class="w-full h-[1px] bg-outline/10"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary">EST. WAIT TIME</span>
+<span class="font-headline-lg text-headline-lg text-secondary">12m</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- FOOTER (As per JSON) -->
+<footer class="ml-64 w-[calc(100%-16rem)] px-gutter py-section-gap-sm flex flex-col items-center gap-stack-space bg-surface border-t border-outline/10">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU1dwFzCQKcO3YKEiAOTR6tKvFFq31whBetEhIVVtcdFtQ6jkE5OmyPkb0esNUr4HnoYguHB9ZjGGy7ApZ3busvbaK4tIITtcUxL1EeV1UOj7DUuTbMRx6On6LCiCTm4CKg4FuTwHJ8Pj7w31BQ3fysBgpHdWxdZlAquMsZRIOBOsP1oIHzal_TP5O3vilSviJiD_EeKZVnvfuOBGfSQmmxCQDg3MTKnHLfAXjtuuBcrZ6sMLUtIcJzD_1pfT6lji2-9Zj_MnAIXg" alt="Maria Alice Odontologia Especializada" class="h-16 w-auto object-contain">
+<div class="flex gap-8">
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary underline transition-all" href="#">Privacy Policy</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary underline transition-all" href="#">Terms of Service</a>
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary underline transition-all" href="#">Accessibility</a>
+</div>
+<p class="font-label-caps text-label-caps text-primary mt-4 opacity-60">
+            © 2024 SMILE ARCHITECTURE. ALL RIGHTS RESERVED.
+        </p>
+</footer>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+    </script>
+
+
+</body></html>

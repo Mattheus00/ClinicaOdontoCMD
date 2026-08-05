@@ -1,0 +1,245 @@
+.dtp {
+  position: relative;
+  width: 100%;
+}
+
+.dtp-trigger {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  border: 1px solid #cfddea;
+  border-radius: 10px;
+  background: #fff;
+  color: #17394f;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.dtp-trigger:hover,
+.dtp-trigger.is-open {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+.dtp-trigger.has-error {
+  border-color: #c23b4d;
+}
+
+.dtp-trigger-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #33556e;
+}
+
+.dtp-trigger-main svg,
+.dtp-trigger > svg {
+  color: var(--color-secondary);
+  flex-shrink: 0;
+}
+
+.dtp-popover {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 118px;
+  border: 1px solid #d7e7f3;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 48px rgba(19, 52, 78, 0.16);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.dtp-calendar {
+  padding: 16px;
+  border-right: 1px solid #e7eef5;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.dtp-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.dtp-month-nav strong {
+  color: #17394f;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+
+.dtp-icon-btn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d7e7f3;
+  border-radius: 8px;
+  background: #f7fbfe;
+  color: #33556e;
+  cursor: pointer;
+}
+
+.dtp-icon-btn:hover {
+  background: #eef6fc;
+  color: var(--color-secondary);
+}
+
+.dtp-weekdays,
+.dtp-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.dtp-weekdays {
+  margin-bottom: 6px;
+}
+
+.dtp-weekdays span {
+  text-align: center;
+  color: #89a0b2;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dtp-day {
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #1b3447;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dtp-day:hover {
+  background: #eef6fc;
+  color: var(--color-secondary);
+}
+
+.dtp-day.is-muted {
+  color: #b4c4d1;
+  font-weight: 500;
+}
+
+.dtp-day.is-today {
+  box-shadow: inset 0 0 0 1.5px rgba(117, 90, 37, 0.45);
+}
+
+.dtp-day.is-selected {
+  background: var(--color-secondary);
+  color: #fff;
+  box-shadow: none;
+}
+
+.dtp-calendar-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #eef4f8;
+}
+
+.dtp-link {
+  border: 0;
+  background: transparent;
+  color: var(--color-secondary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dtp-link:hover {
+  color: var(--color-primary-hover);
+}
+
+.dtp-times {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.dtp-times-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 12px 8px;
+  color: #587084;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.dtp-times-list {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+  padding: 0 10px 12px;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+
+.dtp-time {
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: #fff;
+  color: #33556e;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.dtp-time:hover {
+  border-color: rgba(117, 90, 37, 0.35);
+  color: var(--color-secondary);
+}
+
+.dtp-time.is-selected {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: #fff;
+}
+
+.dtp-error {
+  display: block;
+  margin-top: 6px;
+  color: #c23b4d;
+  font-size: 12px;
+}
+
+@media (max-width: 520px) {
+  .dtp-popover {
+    grid-template-columns: 1fr;
+  }
+
+  .dtp-calendar {
+    border-right: 0;
+    border-bottom: 1px solid #e7eef5;
+  }
+
+  .dtp-times-list {
+    grid-template-columns: repeat(4, 1fr);
+    max-height: 160px;
+  }
+}

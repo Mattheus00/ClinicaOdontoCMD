@@ -1,0 +1,16 @@
+# Local development and generated files
+**/.env
+**/.env.*
+!**/.env.example
+**/*.log
+**/node_modules/
+**/.gradle/
+**/build/
+**/dist/
+**/data/
+
+# Local agent/editor metadata
+.agents/
+.codex/
+.vscode/
+.idea/

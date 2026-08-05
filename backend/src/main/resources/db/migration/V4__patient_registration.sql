@@ -1,0 +1,21 @@
+-- Fase 1: cadastro completo do paciente
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS phone_is_whatsapp BOOLEAN DEFAULT TRUE;
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS cpf VARCHAR(14);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS rg VARCHAR(20);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS gender VARCHAR(20);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS address_street VARCHAR(200);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS address_number VARCHAR(20);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS address_complement VARCHAR(100);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS address_district VARCHAR(100);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS address_city VARCHAR(100);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS address_state VARCHAR(2);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS address_zip VARCHAR(10);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS guardian_name VARCHAR(150);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS guardian_phone VARCHAR(20);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS guardian_cpf VARCHAR(14);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS referral_source VARCHAR(50);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS referral_notes VARCHAR(255);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS preferred_professional_id UUID REFERENCES professionals(id);
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS preferred_time_notes VARCHAR(255);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_patients_clinic_cpf ON patients (clinic_id, cpf) WHERE cpf IS NOT NULL;

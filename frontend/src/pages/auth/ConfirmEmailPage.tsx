@@ -1,0 +1,5 @@
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { api } from '../../services/api';
+import './Login.css';
+export default function ConfirmEmailPage() { const [params] = useSearchParams(); const [state, setState] = useState<'loading' | 'success' | 'error'>('loading'); useEffect(() => { const token = params.get('token'); if (!token) { setState('error'); return; } api.post('/auth/confirm-email', null, { params: { token } }).then(() => setState('success')).catch(() => setState('error')); }, [params]); return <main className="login-container"><section className="login-card glass-card"><h1>{state === 'loading' ? 'Confirmando e-mail...' : state === 'success' ? 'E-mail confirmado' : 'Link inválido ou expirado'}</h1><p>{state === 'success' ? 'Sua conta está pronta para o primeiro acesso.' : state === 'error' ? 'Solicite um novo link de confirmação para continuar.' : 'Aguarde um instante.'}</p>{state !== 'loading' && <Link to="/login">Ir para o login</Link>}</section></main>; }

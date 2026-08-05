@@ -1,0 +1,411 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Digital Patient Record | Maria Alice Odontologia</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#1b1c1c",
+                    "inverse-primary": "#c8c6c5",
+                    "on-background": "#1b1c1c",
+                    "inverse-surface": "#303031",
+                    "surface-container-highest": "#e4e2e2",
+                    "surface-container-high": "#e9e8e7",
+                    "secondary-fixed-dim": "#e6c182",
+                    "on-secondary-fixed-variant": "#5b430f",
+                    "on-secondary-fixed": "#271900",
+                    "surface-container": "#efeded",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#000000",
+                    "on-secondary-container": "#785c28",
+                    "surface-dim": "#dbdad9",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "outline-variant": "#c4c7c7",
+                    "primary-container": "#1c1b1b",
+                    "on-primary-fixed-variant": "#474746",
+                    "surface-variant": "#e4e2e2",
+                    "surface-tint": "#5f5e5e",
+                    "secondary-fixed": "#ffdea7",
+                    "secondary": "#755a25",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "on-primary-fixed": "#1c1b1b",
+                    "on-tertiary-container": "#838484",
+                    "tertiary": "#000000",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#444748",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#fdd897",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#1a1c1c",
+                    "surface-container-low": "#f5f3f3",
+                    "tertiary-fixed": "#e2e2e2",
+                    "on-error-container": "#93000a",
+                    "surface": "#fbf9f8",
+                    "inverse-on-surface": "#f2f0f0",
+                    "background": "#fbf9f8",
+                    "on-primary-container": "#858383",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#e5e2e1",
+                    "outline": "#747878",
+                    "surface-bright": "#fbf9f8",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#c8c6c5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px",
+                    "unit": "8px",
+                    "gutter": "24px",
+                    "container-max": "1200px",
+                    "section-gap": "120px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "headline-md": ["Playfair Display"],
+                    "headline-sm": ["Playfair Display"],
+                    "label-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Playfair Display"],
+                    "body-md": ["Inter"],
+                    "display-lg-mobile": ["Playfair Display"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-sm": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .signature-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        .gold-divider {
+            border-bottom: 1px solid rgba(197, 163, 103, 0.3);
+        }
+        .active-dot {
+            position: relative;
+        }
+        .active-dot::after {
+            content: '';
+            position: absolute;
+            left: -1px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: #755a25;
+            border-radius: 2px;
+        }
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col md:flex-row">
+<!-- Sidebar Navigation (Derived from SideNavBar Shared Component) -->
+<aside class="hidden md:flex flex-col h-screen py-8 px-4 bg-surface-container-low border-r border-outline-variant/30 sticky top-0 w-64 z-50">
+<div class="mb-12"><div class="mb-4 w-32"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnwZVtVGvfjDP_Mue7jIWJnRLlodrUCGvUTthHu2PrIS7lcQkCZqU957FaX_fPSh8dUeRQIQ1HU5QfPhWRCRsgywEVpbPPsShbaHs1V5YNB8ubrghixT6RdaWSM3DfQegzNYAJWisW_FIs3UbwJmouSuwkMO2TcHtlChcvipt6AI2RqqeY-7dk98yv6lYG8HsW68We8Y4vfh5L28w5CVig42MJDNZBTqvFFQEntsUnQRfc7r8uXUppy9PPEAl4IQjR-mhx3lAkOds" alt="Maria Alice Logo" class="w-full h-auto object-contain"></div><p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Management Portal</p></div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-container/10 text-secondary font-bold border-l-4 border-secondary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-md text-label-md">Records</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-label-md text-label-md">Calendar</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+</nav>
+<div class="mt-auto pt-8 border-t border-outline-variant/30 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<button class="w-full mt-4 bg-primary text-on-primary py-3 font-label-md text-label-md rounded-lg hover:bg-secondary transition-colors">
+                New Entry
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 max-w-container-max mx-auto w-full px-4 md:px-margin-desktop py-8 md:py-12 overflow-x-hidden">
+<!-- Header: Patient Identity -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+<div class="flex items-center gap-6">
+<div class="relative">
+<div class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white signature-shadow overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a woman in her 30s with a warm, confident smile, shot against a soft grey background. The lighting is high-key and flattering, emphasizing clarity and surgical precision. The overall aesthetic is clean, sophisticated, and medical, following a modern corporate luxury theme with a high-definition minimalist approach." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRLQMVF3Ai5LIM-G609F9BN_hUTkLtmi5Ws8ULFjO7te4AutCCflXnxdrar24wx7gD-xjoEBcOI1HP7QvPswaesaa0IX0iHv78Grm5PgFQ2ri1BUsrXzcjUidz-rVoQEKoV5ZiaRKBEFVb_qQNAad0WiQ9Hl9vjbW4JHlktMUuV3Ir_bj4HfUGBdUkjus96cS5uEkrKabxOT4LD1kU_L6mNQmGEpKXnBmDeSrzOrIfb2PAQIXugZSQMaPFErPaodtjsHafVDXALQo">
+</div>
+<div class="absolute bottom-1 right-1 bg-secondary text-on-tertiary p-1.5 rounded-full signature-shadow">
+<span class="material-symbols-outlined text-[18px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="bg-secondary-fixed-dim/20 text-secondary font-label-sm text-label-sm px-2 py-0.5 rounded uppercase">Elite Patient</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary">Helena Martins Silveira</h2>
+<p class="font-label-md text-label-md text-on-surface-variant tracking-widest mt-1">ID: 482.991.002-81 • Member since 2021</p>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="flex items-center gap-2 border border-primary px-6 py-3 font-label-md text-label-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="print">print</span>
+                    Print Record
+                </button>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 font-label-md text-label-md hover:bg-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+                    Update Notes
+                </button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Column: Brief & Gallery -->
+<div class="lg:col-span-8 space-y-gutter">
+<!-- Clinical Brief -->
+<section class="bg-surface-container-lowest p-8 border border-outline-variant/30 signature-shadow">
+<div class="flex items-center justify-between mb-6 gold-divider pb-4">
+<h3 class="font-headline-sm text-headline-sm text-primary">Clinical Brief</h3>
+<span class="material-symbols-outlined text-secondary" data-icon="medical_information">medical_information</span>
+</div>
+<div class="prose prose-sm max-w-none text-on-surface-variant leading-relaxed font-body-md">
+<p class="mb-4">Patient presents with generalized mild enamel erosion and aesthetic concerns regarding bilateral diastema in the upper anterior region. Initial assessment revealed high dental hygiene standards but localized gingival recession on 1.3 and 2.3 due to abrasive brushing techniques.</p>
+<p class="">The treatment plan focuses on non-invasive aesthetic restoration using ultra-thin porcelain veneers and laser-guided periodontal recontouring to achieve a balanced "Golden Ratio" smile line. Patient expresses high expectations for a natural, translucent finish.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-outline-variant/20">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Blood Type</p>
+<p class="font-label-md text-label-md text-primary">O Positive</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Allergies</p>
+<p class="font-label-md text-label-md text-error">Latex</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Risk Level</p>
+<p class="font-label-md text-label-md text-primary">Minimal</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Last Visit</p>
+<p class="font-label-md text-label-md text-primary">Oct 24, 2024</p>
+</div>
+</div>
+</section>
+<!-- Transformation Gallery -->
+<section class="bg-surface-container-lowest p-8 border border-outline-variant/30 signature-shadow">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline-sm text-headline-sm text-primary">Transformation Gallery</h3>
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant/30 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="p-2 border border-outline-variant/30 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="group cursor-pointer">
+<div class="relative overflow-hidden mb-4">
+<img class="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-resolution clinical macro photograph of a patient's upper teeth before dental treatment. The image shows natural tooth gaps and slight discoloration under bright, neutral surgical lighting. The style is clinical, clean, and highly detailed, captured in a modern luxury dental environment with a minimalist, professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC4GcVjS5nbRF4tYKj5DepS9jemEB0wtYmwDbGOsYWOktxpgV4IxpBUjB0ri0kpH3KmMhqbL4Z62AhqtBvP2qlq2Ju5se3dSwxsXWUVbMLb94WIMB1cJ8sJhMHTihZRQ0JKBEPhKJolUxekvRFt3u55oX7bfQXE0JK5Ef-XJmzI-QNMb0sm2GrhmDlPR6MnKjSNn6UdmTNHPFXP_FWbVp7ZClTdCtTZ9v2BOuwFLASvXPgpMY2hdf7DtjYoWOMYl-AxoyWNuRw8dA">
+<div class="absolute top-4 left-4 bg-primary/80 backdrop-blur-md text-on-primary px-3 py-1 font-label-sm text-label-sm uppercase tracking-widest">Initial State</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant">March 12, 2024 • Initial Records</p>
+</div>
+<div class="group cursor-pointer">
+<div class="relative overflow-hidden mb-4">
+<img class="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-resolution clinical macro photograph of the same patient's teeth after premium porcelain veneer treatment. The teeth are perfectly aligned, white, and translucent, reflecting soft, high-end studio lighting. The aesthetic is luxurious and surgically precise, emphasizing a perfect smile within a minimalist medical context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFXG4lojyvF6mMhkVIg71DHAfadAulqcc2Vcdp_SUVwfkiDk4LD-DC3KpFI72ubAldkV_tinjRso90EHMGTh51hqj67EkWQiYVaPluKZmPC-5axn1hNffJ6JDJAnLdxJHd7UekfwQ5mHQ-ZgpIlH3ba9KMd6SIB09Os_6JQ09sqAariGfHYQH0e3iuMu7aUHrElqDiNckLjRxg-PQNrYwuUNt863-_68X_MKch4cMdQGvHMYFCBCm2I-2L6apqzWmCF7iHfZe4DY0">
+<div class="absolute top-4 left-4 bg-secondary text-on-tertiary px-3 py-1 font-label-sm text-label-sm uppercase tracking-widest">Final Result</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant">October 24, 2024 • Treatment Conclusion</p>
+</div>
+</div>
+<div class="mt-8 flex justify-center">
+<button class="text-secondary font-label-md text-label-md border-b border-secondary pb-1 hover:opacity-70 transition-opacity">View All 14 Clinical Photos</button>
+</div>
+</section>
+</div>
+<!-- Column: Journey & Quick Actions -->
+<div class="lg:col-span-4 space-y-gutter">
+<!-- Treatment Journey -->
+<section class="bg-surface-container-low p-8 border border-outline-variant/30">
+<div class="flex items-center gap-3 mb-10">
+<span class="material-symbols-outlined text-secondary" data-icon="timeline">timeline</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Treatment Journey</h3>
+</div>
+<div class="relative space-y-12">
+<!-- Timeline Line -->
+<div class="absolute left-[11px] top-0 bottom-0 w-[1px] bg-outline-variant/40"></div>
+<!-- Step 1 (Latest) -->
+<div class="relative pl-10">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-secondary-container border-4 border-background flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest mb-1">October 24, 2024</p>
+<h4 class="font-label-md text-label-md text-primary mb-2">Final Cementation</h4>
+<p class="text-on-surface-variant text-sm">Bonding of 6 ultra-thin ceramic veneers (teeth 13-23). Post-op instructions provided.</p>
+<div class="mt-3 flex items-center gap-2 text-on-surface-variant/60">
+<span class="material-symbols-outlined text-[16px]" data-icon="person">person</span>
+<span class="text-xs">Dr. Maria Alice</span>
+</div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative pl-10 opacity-70 hover:opacity-100 transition-opacity">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-surface-variant border-4 border-background"></div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-1">October 10, 2024</p>
+<h4 class="font-label-md text-label-md text-primary mb-2">Gingival Recontouring</h4>
+<p class="text-on-surface-variant text-sm">Laser-assisted crown lengthening to optimize gingival zenith architecture.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative pl-10 opacity-70 hover:opacity-100 transition-opacity">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-surface-variant border-4 border-background"></div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-1">September 28, 2024</p>
+<h4 class="font-label-md text-label-md text-primary mb-2">Diagnostic Wax-up</h4>
+<p class="text-on-surface-variant text-sm">Presentation of digital smile design and physical mock-up trial.</p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="relative pl-10 opacity-70 hover:opacity-100 transition-opacity">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-surface-variant border-4 border-background"></div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-1">August 15, 2024</p>
+<h4 class="font-label-md text-label-md text-primary mb-2">Initial Consultation</h4>
+<p class="text-on-surface-variant text-sm">Full digital scanning and periodontal health assessment.</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-12 py-3 border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-all">
+                        View Full History
+                    </button>
+</section>
+<!-- Documents & Quick Files -->
+<section class="bg-surface-container-lowest p-8 border border-outline-variant/30 signature-shadow">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-6">Patient Assets</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 border border-outline-variant/20 hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="description">description</span>
+<span class="font-label-md text-label-md">Treatment_Plan_V2.pdf</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="download">download</span>
+</div>
+<div class="flex items-center justify-between p-3 border border-outline-variant/20 hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="camera">camera</span>
+<span class="font-label-md text-label-md">X-Ray_Full_Arch.dicom</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="visibility">visibility</span>
+</div>
+<div class="flex items-center justify-between p-3 border border-outline-variant/20 hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="signature">signature</span>
+<span class="font-label-md text-label-md">Consent_Form_Signed.pdf</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="verified">verified</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation for Mobile (Derives from Shared Component) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-outline-variant/30 flex justify-around items-center h-16 z-50">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-label-sm uppercase">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared" style="font-variation-settings: 'FILL' 1;">folder_shared</span>
+<span class="text-[10px] font-label-sm uppercase">Records</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="text-[10px] font-label-sm uppercase">Calendar</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-label-sm uppercase">Settings</span>
+</a>
+</nav>
+<!-- Global Footer -->
+<footer class="w-full py-12 px-4 md:px-margin-desktop bg-surface-container-lowest border-t border-outline-variant/30 mt-section-gap">
+<div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div><div class="mb-4 w-48"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnwZVtVGvfjDP_Mue7jIWJnRLlodrUCGvUTthHu2PrIS7lcQkCZqU957FaX_fPSh8dUeRQIQ1HU5QfPhWRCRsgywEVpbPPsShbaHs1V5YNB8ubrghixT6RdaWSM3DfQegzNYAJWisW_FIs3UbwJmouSuwkMO2TcHtlChcvipt6AI2RqqeY-7dk98yv6lYG8HsW68We8Y4vfh5L28w5CVig42MJDNZBTqvFFQEntsUnQRfc7r8uXUppy9PPEAl4IQjR-mhx3lAkOds" alt="Maria Alice Logo" class="w-full h-auto object-contain"></div><p class="text-on-surface-variant text-sm font-label-sm uppercase tracking-widest">Odontologia Especializada</p></div>
+<div class="space-y-4">
+<p class="font-label-md text-label-md text-primary">Resources</p>
+<div class="flex flex-col gap-2">
+<a class="text-on-surface-variant hover:text-primary text-sm transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary text-sm transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary text-sm transition-colors" href="#">Dental Ethics</a>
+</div>
+</div>
+<div class="space-y-4">
+<p class="font-label-md text-label-md text-primary">Contact Support</p>
+<p class="text-on-surface-variant text-sm">support@mariaalice.com<br>+55 (11) 99999-0000</p>
+</div>
+</div>
+<div class="max-w-container-max mx-auto mt-12 pt-8 border-t border-outline-variant/10 text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">© 2024 Maria Alice Odontologia Especializada. All rights reserved.</p>
+</div>
+</footer>
+<script>
+        // Simple interaction for gallery images
+        document.querySelectorAll('.group').forEach(el => {
+            el.addEventListener('click', () => {
+                console.log('Image view triggered');
+                // Could implement a lightbox here
+            });
+        });
+
+        // Sticky header highlight logic if needed for scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                // Potential for subtle sticky styling change
+            }
+        });
+    </script>
+
+
+</body></html>

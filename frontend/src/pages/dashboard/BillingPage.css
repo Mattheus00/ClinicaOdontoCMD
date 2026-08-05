@@ -1,0 +1,76 @@
+.billing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.billing-current {
+  grid-row: span 2;
+}
+
+.billing-plan-badge {
+  margin-bottom: var(--spacing-md);
+}
+
+.billing-plan-name {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+}
+
+.billing-plan-price {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.billing-price-value {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.billing-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.billing-next-charge {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.billing-upgrade-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.billing-upgrade-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.6;
+}
+
+.billing-history-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+}
+
+.billing-cancel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.billing-cancel-note {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
