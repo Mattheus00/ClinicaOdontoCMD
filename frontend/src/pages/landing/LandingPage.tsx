@@ -1,4 +1,5 @@
-import { Camera, Eye, Globe, Mail, MapPin, Microscope, Phone, Settings2 } from 'lucide-react';
+import { useEffect, useId, useState } from 'react';
+import { Camera, Eye, Globe, Mail, MapPin, Menu, Microscope, Phone, Settings2, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './LandingPage.css';
 
@@ -75,11 +76,33 @@ const GALLERY = [
 const FOOTER_LINKS = ['Política de privacidade', 'Termos de uso', 'Código de ética', 'Suporte'];
 
 export default function LandingPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuId = useId();
+
+  useEffect(() => {
+    const onResize = () => {
+      if (window.matchMedia('(min-width: 769px)').matches) {
+        setMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <div className="landing">
+    <div className={`landing${menuOpen ? ' is-menu-open' : ''}`}>
       <header className="landing-nav-bar">
         <div className="landing-wrap landing-nav-inner">
-          <Link to="/" className="landing-brand">
+          <Link to="/" className="landing-brand" onClick={closeMenu}>
             <img src={LOGO} alt="Maria Alice Odontologia Especializada" />
           </Link>
 
@@ -95,9 +118,40 @@ export default function LandingPage() {
             <Link to="/login" className="landing-btn landing-btn-outline landing-portal-link">
               Área da clínica
             </Link>
-            <a href="#contato" className="landing-btn landing-btn-primary">
-              <span className="landing-cta-full">Agendar consulta</span>
-              <span className="landing-cta-short">Agendar</span>
+            <a href="#contato" className="landing-btn landing-btn-primary" onClick={closeMenu}>
+              Agendar consulta
+            </a>
+            <button
+              type="button"
+              className="landing-menu-toggle"
+              aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+              aria-expanded={menuOpen}
+              aria-controls={menuId}
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              {menuOpen ? <X size={22} strokeWidth={1.75} /> : <Menu size={22} strokeWidth={1.75} />}
+            </button>
+          </div>
+        </div>
+
+        <div
+          id={menuId}
+          className={`landing-mobile-panel${menuOpen ? ' is-open' : ''}`}
+          aria-hidden={!menuOpen}
+        >
+          <nav className="landing-mobile-nav" aria-label="Menu mobile">
+            {NAV.map((item) => (
+              <a key={item.href} href={item.href} onClick={closeMenu}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <div className="landing-mobile-actions">
+            <Link to="/login" className="landing-btn landing-btn-primary" onClick={closeMenu}>
+              Área da clínica
+            </Link>
+            <a href="#contato" className="landing-btn landing-btn-outline" onClick={closeMenu}>
+              Agendar consulta
             </a>
           </div>
         </div>
