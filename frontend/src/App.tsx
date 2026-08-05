@@ -4,7 +4,6 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AppFeedback } from './components/AppFeedback';
 import MobileTopbar from './components/MobileTopbar';
 import Sidebar from './components/Sidebar';
-import './index.css';
 import './components/Sidebar.css';
 import './components/MobileTopbar.css';
 
@@ -53,7 +52,8 @@ function RequireRole({ roles, children }: { roles: AppRole[]; children: ReactNod
 
 function HomeRoute() {
   const { isAuthenticated, isInitializing } = useAuth();
-  if (isInitializing) return <div className="app-loading" role="status">Carregando...</div>;
+  // Show landing immediately while session restores — avoids blank screen on cold start.
+  if (isInitializing) return <LandingPage />;
   return isAuthenticated ? <Navigate to="/agenda" replace /> : <LandingPage />;
 }
 

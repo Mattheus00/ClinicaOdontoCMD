@@ -114,7 +114,8 @@ export default function AgendaPage() {
   const appointments = useAppointments(filters);
   const dentists = useProfessionals(isAdmin);
   const procedureList = useProcedures(isAdmin);
-  const patients = usePatients('', 0, isAdmin);
+  // Load patients only when creating an appointment (modal open).
+  const patients = usePatients('', 0, isAdmin && open);
   const create = useCreateAppointment(filters);
   const cancel = useCancelAppointment(filters);
   const confirm = useConfirmAppointment(filters);
@@ -174,11 +175,11 @@ export default function AgendaPage() {
         )}
       </div>
 
-      {appointments.isLoading || (isAdmin && (dentists.isLoading || procedureList.isLoading)) ? (
+      {appointments.isLoading ? (
         <LoadingState />
       ) : appointments.isError ? (
         <ErrorState onRetry={() => appointments.refetch()} />
-      ) : isAdmin && !dentistsList.length ? (
+      ) : isAdmin && dentists.isSuccess && !dentistsList.length ? (
         <EmptyState
           title="Cadastre um dentista para usar a agenda"
           description="Adicione pelo menos um dentista para começar a agendar consultas."
@@ -188,7 +189,7 @@ export default function AgendaPage() {
             </Link>
           }
         />
-      ) : isAdmin && !proceduresList.length ? (
+      ) : isAdmin && procedureList.isSuccess && !proceduresList.length ? (
         <EmptyState
           title="Cadastre procedimentos para usar a agenda"
           description="Adicione pelo menos um procedimento antes de criar agendamentos."
@@ -374,8 +375,8 @@ export default function AgendaPage() {
           <form className="form-grid" onSubmit={submit}>
             <label>
               Paciente
-              <select {...form.register('patientId')}>
-                <option value="">Selecione</option>
+              <select {...form.register('patientId')} disabled={patients.isLoading}>
+                <option value="">{patients.isLoading ? 'Carregando pacientes...' : 'Selecione'}</option>
                 {patients.data?.content.map((patient) => (
                   <option key={patient.id} value={patient.id}>
                     {patient.name}

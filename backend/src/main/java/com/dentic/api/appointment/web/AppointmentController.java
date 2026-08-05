@@ -64,15 +64,13 @@ public class AppointmentController {
                 : professionalId;
         LocalDate startDay = from != null ? LocalDate.parse(from) : (date != null ? LocalDate.parse(date) : LocalDate.now());
         LocalDate endDayExclusive = to != null ? LocalDate.parse(to).plusDays(1) : (date != null ? LocalDate.parse(date).plusDays(1) : startDay.plusDays(1));
-        List<Appointment> found = appointments.findByClinicIdAndScheduledAtBetween(
+        List<Appointment> found = appointments.findAgendaWithDetails(
                 tenant(),
                 startDay.atStartOfDay(clinicTimeZone).toOffsetDateTime(),
-                endDayExclusive.atStartOfDay(clinicTimeZone).toOffsetDateTime()
+                endDayExclusive.atStartOfDay(clinicTimeZone).toOffsetDateTime(),
+                scopedProfessionalId
         );
-        List<AppointmentResponse> data = found.stream()
-                .filter(v -> scopedProfessionalId == null || v.getProfessional().getId().equals(scopedProfessionalId))
-                .map(AppointmentResponse::from)
-                .toList();
+        List<AppointmentResponse> data = found.stream().map(AppointmentResponse::from).toList();
         return new PageResponse<>(data, data.isEmpty() ? 0 : 1, data.size(), 0, 500);
     }
 

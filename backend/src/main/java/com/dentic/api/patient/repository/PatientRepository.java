@@ -1,6 +1,8 @@
 package com.dentic.api.patient.repository;
 
 import com.dentic.api.patient.domain.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,6 +26,22 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
         ORDER BY p.name
         """)
     List<Patient> search(@Param("clinicId") UUID clinicId, @Param("search") String search);
+
+    @Query("""
+        SELECT p FROM Patient p
+        WHERE p.clinic.id = :clinicId
+          AND (
+            :search = ''
+            OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR p.phone LIKE CONCAT('%', :search, '%')
+            OR p.cpf LIKE CONCAT('%', :search, '%')
+          )
+        """)
+    Page<Patient> searchPaged(
+            @Param("clinicId") UUID clinicId,
+            @Param("search") String search,
+            Pageable pageable
+    );
 
     Optional<Patient> findByIdAndClinic_Id(UUID id, UUID clinicId);
 

@@ -1,8 +1,6 @@
 package com.dentic.api.security;
 
 import com.dentic.api.multitenant.TenantContext;
-import com.dentic.api.onboarding.domain.User;
-import com.dentic.api.onboarding.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,24 +17,24 @@ import java.util.UUID;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
-    private final UserRepository users;
-    public JwtAuthenticationFilter(JwtProvider jwtProvider, UserRepository users) {
+
+    public JwtAuthenticationFilter(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
-        this.users = users;
     }
-    @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
         try {
             String value = request.getHeader("Authorization");
-            if (value != null && value.startsWith("Bearer ") && jwtProvider.validateToken(value.substring(7))) {
+            if (value != null && value.startsWith("Bearer ")) {
                 String token = value.substring(7);
-                UUID userId = jwtProvider.getUserIdFromToken(token);
-                UUID clinicId = jwtProvider.getClinicIdFromToken(token);
-                String role = jwtProvider.getRoleFromToken(token);
-                User user = users.findById(userId).orElse(null);
-                if (user != null
-                        && user.getClinic() != null
-                        && clinicId.equals(user.getClinic().getId())
-                        && role.equalsIgnoreCase(user.getRole())) {
+                if (jwtProvider.validateToken(token)) {
+                    // Trust signed, short-lived claims — avoids a DB round-trip on every API call.
+                    // Role/clinic revocation is enforced on refresh (15 min access token TTL).
+                    UUID userId = jwtProvider.getUserIdFromToken(token);
+                    UUID clinicId = jwtProvider.getClinicIdFromToken(token);
+                    String role = jwtProvider.getRoleFromToken(token);
                     TenantContext.setCurrentTenant(clinicId);
                     UUID professionalId = jwtProvider.getProfessionalIdFromToken(token);
                     if (professionalId != null) {
@@ -45,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
                             userId,
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().toUpperCase()))
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                     ));
                 }
             }

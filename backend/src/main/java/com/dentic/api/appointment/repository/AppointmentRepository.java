@@ -14,6 +14,25 @@ import java.util.UUID;
 public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
     List<Appointment> findByProfessionalIdAndScheduledAtBetween(UUID professionalId, OffsetDateTime start, OffsetDateTime end);
     List<Appointment> findByClinicIdAndScheduledAtBetween(UUID clinicId, OffsetDateTime start, OffsetDateTime end);
+
+    @Query("""
+        SELECT DISTINCT a FROM Appointment a
+        JOIN FETCH a.professional
+        JOIN FETCH a.patient
+        LEFT JOIN FETCH a.procedure
+        WHERE a.clinic.id = :clinicId
+          AND a.scheduledAt >= :start
+          AND a.scheduledAt < :end
+          AND (:professionalId IS NULL OR a.professional.id = :professionalId)
+        ORDER BY a.scheduledAt
+        """)
+    List<Appointment> findAgendaWithDetails(
+            @Param("clinicId") UUID clinicId,
+            @Param("start") OffsetDateTime start,
+            @Param("end") OffsetDateTime end,
+            @Param("professionalId") UUID professionalId
+    );
+
     List<Appointment> findByPatientIdOrderByScheduledAtDesc(UUID patientId);
 
     @Query("SELECT COUNT(a) FROM Appointment a WHERE a.professional.id = :professionalId")

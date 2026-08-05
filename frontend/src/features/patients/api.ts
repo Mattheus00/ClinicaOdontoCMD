@@ -34,10 +34,10 @@ export function usePatient(id?: string) {
   });
 }
 
-export function usePatientSummary(id?: string) {
+export function usePatientSummary(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['patient-summary', id],
-    enabled: Boolean(id),
+    enabled: Boolean(id) && enabled,
     queryFn: async () => (await api.get<PatientSummary>(`/patients/${id}/summary`)).data,
   });
 }
@@ -74,10 +74,10 @@ export function useAnonymizePatient() {
   });
 }
 
-export function useAnamnesis(id?: string) {
+export function useAnamnesis(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['anamnesis', id],
-    enabled: Boolean(id),
+    enabled: Boolean(id) && enabled,
     queryFn: async () => (await api.get<Anamnesis>(`/patients/${id}/anamnesis`)).data,
   });
 }
@@ -127,18 +127,18 @@ export function useSaveOdontogram(id: string) {
   });
 }
 
-export function useBillingSummary(id?: string) {
+export function useBillingSummary(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['billing-summary', id],
-    enabled: Boolean(id),
+    enabled: Boolean(id) && enabled,
     queryFn: async () => (await api.get<BillingSummary>(`/patients/${id}/billing/summary`)).data,
   });
 }
 
-export function useTreatmentPlans(id?: string) {
+export function useTreatmentPlans(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['treatment-plans', id],
-    enabled: Boolean(id),
+    enabled: Boolean(id) && enabled,
     queryFn: async () => (await api.get<TreatmentPlan[]>(`/patients/${id}/billing/plans`)).data,
   });
 }
@@ -156,10 +156,10 @@ export function useCreateTreatmentPlan(id: string) {
   });
 }
 
-export function usePatientPayments(id?: string) {
+export function usePatientPayments(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['patient-payments', id],
-    enabled: Boolean(id),
+    enabled: Boolean(id) && enabled,
     queryFn: async () => (await api.get<PatientPayment[]>(`/patients/${id}/billing/payments`)).data,
   });
 }
@@ -177,10 +177,10 @@ export function useCreatePatientPayment(id: string) {
   });
 }
 
-export function usePatientInsurances(id?: string) {
+export function usePatientInsurances(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['patient-insurances', id],
-    enabled: Boolean(id),
+    enabled: Boolean(id) && enabled,
     queryFn: async () => (await api.get<PatientInsurance[]>(`/patients/${id}/billing/insurances`)).data,
   });
 }
@@ -194,10 +194,10 @@ export function useCreatePatientInsurance(id: string) {
   });
 }
 
-export function usePatientAppointments(id?: string) {
+export function usePatientAppointments(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['patient-appointments', id],
-    enabled: Boolean(id),
+    enabled: Boolean(id) && enabled,
     queryFn: async () => (await api.get<AppointmentHistory[]>(`/patients/${id}/appointments`)).data,
   });
 }

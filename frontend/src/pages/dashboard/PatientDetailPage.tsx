@@ -144,18 +144,18 @@ export default function PatientDetailPage() {
 
   const patient = usePatient(id);
   const summary = usePatientSummary(id);
-  const dentists = useProfessionals();
+  const dentists = useProfessionals(tab === 'cadastro');
   const update = useUpdatePatient(id);
-  const anamnesis = useAnamnesis(id);
+  const anamnesis = useAnamnesis(id, tab === 'anamnese');
   const saveAnamnesis = useSaveAnamnesis(id);
-  const billing = useBillingSummary(id);
-  const plans = useTreatmentPlans(id);
+  const billing = useBillingSummary(id, tab === 'financeiro');
+  const plans = useTreatmentPlans(id, tab === 'financeiro');
   const createPlan = useCreateTreatmentPlan(id);
-  const payments = usePatientPayments(id);
+  const payments = usePatientPayments(id, tab === 'financeiro');
   const createPayment = useCreatePatientPayment(id);
-  const insurances = usePatientInsurances(id);
+  const insurances = usePatientInsurances(id, tab === 'financeiro');
   const createInsurance = useCreatePatientInsurance(id);
-  const history = usePatientAppointments(id);
+  const history = usePatientAppointments(id, tab === 'consultas');
 
   const cadastroForm = useForm<PatientCadastroForm>({
     resolver: zodResolver(patientCadastroSchema),

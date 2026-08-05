@@ -38,14 +38,15 @@ const delay = (milliseconds: number) => new Promise((resolve) => window.setTimeo
 async function restoreSession() {
   let lastError: unknown;
 
-  for (let attempt = 0; attempt < 3; attempt += 1) {
+  // Proxy already waits up to 60s for cold start; keep client retries short.
+  for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
       return await refreshAccessToken();
     } catch (error) {
       lastError = error;
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
       if (status !== undefined && status < 500) throw error;
-      if (attempt < 2) await delay((attempt + 1) * 1_000);
+      if (attempt < 1) await delay(300);
     }
   }
 

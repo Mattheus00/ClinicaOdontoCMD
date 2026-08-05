@@ -9,6 +9,9 @@ import com.dentic.api.patient.repository.*;
 import com.dentic.api.professional.domain.Professional;
 import com.dentic.api.professional.repository.ProfessionalRepository;
 import com.dentic.api.security.SecurityUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -76,16 +79,15 @@ public class PatientController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        List<Patient> found = search.isBlank()
-                ? patients.search(clinicId(), "")
-                : patients.search(clinicId(), search.trim());
-        int pageSize = Math.min(size, 50);
-        List<PatientResponse> content = found.stream()
-                .skip((long) page * pageSize)
-                .limit(pageSize)
-                .map(PatientResponse::from)
-                .toList();
-        return new PageResponse<>(content, (int) Math.ceil((double) found.size() / pageSize), found.size(), page, pageSize);
+        int pageSize = Math.min(Math.max(size, 1), 50);
+        int pageNumber = Math.max(page, 0);
+        Page<Patient> found = patients.searchPaged(
+                clinicId(),
+                search == null ? "" : search.trim(),
+                PageRequest.of(pageNumber, pageSize, Sort.by("name"))
+        );
+        List<PatientResponse> content = found.getContent().stream().map(PatientResponse::from).toList();
+        return new PageResponse<>(content, found.getTotalPages(), (int) found.getTotalElements(), found.getNumber(), found.getSize());
     }
 
     @GetMapping("/{id}")
