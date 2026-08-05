@@ -1,7 +1,10 @@
 const http = require('http');
 
 const backend = { host: '127.0.0.1', port: 8080 };
-const maxStartupWaitMs = 30_000;
+// A Spring Boot cold start on the serverless container can exceed 30 seconds
+// while it connects to PostgreSQL and validates Flyway migrations. Keep the
+// refresh request alive long enough to preserve an otherwise valid session.
+const maxStartupWaitMs = 60_000;
 const retryDelayMs = 250;
 const maxRequestBodyBytes = 10 * 1024 * 1024;
 

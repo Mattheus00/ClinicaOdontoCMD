@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { refreshAccessToken, setAuthHandlers } from '../services/api';
 
@@ -31,6 +32,25 @@ function readTokenClaims(token: string): { role: Role | null; professionalId: st
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
+
+const delay = (milliseconds: number) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+
+async function restoreSession() {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await refreshAccessToken();
+    } catch (error) {
+      lastError = error;
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      if (status !== undefined && status < 500) throw error;
+      if (attempt < 2) await delay((attempt + 1) * 1_000);
+    }
+  }
+
+  throw lastError;
+}
 
 export function useAuth() {
   const context = useContext(AuthContext);
@@ -77,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
 
-    refreshAccessToken()
+    restoreSession()
       .then((token) => {
         if (active && token) applyToken(token);
       })
