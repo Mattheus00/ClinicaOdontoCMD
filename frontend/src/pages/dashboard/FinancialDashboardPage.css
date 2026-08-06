@@ -3,11 +3,26 @@
   gap: 20px;
 }
 
+.financial-header {
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.financial-header-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.financial-header-copy .page-subtitle {
+  max-width: 36rem;
+}
+
 .financial-period-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   align-items: flex-end;
+  flex-shrink: 0;
 }
 
 .financial-period-filters label {
@@ -18,24 +33,59 @@
   color: var(--color-text-secondary);
 }
 
-.financial-period-label {
-  margin: 0;
-  font-size: 14px;
+.financial-period-filters .input-field {
+  min-width: 148px;
+}
+
+.financial-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border: 1px solid rgba(196, 199, 199, 0.45);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #fff 0%, #f7f2e8 100%);
+  box-shadow: var(--shadow-sm);
+}
+
+.financial-hero-copy {
+  min-width: 0;
+}
+
+.financial-hero-copy span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
-.financial-period-label strong {
-  color: var(--color-text);
+.financial-hero-copy p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.financial-hero > strong {
+  font-size: clamp(1.6rem, 4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 .financial-summary-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
 .financial-summary-cards article {
-  padding: 18px;
+  min-width: 0;
+  padding: 16px 18px;
   border: 1px solid rgba(196, 199, 199, 0.45);
   border-radius: var(--radius-lg);
   background: #fff;
@@ -46,13 +96,15 @@
   display: block;
   margin-bottom: 8px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text-muted);
 }
 
 .financial-summary-cards strong {
-  font-size: 1.35rem;
+  display: block;
+  font-size: 1.25rem;
   color: var(--color-text);
+  overflow-wrap: anywhere;
 }
 
 .financial-highlight {
@@ -64,13 +116,119 @@
 }
 
 .financial-by-dentist {
+  display: grid;
+  gap: 16px;
   padding: 24px;
+  border: 1px solid rgba(196, 199, 199, 0.45);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--signature-shadow);
+}
+
+.financial-by-dentist-head .card-section-title {
+  margin-bottom: 8px;
 }
 
 .financial-attribution-note {
-  margin: -8px 0 20px;
+  margin: 0;
   font-size: 13px;
+  line-height: 1.45;
   color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.financial-dentist-list {
+  display: none;
+  gap: 12px;
+}
+
+.financial-dentist-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(196, 199, 199, 0.4);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+}
+
+.financial-dentist-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.financial-dentist-card-head > div:first-child {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.financial-dentist-card-head strong {
+  font-size: 15px;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.financial-dentist-card-head span {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.financial-dentist-card-period {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.financial-dentist-card-period small {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.financial-dentist-card-period strong {
+  font-size: 1.15rem;
+}
+
+.financial-dentist-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.financial-dentist-metrics div {
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1px solid rgba(196, 199, 199, 0.35);
+}
+
+.financial-dentist-metrics-wide {
+  grid-column: 1 / -1;
+}
+
+.financial-dentist-metrics dt {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.financial-dentist-metrics dd {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.financial-table-desktop {
+  display: block;
 }
 
 .financial-table th,
@@ -78,13 +236,88 @@
   white-space: nowrap;
 }
 
+.financial-dentist-note {
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-secondary-container);
+  border: 1px solid rgba(117, 90, 37, 0.18);
+}
+
+.financial-dentist-note p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-secondary);
+}
+
 @media (max-width: 960px) {
+  .financial-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .financial-period-filters {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .financial-period-filters .input-field {
+    min-width: 0;
     width: 100%;
   }
 
-  .page-header {
+  .financial-summary-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .financial-dentist-list {
+    display: grid;
+  }
+
+  .financial-table-desktop {
+    display: none;
+  }
+
+  .financial-by-dentist {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 800px) {
+  .financial-dashboard {
+    gap: 16px;
+  }
+
+  .financial-hero {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
+    padding: 18px 16px;
+  }
+
+  .financial-hero > strong {
+    font-size: 1.75rem;
+  }
+
+  .financial-summary-cards article {
+    padding: 14px;
+  }
+
+  .financial-summary-cards strong {
+    font-size: 1.1rem;
+  }
+
+  .financial-period-filters label {
+    font-size: 11px;
+  }
+
+  .financial-period-filters .input-field {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 380px) {
+  .financial-period-filters {
+    grid-template-columns: 1fr;
   }
 }
