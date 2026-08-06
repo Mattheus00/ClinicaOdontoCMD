@@ -351,9 +351,15 @@ button:disabled {
 
 @media (max-width: 800px) {
   .page-header {
-    align-items: flex-start;
-    gap: var(--spacing-md);
+    align-items: stretch;
+    gap: 12px;
     flex-direction: column;
+    margin-bottom: 18px;
+  }
+
+  .page-header .btn {
+    width: 100%;
+    min-height: 44px;
   }
 
   .form-grid {
