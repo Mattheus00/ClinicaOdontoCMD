@@ -41,3 +41,17 @@ export function useMarkAllNotificationsRead() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['staff-notifications'] }),
   });
 }
+
+export function useClearStaffNotifications() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.delete('/staff-notifications'),
+    onSuccess: () => {
+      queryClient.setQueryData<StaffNotificationList>(['staff-notifications'], {
+        unreadCount: 0,
+        items: [],
+      });
+      queryClient.invalidateQueries({ queryKey: ['staff-notifications'] });
+    },
+  });
+}

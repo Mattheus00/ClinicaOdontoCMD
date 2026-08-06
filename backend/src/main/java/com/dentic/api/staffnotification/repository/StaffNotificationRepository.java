@@ -2,6 +2,7 @@ package com.dentic.api.staffnotification.repository;
 
 import com.dentic.api.staffnotification.domain.StaffNotification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -33,4 +34,8 @@ public interface StaffNotificationRepository extends JpaRepository<StaffNotifica
     Optional<StaffNotification> findByIdAndClinic_Id(UUID id, UUID clinicId);
 
     List<StaffNotification> findByAppointment_IdAndClinic_Id(UUID appointmentId, UUID clinicId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("DELETE FROM StaffNotification n WHERE n.clinic.id = :clinicId")
+    int deleteByClinicId(@Param("clinicId") UUID clinicId);
 }

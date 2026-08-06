@@ -65,6 +65,14 @@ public class StaffNotificationController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping
+    @Transactional
+    public ResponseEntity<Void> clearAll() {
+        SecurityUtils.requireAdminOrSecretary();
+        notifications.deleteByClinicId(tenant());
+        return ResponseEntity.noContent().build();
+    }
+
     private UUID tenant() {
         UUID id = TenantContext.getCurrentTenant();
         if (id == null) throw new IllegalStateException("Sessão inválida");
