@@ -2,6 +2,7 @@ package com.dentic.api.booking.service;
 
 import com.dentic.api.appointment.domain.Appointment;
 import com.dentic.api.appointment.repository.AppointmentRepository;
+import com.dentic.api.common.PhoneNormalizer;
 import com.dentic.api.onboarding.domain.Clinic;
 import com.dentic.api.onboarding.repository.ClinicRepository;
 import com.dentic.api.patient.domain.Patient;
@@ -15,6 +16,7 @@ import com.dentic.api.professional.repository.WorkingHoursRepository;
 import com.dentic.api.staffnotification.domain.StaffNotification;
 import com.dentic.api.staffnotification.repository.StaffNotificationRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +68,7 @@ public class PublicBookingService {
     public BookingPageResponse getBookingPage(String slug) {
         Clinic clinic = requireActiveClinic(slug);
         List<ProfessionalOption> dentistOptions = professionals.findByClinicId(clinic.getId()).stream()
+                .filter(Professional::hasActiveAccess)
                 .sorted(Comparator.comparing(Professional::getName, String.CASE_INSENSITIVE_ORDER))
                 .map(item -> new ProfessionalOption(item.getId(), item.getName(), item.getSpecialty()))
                 .toList();
@@ -90,6 +93,7 @@ public class PublicBookingService {
 
         Professional professional = professionals.findById(professionalId)
                 .filter(item -> item.getClinic().getId().equals(clinic.getId()))
+                .filter(Professional::hasActiveAccess)
                 .orElseThrow(() -> new IllegalArgumentException("Dentista não encontrado."));
 
         List<LocalTimeRange> windows = resolveWorkingWindows(professional.getId(), date.getDayOfWeek());
@@ -131,6 +135,7 @@ public class PublicBookingService {
 
         Professional professional = professionals.findById(request.professionalId())
                 .filter(item -> item.getClinic().getId().equals(clinic.getId()))
+                .filter(Professional::hasActiveAccess)
                 .orElseThrow(() -> new IllegalArgumentException("Dentista não encontrado."));
         Procedure procedure = procedures.findByIdAndClinicId(request.procedureId(), clinic.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Procedimento não encontrado."));
@@ -150,7 +155,7 @@ public class PublicBookingService {
             throw new IllegalArgumentException("Este horário não está mais disponível. Escolha outro.");
         }
 
-        String phone = normalizePhone(request.phone());
+        String phone = PhoneNormalizer.normalize(request.phone());
         Patient patient = patients.findByClinicIdAndPhone(clinic.getId(), phone).orElseGet(Patient::new);
         boolean isNew = patient.getId() == null;
         if (isNew) {
@@ -159,17 +164,36 @@ public class PublicBookingService {
             patient.setPhoneIsWhatsapp(true);
             patient.setConsentGivenAt(OffsetDateTime.now());
             patient.setConsentVersion("1.0");
+            patient.setReferralSource("instagram");
+            if (request.notes() != null && !request.notes().isBlank()) {
+                patient.setNotes(request.notes().trim());
+            }
+        } else {
+            // Keep existing clinical notes / referral attribution for returning patients.
+            if ((patient.getNotes() == null || patient.getNotes().isBlank())
+                    && request.notes() != null
+                    && !request.notes().isBlank()) {
+                patient.setNotes(request.notes().trim());
+            }
         }
         patient.setName(request.name().trim());
         if (request.email() != null && !request.email().isBlank()) {
             patient.setEmail(request.email().trim());
         }
-        patient.setReferralSource("instagram");
-        patient.setPreferredProfessional(professional);
-        if (request.notes() != null && !request.notes().isBlank()) {
-            patient.setNotes(request.notes().trim());
+        if (patient.getPreferredProfessional() == null) {
+            patient.setPreferredProfessional(professional);
         }
-        patient = patients.save(patient);
+        try {
+            patient = patients.save(patient);
+        } catch (DataIntegrityViolationException ex) {
+            patient = patients.findByClinicIdAndPhone(clinic.getId(), phone)
+                    .orElseThrow(() -> new IllegalArgumentException("Não foi possível salvar o paciente. Tente novamente."));
+            patient.setName(request.name().trim());
+            if (request.email() != null && !request.email().isBlank()) {
+                patient.setEmail(request.email().trim());
+            }
+            patient = patients.save(patient);
+        }
 
         Appointment appointment = new Appointment();
         appointment.setClinic(clinic);
@@ -180,7 +204,11 @@ public class PublicBookingService {
         appointment.setDurationMinutes(DEFAULT_DURATION);
         appointment.setStatus("PENDING");
         appointment.setCreatedVia("instagram");
-        appointment = appointments.save(appointment);
+        try {
+            appointment = appointments.save(appointment);
+        } catch (DataIntegrityViolationException ex) {
+            throw new IllegalArgumentException("Este horário não está mais disponível. Escolha outro.");
+        }
 
         String whenLabel = startsAt.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm"));
         StaffNotification notification = new StaffNotification();
@@ -257,7 +285,7 @@ public class PublicBookingService {
         if (request.name() == null || request.name().trim().length() < 2) {
             throw new IllegalArgumentException("Informe seu nome.");
         }
-        if (request.phone() == null || normalizePhone(request.phone()).length() < 10) {
+        if (request.phone() == null || PhoneNormalizer.normalize(request.phone()).length() < 10) {
             throw new IllegalArgumentException("Informe um telefone válido com DDD.");
         }
         if (request.professionalId() == null) {
@@ -269,10 +297,6 @@ public class PublicBookingService {
         if (request.startsAt() == null || request.startsAt().isBlank()) {
             throw new IllegalArgumentException("Escolha o horário.");
         }
-    }
-
-    private static String normalizePhone(String phone) {
-        return phone == null ? "" : phone.replaceAll("\\D+", "");
     }
 
     private record LocalTimeRange(LocalTime start, LocalTime end) {}

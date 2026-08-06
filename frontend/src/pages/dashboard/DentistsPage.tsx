@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
+import { useAuth } from '../../contexts/AuthContext';
 import {
   useCreateProfessional,
   useDeleteProfessional,
@@ -14,6 +15,8 @@ import './DentistsPage.css';
 type DeleteTarget = Pick<Professional, 'id' | 'name' | 'appointmentCount'>;
 
 export default function DentistsPage() {
+  const { role } = useAuth();
+  const canManage = role === 'ADMIN';
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [specialty, setSpecialty] = useState('');
@@ -103,68 +106,74 @@ export default function DentistsPage() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Dentistas</h1>
-          <p className="page-subtitle">Cadastre a equipe e envie o link de primeiro acesso.</p>
+          <p className="page-subtitle">
+            {canManage
+              ? 'Cadastre a equipe e envie o link de primeiro acesso.'
+              : 'Consulte a equipe de dentistas da clínica.'}
+          </p>
         </div>
       </div>
 
-      <section className="glass-card dentists-form-card">
-        <h2 className="card-section-title">Adicionar dentista</h2>
-        <form className="dashboard-form" onSubmit={submit}>
-          <label>
-            Nome completo
-            <input
-              required
-              className="input-field"
-              placeholder="Ex.: Dra. Maria Alice"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          <label>
-            E-mail
-            <input
-              required
-              type="email"
-              className="input-field"
-              placeholder="dentista@clinica.com.br"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </label>
-          <label>
-            Especialidade
-            <input
-              className="input-field"
-              placeholder="Ex.: Ortodontia"
-              value={specialty}
-              onChange={(e) => setSpecialty(e.target.value)}
-            />
-          </label>
+      {canManage ? (
+        <section className="glass-card dentists-form-card">
+          <h2 className="card-section-title">Adicionar dentista</h2>
+          <form className="dashboard-form" onSubmit={submit}>
+            <label>
+              Nome completo
+              <input
+                required
+                className="input-field"
+                placeholder="Ex.: Dra. Maria Alice"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </label>
+            <label>
+              E-mail
+              <input
+                required
+                type="email"
+                className="input-field"
+                placeholder="dentista@clinica.com.br"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </label>
+            <label>
+              Especialidade
+              <input
+                className="input-field"
+                placeholder="Ex.: Ortodontia"
+                value={specialty}
+                onChange={(e) => setSpecialty(e.target.value)}
+              />
+            </label>
 
-          {latestInviteUrl && (
-            <div id="dentist-invite-link" className="dentist-invite-field">
-              <span className="dentist-invite-label">Link de primeiro acesso</span>
-              {latestInviteName ? (
-                <p className="dentist-invite-success">
-                  Link gerado para <strong>{latestInviteName}</strong>. Envie para o dentista concluir o cadastro.
-                </p>
-              ) : null}
-              <div className="dentist-invite-row">
-                <input className="input-field" readOnly value={latestInviteUrl} aria-label="Link de convite" />
-                <button type="button" className="btn btn-secondary btn-sm" onClick={() => copyInvite(latestInviteUrl)}>
-                  Copiar link
-                </button>
+            {latestInviteUrl && (
+              <div id="dentist-invite-link" className="dentist-invite-field">
+                <span className="dentist-invite-label">Link de primeiro acesso</span>
+                {latestInviteName ? (
+                  <p className="dentist-invite-success">
+                    Link gerado para <strong>{latestInviteName}</strong>. Envie para o dentista concluir o cadastro.
+                  </p>
+                ) : null}
+                <div className="dentist-invite-row">
+                  <input className="input-field" readOnly value={latestInviteUrl} aria-label="Link de convite" />
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => copyInvite(latestInviteUrl)}>
+                    Copiar link
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="dashboard-form-actions">
-            <button className="btn btn-primary" disabled={create.isPending}>
-              {create.isPending ? 'Salvando...' : 'Cadastrar e gerar link'}
-            </button>
-          </div>
-        </form>
-      </section>
+            <div className="dashboard-form-actions">
+              <button className="btn btn-primary" disabled={create.isPending}>
+                {create.isPending ? 'Salvando...' : 'Cadastrar e gerar link'}
+              </button>
+            </div>
+          </form>
+        </section>
+      ) : null}
 
       {dentists.isLoading ? (
         <LoadingState />
@@ -179,7 +188,7 @@ export default function DentistsPage() {
                 <th>E-mail</th>
                 <th>Especialidade</th>
                 <th>Status</th>
-                <th className="col-actions">Ações</th>
+                {canManage ? <th className="col-actions">Ações</th> : null}
               </tr>
             </thead>
             <tbody>
@@ -193,34 +202,36 @@ export default function DentistsPage() {
                       {dentist.accessStatus === 'ACTIVE' ? 'Acesso ativo' : 'Convite pendente'}
                     </span>
                   </td>
-                  <td className="col-actions">
-                    <div className="dentist-actions">
-                      {dentist.accessStatus === 'PENDING' && (
+                  {canManage ? (
+                    <td className="col-actions">
+                      <div className="dentist-actions">
+                        {dentist.accessStatus === 'PENDING' && (
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm"
+                            disabled={regenerate.isPending}
+                            onClick={() => handleRegenerateInvite(dentist)}
+                          >
+                            {dentist.email ? 'Novo link' : 'Definir e-mail'}
+                          </button>
+                        )}
                         <button
                           type="button"
-                          className="btn btn-ghost btn-sm"
-                          disabled={regenerate.isPending}
-                          onClick={() => handleRegenerateInvite(dentist)}
+                          className="btn btn-ghost btn-sm dentist-delete"
+                          disabled={remove.isPending}
+                          onClick={() =>
+                            setDeleteTarget({
+                              id: dentist.id,
+                              name: dentist.name,
+                              appointmentCount: dentist.appointmentCount ?? 0,
+                            })
+                          }
                         >
-                          {dentist.email ? 'Novo link' : 'Definir e-mail'}
+                          Excluir
                         </button>
-                      )}
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-sm dentist-delete"
-                        disabled={remove.isPending}
-                        onClick={() =>
-                          setDeleteTarget({
-                            id: dentist.id,
-                            name: dentist.name,
-                            appointmentCount: dentist.appointmentCount ?? 0,
-                          })
-                        }
-                      >
-                        Excluir
-                      </button>
-                    </div>
-                  </td>
+                      </div>
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>

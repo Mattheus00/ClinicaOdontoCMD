@@ -121,7 +121,9 @@ export default function AgendaScheduleGrid({
   const handleDrop = (dayDate: string, slotValue: string) => {
     if (!draggingId || isRescheduling) return;
     const appointment = appointments.find((item) => item.id === draggingId);
-    if (!appointment || appointment.status === 'CANCELLED') return;
+    if (!appointment || (appointment.status !== 'SCHEDULED' && appointment.status !== 'CONFIRMED')) {
+      return;
+    }
 
     const startsAt = `${dayDate}T${slotValue}:00`;
     const currentStart = new Date(appointment.startsAt);
@@ -218,7 +220,10 @@ export default function AgendaScheduleGrid({
                   ),
                 );
 
-                const draggable = canEdit && appointment.status !== 'CANCELLED' && !isRescheduling;
+                const draggable =
+                  canEdit &&
+                  !isRescheduling &&
+                  (appointment.status === 'SCHEDULED' || appointment.status === 'CONFIRMED');
                 const layout = dayLayout.get(appointment.id) ?? { columnIndex: 0, columnCount: 1 };
                 const gap = 2;
                 const horizontalPadding = 6;

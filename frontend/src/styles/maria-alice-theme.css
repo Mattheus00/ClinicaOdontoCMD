@@ -287,6 +287,10 @@ a.btn-ghost:hover {
   outline: none;
 }
 
+.sidebar-link-label-short {
+  display: none;
+}
+
 .sidebar-link:hover {
   background: var(--color-bg-card);
   color: var(--color-primary);
@@ -478,6 +482,14 @@ a.btn-ghost:hover {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .sidebar-link-label-full {
+    display: none;
+  }
+
+  .sidebar-link-label-short {
+    display: block;
   }
 
   .sidebar-link svg {

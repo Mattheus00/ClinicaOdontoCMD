@@ -2,6 +2,7 @@ package com.dentic.api.patient.web;
 
 import com.dentic.api.appointment.domain.Appointment;
 import com.dentic.api.appointment.repository.AppointmentRepository;
+import com.dentic.api.common.PhoneNormalizer;
 import com.dentic.api.multitenant.TenantContext;
 import com.dentic.api.onboarding.repository.ClinicRepository;
 import com.dentic.api.patient.domain.*;
@@ -430,11 +431,12 @@ public class PatientController {
         if (request.name() == null || request.name().isBlank()) {
             throw new IllegalArgumentException("Informe o nome do paciente.");
         }
-        if (request.phone() == null || request.phone().isBlank()) {
-            throw new IllegalArgumentException("Informe o telefone do paciente.");
+        String phone = PhoneNormalizer.normalize(request.phone());
+        if (phone.length() < 10) {
+            throw new IllegalArgumentException("Informe um telefone válido com DDD.");
         }
         patient.setName(request.name().trim());
-        patient.setPhone(request.phone().trim());
+        patient.setPhone(phone);
         patient.setPhoneIsWhatsapp(request.phoneIsWhatsapp() == null || request.phoneIsWhatsapp());
         patient.setEmail(blankToNull(request.email()));
         patient.setCpf(blankToNull(request.cpf()));

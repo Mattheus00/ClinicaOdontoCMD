@@ -7,22 +7,26 @@ import { money } from '../../lib/money';
 import './PublicBookingPage.css';
 
 const LOGO = '/brand/maria-alice-logo.png';
+const CLINIC_TIME_ZONE = 'America/Sao_Paulo';
+
+function clinicDateIso(date = new Date()) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: CLINIC_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
 
 function todayIso() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return clinicDateIso();
 }
 
 function maxDateIso() {
-  const now = new Date();
-  now.setDate(now.getDate() + 60);
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  const today = clinicDateIso();
+  const cursor = new Date(`${today}T12:00:00Z`);
+  cursor.setUTCDate(cursor.getUTCDate() + 60);
+  return cursor.toISOString().slice(0, 10);
 }
 
 function formatSlotLabel(startsAt: string) {
@@ -144,13 +148,13 @@ export default function PublicBookingPage() {
     <main className="public-booking">
       <div className="public-booking-shell">
         <header className="public-booking-header">
-          <img src={LOGO} alt="" className="public-booking-logo" />
+          <img src={LOGO} alt="Maria Alice Odontologia Especializada" className="public-booking-logo" />
           <div>
             <p className="public-booking-kicker">
               <Share2 size={14} /> Agendamento online
             </p>
             <h1>{data.clinicName}</h1>
-            <p>Escolha o horário e reserve sua consulta em poucos passos.</p>
+            <p>Escolha o horário e envie sua solicitação em poucos passos.</p>
           </div>
         </header>
 
@@ -296,7 +300,7 @@ export default function PublicBookingPage() {
             {formError ? <p className="public-booking-error">{formError}</p> : null}
 
             <button className="btn btn-primary public-booking-submit" type="submit" disabled={book.isPending}>
-              {book.isPending ? 'Reservando...' : 'Confirmar agendamento'}
+              {book.isPending ? 'Enviando...' : 'Enviar solicitação'}
             </button>
           </form>
         )}

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { refreshAccessToken, setAuthHandlers } from '../services/api';
+import { api, refreshAccessToken, setAuthHandlers } from '../services/api';
 
 type Role = 'ADMIN' | 'SECRETARY' | 'DENTIST';
 
@@ -78,12 +78,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     applyToken(token);
   }, [applyToken]);
 
-  const logout = useCallback(() => {
+  const clearSession = useCallback(() => {
     accessTokenRef.current = null;
     setAccessToken(null);
     setRole(null);
     setProfessionalId(null);
   }, []);
+
+  const logout = useCallback(() => {
+    void api
+      .post('/auth/logout', {}, { skipGlobalError: true })
+      .catch(() => undefined)
+      .finally(() => {
+        clearSession();
+      });
+  }, [clearSession]);
 
   useEffect(() => {
     setAuthHandlers({
@@ -103,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (active && token) applyToken(token);
       })
       .catch(() => {
-        logout();
+        clearSession();
       })
       .finally(() => {
         if (active) setIsInitializing(false);
@@ -112,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [applyToken, logout]);
+  }, [applyToken, clearSession]);
 
   return (
     <AuthContext.Provider

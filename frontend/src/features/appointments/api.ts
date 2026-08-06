@@ -80,10 +80,14 @@ export function useRescheduleAppointment(filters: AppointmentFilters) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: RescheduleInput) =>
-      (await api.patch<Appointment>(`/appointments/${input.id}/reschedule`, {
-        startsAt: input.startsAt,
-        professionalId: input.professionalId,
-      })).data,
+      (await api.patch<Appointment>(
+        `/appointments/${input.id}/reschedule`,
+        {
+          startsAt: input.startsAt,
+          professionalId: input.professionalId,
+        },
+        { skipGlobalError: true },
+      )).data,
     onMutate: async (input: RescheduleInput) => {
       await queryClient.cancelQueries({ queryKey: ['appointments', filters] });
       const previous = queryClient.getQueryData<{ content: Appointment[] }>(['appointments', filters]);

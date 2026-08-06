@@ -79,16 +79,19 @@ public class StaffNotificationController {
             String title,
             String message,
             UUID appointmentId,
+            OffsetDateTime appointmentStartsAt,
             OffsetDateTime createdAt,
             OffsetDateTime readAt
     ) {
         static NotificationResponse from(StaffNotification value) {
+            var appointment = value.getAppointment();
             return new NotificationResponse(
                     value.getId(),
                     value.getType(),
                     value.getTitle(),
                     value.getMessage(),
-                    value.getAppointment() == null ? null : value.getAppointment().getId(),
+                    appointment == null ? null : appointment.getId(),
+                    appointment == null ? null : appointment.getScheduledAt(),
                     value.getCreatedAt(),
                     value.getReadAt()
             );

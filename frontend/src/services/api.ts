@@ -18,13 +18,17 @@ type AuthHandlers = {
   logout: () => void;
 };
 
-type RetriableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean };
+type RetriableRequestConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+  skipGlobalError?: boolean;
+};
 
 const publicPaths = new Set([
   '/auth/login',
   '/auth/register',
   '/auth/confirm-email',
   '/auth/refresh',
+  '/auth/logout',
 ]);
 
 function isPublicApiPath(path: string) {
@@ -103,13 +107,27 @@ api.interceptors.response.use(
       }
     }
 
-    if (error.response?.status === 403) {
-      window.dispatchEvent(new CustomEvent('app:api-error', { detail: { message: 'Você não tem permissão para realizar esta ação.' } }));
-    } else if (error.response) {
-      const message = readApiError(error, error.response.status >= 500
-        ? 'O serviço está indisponível no momento. Tente novamente.'
-        : 'Não foi possível concluir a operação.');
-      window.dispatchEvent(new CustomEvent('app:api-error', { detail: { message } }));
+    const skipToast =
+      Boolean(originalRequest?.skipGlobalError) ||
+      isPublicApiPath(requestPath) ||
+      requestPath.startsWith('/public/');
+
+    if (!skipToast) {
+      if (error.response?.status === 403) {
+        window.dispatchEvent(
+          new CustomEvent('app:api-error', {
+            detail: { message: 'Você não tem permissão para realizar esta ação.' },
+          }),
+        );
+      } else if (error.response) {
+        const message = readApiError(
+          error,
+          error.response.status >= 500
+            ? 'O serviço está indisponível no momento. Tente novamente.'
+            : 'Não foi possível concluir a operação.',
+        );
+        window.dispatchEvent(new CustomEvent('app:api-error', { detail: { message } }));
+      }
     }
 
     return Promise.reject(error);
