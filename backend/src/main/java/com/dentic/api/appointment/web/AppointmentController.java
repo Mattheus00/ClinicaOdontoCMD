@@ -246,7 +246,7 @@ public class AppointmentController {
 
     public record RescheduleRequest(String startsAt, UUID professionalId, Integer durationMinutes) {}
 
-    public record PatientData(UUID id, String name) {}
+    public record PatientData(UUID id, String name, String phone) {}
 
     public record ProfessionalData(UUID id, String name) {}
 
@@ -265,9 +265,10 @@ public class AppointmentController {
     ) {
         static AppointmentResponse from(Appointment value) {
             var procedure = value.getProcedure();
+            var patient = value.getPatient();
             return new AppointmentResponse(
                     value.getId(),
-                    new PatientData(value.getPatient().getId(), value.getPatient().getName()),
+                    new PatientData(patient.getId(), patient.getName(), patient.getPhone()),
                     new ProfessionalData(value.getProfessional().getId(), value.getProfessional().getName()),
                     procedure == null ? null : new ProcedureData(procedure.getId(), procedure.getName(), procedure.getPrice()),
                     value.getScheduledAt(),

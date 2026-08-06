@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,6 +24,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useMediaQuery } from '../../lib/useMediaQuery';
 import { APPOINTMENT_DURATION_OPTIONS, DEFAULT_APPOINTMENT_DURATION, formatAppointmentDuration } from '../../lib/appointment-duration';
 import { money } from '../../lib/money';
+import { buildAppointmentConfirmationMessage, buildWhatsAppUrl } from '../../lib/whatsapp';
 import './AgendaPage.css';
 
 const schema = z.object({
@@ -170,6 +171,20 @@ export default function AgendaPage() {
   const selectedDentist = isDentist
     ? null
     : dentistsList.find((item) => item.id === selectedProfessionalId);
+
+  const whatsappConfirmUrl = useMemo(() => {
+    if (!selectedAppointment) return null;
+    if (selectedAppointment.status !== 'SCHEDULED' && selectedAppointment.status !== 'CONFIRMED') {
+      return null;
+    }
+    const message = buildAppointmentConfirmationMessage({
+      patientName: selectedAppointment.patient.name,
+      startsAt: selectedAppointment.startsAt,
+      professionalName: selectedAppointment.professional.name,
+      procedureName: selectedAppointment.procedure?.name,
+    });
+    return buildWhatsAppUrl(selectedAppointment.patient.phone, message);
+  }, [selectedAppointment]);
 
   return (
     <div className="agenda-page">
@@ -351,6 +366,11 @@ export default function AgendaPage() {
                 <strong>Origem:</strong> Instagram / link público
               </p>
             ) : null}
+            {whatsappConfirmUrl ? (
+              <p className="appointment-whatsapp-hint">
+                Envie a confirmação pelo WhatsApp para o paciente ficar ciente do horário.
+              </p>
+            ) : null}
           </div>
           <div className="modal-actions">
             {isAdmin && selectedAppointment.status === 'PENDING' && (
@@ -360,7 +380,13 @@ export default function AgendaPage() {
                 onClick={() => {
                   if (window.confirm('Aceitar esta solicitação e confirmar o horário na agenda?')) {
                     accept.mutate(selectedAppointment.id, {
-                      onSuccess: () => setSelectedAppointmentId(null),
+                      onSuccess: () => {
+                        window.dispatchEvent(
+                          new CustomEvent('app:toast', {
+                            detail: { message: 'Agendamento aceito. Envie a confirmação pelo WhatsApp.' },
+                          }),
+                        );
+                      },
                     });
                   }
                 }}
@@ -368,6 +394,17 @@ export default function AgendaPage() {
                 {accept.isPending ? 'Aceitando...' : 'Aceitar agendamento'}
               </button>
             )}
+            {whatsappConfirmUrl ? (
+              <a
+                className="btn btn-whatsapp"
+                href={whatsappConfirmUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle size={16} strokeWidth={2} />
+                Confirmar no WhatsApp
+              </a>
+            ) : null}
             {selectedAppointment.status !== 'CANCELLED'
               && selectedAppointment.status !== 'COMPLETED'
               && selectedAppointment.status !== 'PENDING' && (

@@ -3,6 +3,32 @@
   overflow-x: hidden;
 }
 
+.appointment-whatsapp-hint {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(37, 211, 102, 0.1);
+  color: #128c4a;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #25d366;
+  color: #fff;
+  border: 1px solid #1ebe57;
+  text-decoration: none;
+}
+
+.btn-whatsapp:hover {
+  background: #1ebe57;
+  color: #fff;
+}
+
 .page-header-intro {
   min-width: 0;
   flex: 1;
