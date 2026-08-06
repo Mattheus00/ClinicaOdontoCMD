@@ -68,6 +68,37 @@
   font-size: 14px;
 }
 
+.staff-bell-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.staff-bell-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.staff-bell-clear:hover:not(:disabled) {
+  color: var(--color-danger);
+  background: rgba(176, 0, 32, 0.06);
+  border-color: rgba(176, 0, 32, 0.12);
+}
+
+.staff-bell-clear:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .staff-bell-empty {
   margin: 0;
   padding: 20px 14px;

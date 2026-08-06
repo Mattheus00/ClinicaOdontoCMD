@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
+  useClearStaffNotifications,
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useStaffNotifications,
@@ -35,6 +36,7 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
   const notifications = useStaffNotifications(enabled);
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
+  const clearAll = useClearStaffNotifications();
 
   const unreadCount = notifications.data?.unreadCount ?? 0;
   const items = notifications.data?.items ?? [];
@@ -96,16 +98,43 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
         <div className="staff-bell-panel" role="dialog" aria-label="Notificações" ref={panelRef}>
           <header className="staff-bell-panel-head">
             <strong>Solicitações</strong>
-            {unreadCount > 0 ? (
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                disabled={markAllRead.isPending}
-                onClick={() => markAllRead.mutate()}
-              >
-                Marcar todas
-              </button>
-            ) : null}
+            <div className="staff-bell-panel-actions">
+              {unreadCount > 0 ? (
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  disabled={markAllRead.isPending || clearAll.isPending}
+                  onClick={() => markAllRead.mutate()}
+                >
+                  Marcar todas
+                </button>
+              ) : null}
+              {items.length > 0 ? (
+                <button
+                  type="button"
+                  className="staff-bell-clear"
+                  aria-label="Limpar notificações"
+                  title="Limpar notificações"
+                  disabled={clearAll.isPending}
+                  onClick={() => {
+                    if (window.confirm('Limpar todas as notificações desta lista?')) {
+                      clearAll.mutate(undefined, {
+                        onSuccess: () => {
+                          previousUnread.current = 0;
+                          window.dispatchEvent(
+                            new CustomEvent('app:toast', {
+                              detail: { message: 'Notificações limpas.' },
+                            }),
+                          );
+                        },
+                      });
+                    }
+                  }}
+                >
+                  <Trash2 size={16} strokeWidth={1.8} />
+                </button>
+              ) : null}
+            </div>
           </header>
 
           {notifications.isLoading ? (
