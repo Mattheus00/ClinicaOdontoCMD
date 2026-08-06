@@ -86,12 +86,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
-    void api
-      .post('/auth/logout', {}, { skipGlobalError: true })
-      .catch(() => undefined)
-      .finally(() => {
-        clearSession();
-      });
+    clearSession();
+    void api.post('/auth/logout', {}, { skipGlobalError: true }).catch(() => undefined);
   }, [clearSession]);
 
   useEffect(() => {
