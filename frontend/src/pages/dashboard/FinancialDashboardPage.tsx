@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
 import { useAuth } from '../../contexts/AuthContext';
 import { useFinancialDashboard } from '../../features/financial/api';
+import type { ProfessionalFinancialBreakdown } from '../../api/types';
 import { money } from '../../lib/money';
 import './FinancialDashboardPage.css';
 
@@ -25,6 +26,47 @@ const formatPeriod = (from: string, to: string) => {
   return `${formatter.format(new Date(`${from}T12:00:00`))} — ${formatter.format(new Date(`${to}T12:00:00`))}`;
 };
 
+function DentistBreakdownCard({ row }: { row: ProfessionalFinancialBreakdown }) {
+  return (
+    <article className="financial-dentist-card">
+      <header className="financial-dentist-card-head">
+        <div>
+          <strong>{row.professionalName}</strong>
+          <span>
+            {row.patientCount} {row.patientCount === 1 ? 'paciente' : 'pacientes'}
+          </span>
+        </div>
+        <div className="financial-dentist-card-period">
+          <small>No período</small>
+          <strong className="financial-highlight">{money(row.receivedInPeriod)}</strong>
+        </div>
+      </header>
+      <dl className="financial-dentist-metrics">
+        <div>
+          <dt>Total recebido</dt>
+          <dd>{money(row.paid)}</dd>
+        </div>
+        <div>
+          <dt>Aprovado</dt>
+          <dd>{money(row.approved)}</dd>
+        </div>
+        <div>
+          <dt>Pendente</dt>
+          <dd>{money(row.pending)}</dd>
+        </div>
+        <div>
+          <dt>Em aberto</dt>
+          <dd>{money(row.openBalance)}</dd>
+        </div>
+        <div className="financial-dentist-metrics-wide">
+          <dt>Em atraso</dt>
+          <dd className={row.overdue > 0 ? 'financial-danger' : undefined}>{money(row.overdue)}</dd>
+        </div>
+      </dl>
+    </article>
+  );
+}
+
 export default function FinancialDashboardPage() {
   const { role } = useAuth();
   const isDentist = role === 'DENTIST';
@@ -38,126 +80,153 @@ export default function FinancialDashboardPage() {
   if (dashboard.isError) return <ErrorState onRetry={() => dashboard.refetch()} />;
 
   const data = dashboard.data;
-  if (!data) return <EmptyState title="Sem dados financeiros" description="Cadastre pacientes e registre pagamentos para visualizar o resumo." />;
+  if (!data) {
+    return (
+      <EmptyState
+        title="Sem dados financeiros"
+        description="Cadastre pacientes e registre pagamentos para visualizar o resumo."
+      />
+    );
+  }
 
   const { totals, byProfessional, period } = data;
+  const secondaryMetrics = [
+    { label: 'Total recebido', value: money(totals.paid) },
+    { label: 'Planos aprovados', value: money(totals.approved) },
+    { label: 'Pendente', value: money(totals.pending) },
+    { label: 'Saldo em aberto', value: money(totals.openBalance) },
+    {
+      label: 'Em atraso',
+      value: money(totals.overdue),
+      danger: totals.overdue > 0,
+    },
+    {
+      label: isDentist ? 'Seus pacientes' : 'Pacientes',
+      value: String(totals.patientCount),
+    },
+  ];
 
   return (
     <div className="financial-dashboard">
-      <div className="page-header">
-        <div>
+      <div className="page-header financial-header">
+        <div className="financial-header-copy">
           <h1 className="page-title">Financeiro</h1>
           <p className="page-subtitle">
             {isDentist
-              ? 'Resumo dos seus recebimentos e saldo em aberto.'
-              : 'Visão consolidada da clínica e desempenho por dentista.'}
+              ? 'Acompanhe seus recebimentos e valores em aberto.'
+              : 'Resumo da clínica e desempenho por dentista.'}
           </p>
         </div>
-        {!isDentist && (
-          <div className="financial-period-filters">
-            <label>
-              De
-              <input
-                className="input-field compact-field"
-                type="date"
-                value={from}
-                max={to}
-                onChange={(event) => setFrom(event.target.value)}
-              />
-            </label>
-            <label>
-              Até
-              <input
-                className="input-field compact-field"
-                type="date"
-                value={to}
-                min={from}
-                max={today()}
-                onChange={(event) => setTo(event.target.value)}
-              />
-            </label>
-          </div>
-        )}
+
+        <div className="financial-period-filters">
+          <label>
+            De
+            <input
+              className="input-field"
+              type="date"
+              value={from}
+              max={to}
+              onChange={(event) => setFrom(event.target.value)}
+            />
+          </label>
+          <label>
+            Até
+            <input
+              className="input-field"
+              type="date"
+              value={to}
+              min={from}
+              max={today()}
+              onChange={(event) => setTo(event.target.value)}
+            />
+          </label>
+        </div>
       </div>
 
-      <p className="financial-period-label">
-        Recebido no período: <strong>{formatPeriod(period.from, period.to)}</strong>
-      </p>
+      <section className="financial-hero" aria-label="Recebido no período">
+        <div className="financial-hero-copy">
+          <span>Recebido no período</span>
+          <p>{formatPeriod(period.from, period.to)}</p>
+        </div>
+        <strong className="financial-highlight">{money(totals.receivedInPeriod)}</strong>
+      </section>
 
       <div className="financial-summary-cards">
-        <article>
-          <span>Recebido no período</span>
-          <strong className="financial-highlight">{money(totals.receivedInPeriod)}</strong>
-        </article>
-        <article>
-          <span>Total recebido</span>
-          <strong>{money(totals.paid)}</strong>
-        </article>
-        <article>
-          <span>Planos aprovados</span>
-          <strong>{money(totals.approved)}</strong>
-        </article>
-        <article>
-          <span>Pendente</span>
-          <strong>{money(totals.pending)}</strong>
-        </article>
-        <article>
-          <span>Saldo em aberto</span>
-          <strong>{money(totals.openBalance)}</strong>
-        </article>
-        <article>
-          <span>Em atraso</span>
-          <strong className="financial-danger">{money(totals.overdue)}</strong>
-        </article>
+        {secondaryMetrics.map((metric) => (
+          <article key={metric.label}>
+            <span>{metric.label}</span>
+            <strong className={metric.danger ? 'financial-danger' : undefined}>{metric.value}</strong>
+          </article>
+        ))}
       </div>
 
       {!isDentist && (
-      <section className="glass-card financial-by-dentist">
-        <h2 className="card-section-title">Por dentista</h2>
-        <p className="financial-attribution-note">
-          Valores atribuídos pelo dentista preferencial do paciente ou pela consulta mais recente.
-        </p>
-
-        {byProfessional.length ? (
-          <div className="table-wrap">
-            <table className="data-table financial-table">
-              <thead>
-                <tr>
-                  <th>Dentista</th>
-                  <th>Pacientes</th>
-                  <th>Recebido no período</th>
-                  <th>Total recebido</th>
-                  <th>Aprovado</th>
-                  <th>Pendente</th>
-                  <th>Saldo em aberto</th>
-                  <th>Em atraso</th>
-                </tr>
-              </thead>
-              <tbody>
-                {byProfessional.map((row) => (
-                  <tr key={row.professionalId ?? 'unassigned'}>
-                    <td>
-                      <strong>{row.professionalName}</strong>
-                    </td>
-                    <td>{row.patientCount}</td>
-                    <td>{money(row.receivedInPeriod)}</td>
-                    <td>{money(row.paid)}</td>
-                    <td>{money(row.approved)}</td>
-                    <td>{money(row.pending)}</td>
-                    <td>{money(row.openBalance)}</td>
-                    <td className={row.overdue > 0 ? 'financial-danger' : undefined}>{money(row.overdue)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <section className="financial-by-dentist">
+          <div className="financial-by-dentist-head">
+            <h2 className="card-section-title">Por dentista</h2>
+            <p className="financial-attribution-note">
+              Valores atribuídos pelo dentista preferencial do paciente ou pela consulta mais recente.
+            </p>
           </div>
-        ) : (
-          <EmptyState
-            title="Nenhum dentista cadastrado"
-            description="Cadastre profissionais para acompanhar o financeiro por dentista."
-          />
-        )}
-      </section>
+
+          {byProfessional.length ? (
+            <>
+              <div className="financial-dentist-list">
+                {byProfessional.map((row) => (
+                  <DentistBreakdownCard key={row.professionalId ?? 'unassigned'} row={row} />
+                ))}
+              </div>
+
+              <div className="table-wrap financial-table-desktop">
+                <table className="data-table financial-table">
+                  <thead>
+                    <tr>
+                      <th>Dentista</th>
+                      <th>Pacientes</th>
+                      <th>Recebido no período</th>
+                      <th>Total recebido</th>
+                      <th>Aprovado</th>
+                      <th>Pendente</th>
+                      <th>Saldo em aberto</th>
+                      <th>Em atraso</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {byProfessional.map((row) => (
+                      <tr key={row.professionalId ?? 'unassigned'}>
+                        <td>
+                          <strong>{row.professionalName}</strong>
+                        </td>
+                        <td>{row.patientCount}</td>
+                        <td>{money(row.receivedInPeriod)}</td>
+                        <td>{money(row.paid)}</td>
+                        <td>{money(row.approved)}</td>
+                        <td>{money(row.pending)}</td>
+                        <td>{money(row.openBalance)}</td>
+                        <td className={row.overdue > 0 ? 'financial-danger' : undefined}>
+                          {money(row.overdue)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          ) : (
+            <EmptyState
+              title="Nenhum dentista cadastrado"
+              description="Cadastre profissionais para acompanhar o financeiro por dentista."
+            />
+          )}
+        </section>
+      )}
+
+      {isDentist && (
+        <section className="financial-dentist-note">
+          <p>
+            Os valores consideram os pacientes atribuídos a você no período selecionado.
+          </p>
+        </section>
       )}
     </div>
   );
