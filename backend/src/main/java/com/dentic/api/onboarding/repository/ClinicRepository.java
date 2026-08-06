@@ -7,4 +7,8 @@ import java.util.Optional;
 
 public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
     Optional<Clinic> findByEmail(String email);
+
+    Optional<Clinic> findByBookingSlug(String bookingSlug);
+
+    boolean existsByBookingSlug(String bookingSlug);
 }

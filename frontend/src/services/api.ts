@@ -27,6 +27,11 @@ const publicPaths = new Set([
   '/auth/refresh',
 ]);
 
+function isPublicApiPath(path: string) {
+  const normalized = path.split('?')[0] ?? '';
+  return publicPaths.has(normalized) || normalized.startsWith('/public/');
+}
+
 let authHandlers: AuthHandlers | null = null;
 let refreshPromise: Promise<string> | null = null;
 
@@ -67,7 +72,7 @@ export async function refreshAccessToken(): Promise<string> {
 }
 
 api.interceptors.request.use((config) => {
-  if (!publicPaths.has(config.url ?? '')) {
+  if (!isPublicApiPath(config.url ?? '')) {
     const token = authHandlers?.getAccessToken();
     if (token) config.headers.Authorization = `Bearer ${token}`;
   }
@@ -84,7 +89,7 @@ api.interceptors.response.use(
       error.response?.status === 401 &&
       originalRequest &&
       !originalRequest._retry &&
-      !publicPaths.has(requestPath)
+      !isPublicApiPath(requestPath)
     ) {
       originalRequest._retry = true;
 

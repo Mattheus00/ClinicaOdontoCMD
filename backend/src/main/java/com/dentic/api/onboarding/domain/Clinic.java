@@ -36,6 +36,9 @@ public class Clinic {
     @Column(name = "trial_ends_at")
     private OffsetDateTime trialEndsAt;
 
+    @Column(name = "booking_slug", unique = true, length = 80)
+    private String bookingSlug;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 

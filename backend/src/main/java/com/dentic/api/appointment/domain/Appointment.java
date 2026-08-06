@@ -52,7 +52,7 @@ public class Appointment {
     private String status = "pending"; // pending, confirmed, cancelled, completed, no_show
 
     @Column(name = "created_via", nullable = false)
-    private String createdVia = "manual"; // whatsapp, manual
+    private String createdVia = "manual"; // whatsapp, manual, instagram
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
