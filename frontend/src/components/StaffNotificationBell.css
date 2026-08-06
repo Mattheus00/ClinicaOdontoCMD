@@ -39,17 +39,24 @@
 }
 
 .staff-bell-panel {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 60;
+  /* Fixed so the panel is not clipped by sidebar/app overflow on desktop web. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
   width: min(340px, calc(100vw - 24px));
   max-height: min(420px, 70vh);
   overflow: auto;
+  overflow-wrap: anywhere;
   background: #fff;
   border: 1px solid rgba(196, 199, 199, 0.5);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
+  visibility: hidden;
+}
+
+.staff-bell-panel.is-positioned {
+  visibility: visible;
 }
 
 .staff-bell-panel-head {
@@ -114,6 +121,7 @@
 
 .staff-bell-list li button {
   width: 100%;
+  max-width: 100%;
   display: grid;
   gap: 4px;
   padding: 12px 14px;
@@ -122,6 +130,7 @@
   background: transparent;
   text-align: left;
   cursor: pointer;
+  min-width: 0;
 }
 
 .staff-bell-list li.is-unread button {
@@ -135,12 +144,15 @@
 .staff-bell-list strong {
   font-size: 13px;
   color: var(--color-text);
+  overflow-wrap: anywhere;
 }
 
 .staff-bell-list span {
   font-size: 12px;
   line-height: 1.4;
   color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .staff-bell-list small {
@@ -148,24 +160,8 @@
   color: var(--color-text-muted);
 }
 
-.sidebar-notifications .staff-bell-panel {
-  left: 0;
-  right: auto;
-  top: calc(100% + 8px);
-}
-
 @media (max-width: 800px) {
   .sidebar .staff-bell {
     display: none;
-  }
-
-  /* Anchor to the viewport so the panel is not clipped by the left edge. */
-  .mobile-topbar .staff-bell-panel {
-    position: fixed;
-    top: calc(64px + env(safe-area-inset-top, 0px));
-    left: 12px;
-    right: 12px;
-    width: auto;
-    max-width: none;
   }
 }
