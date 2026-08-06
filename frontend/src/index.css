@@ -349,6 +349,11 @@ button:disabled {
   box-shadow: var(--shadow-lg);
 }
 
+.toast-info {
+  border-color: rgba(117, 90, 37, 0.35);
+  color: var(--color-text);
+}
+
 @media (max-width: 800px) {
   .page-header {
     align-items: stretch;

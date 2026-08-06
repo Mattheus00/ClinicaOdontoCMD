@@ -10,6 +10,8 @@ import com.dentic.api.patient.repository.PatientRepository;
 import com.dentic.api.procedure.repository.ProcedureRepository;
 import com.dentic.api.professional.repository.ProfessionalRepository;
 import com.dentic.api.security.SecurityUtils;
+import com.dentic.api.staffnotification.domain.StaffNotification;
+import com.dentic.api.staffnotification.repository.StaffNotificationRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,7 @@ public class AppointmentController {
     private final ProcedureRepository procedures;
     private final PatientPaymentRepository payments;
     private final ClinicRepository clinics;
+    private final StaffNotificationRepository staffNotifications;
     private final ZoneId clinicTimeZone;
 
     public AppointmentController(
@@ -40,6 +43,7 @@ public class AppointmentController {
             ProcedureRepository procedures,
             PatientPaymentRepository payments,
             ClinicRepository clinics,
+            StaffNotificationRepository staffNotifications,
             @Value("${dentic.clinic-time-zone:America/Sao_Paulo}") String clinicTimeZone
     ) {
         this.appointments = appointments;
@@ -48,6 +52,7 @@ public class AppointmentController {
         this.procedures = procedures;
         this.payments = payments;
         this.clinics = clinics;
+        this.staffNotifications = staffNotifications;
         this.clinicTimeZone = ZoneId.of(clinicTimeZone);
     }
 
@@ -127,13 +132,30 @@ public class AppointmentController {
     @PostMapping("/{id}/cancel")
     @Transactional
     public ResponseEntity<Void> cancel(@PathVariable UUID id) {
-        SecurityUtils.requireAdmin();
+        SecurityUtils.requireAdminOrSecretary();
         Appointment value = appointments.findById(id)
                 .filter(v -> v.getClinic().getId().equals(tenant()))
                 .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
         value.setStatus("CANCELLED");
         appointments.save(value);
+        markBookingNotificationsRead(value.getId());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/accept")
+    @Transactional
+    public ResponseEntity<AppointmentResponse> accept(@PathVariable UUID id) {
+        SecurityUtils.requireAdminOrSecretary();
+        Appointment value = appointments.findById(id)
+                .filter(v -> v.getClinic().getId().equals(tenant()))
+                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
+        if (!"PENDING".equals(value.getStatus())) {
+            throw new IllegalArgumentException("Somente solicitações pendentes podem ser aceitas.");
+        }
+        value.setStatus("SCHEDULED");
+        appointments.save(value);
+        markBookingNotificationsRead(value.getId());
+        return ResponseEntity.ok(AppointmentResponse.from(value));
     }
 
     @PostMapping("/{id}/confirm")
@@ -145,6 +167,9 @@ public class AppointmentController {
 
         if ("CANCELLED".equals(value.getStatus())) {
             throw new IllegalArgumentException("Não é possível confirmar um agendamento cancelado.");
+        }
+        if ("PENDING".equals(value.getStatus())) {
+            throw new IllegalArgumentException("Aceite a solicitação antes de confirmar o atendimento.");
         }
         if (value.getProcedure() == null) {
             throw new IllegalArgumentException("Este agendamento não possui procedimento vinculado.");
@@ -174,6 +199,15 @@ public class AppointmentController {
             appointments.save(value);
         }
         return ResponseEntity.ok(AppointmentResponse.from(value));
+    }
+
+    private void markBookingNotificationsRead(UUID appointmentId) {
+        OffsetDateTime now = OffsetDateTime.now();
+        for (StaffNotification notification : staffNotifications.findByAppointment_IdAndClinic_Id(appointmentId, tenant())) {
+            if (notification.getReadAt() == null) {
+                notification.setReadAt(now);
+            }
+        }
     }
 
     private UUID tenant() {
@@ -212,7 +246,8 @@ public class AppointmentController {
             OffsetDateTime startsAt,
             OffsetDateTime endsAt,
             short durationMinutes,
-            String status
+            String status,
+            String createdVia
     ) {
         static AppointmentResponse from(Appointment value) {
             var procedure = value.getProcedure();
@@ -224,7 +259,8 @@ public class AppointmentController {
                     value.getScheduledAt(),
                     value.getScheduledAt().plusMinutes(value.getDurationMinutes()),
                     value.getDurationMinutes(),
-                    value.getStatus()
+                    value.getStatus(),
+                    value.getCreatedVia()
             );
         }
     }

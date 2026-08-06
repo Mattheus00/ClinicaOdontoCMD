@@ -10,6 +10,7 @@ import { Modal } from '../../components/Modal';
 import AgendaScheduleGrid, { getWeekDays } from '../../components/schedule/AgendaScheduleGrid';
 import AgendaMobileList from '../../components/schedule/AgendaMobileList';
 import {
+  useAcceptAppointment,
   useAppointments,
   useCancelAppointment,
   useConfirmAppointment,
@@ -65,6 +66,7 @@ const formatWeekRange = (from: string, to: string, compact = false) => {
 };
 
 const APPOINTMENT_STATUS: Record<string, { label: string; className: string }> = {
+  PENDING: { label: 'Aguardando aceite', className: 'badge-warning' },
   SCHEDULED: { label: 'Agendada', className: 'badge-info' },
   CONFIRMED: { label: 'Confirmada', className: 'badge-success' },
   COMPLETED: { label: 'Realizada', className: 'badge-success' },
@@ -118,6 +120,7 @@ export default function AgendaPage() {
   const patients = usePatients('', 0, isAdmin && open);
   const create = useCreateAppointment(filters);
   const cancel = useCancelAppointment(filters);
+  const accept = useAcceptAppointment(filters);
   const confirm = useConfirmAppointment(filters);
   const reschedule = useRescheduleAppointment(filters);
 
@@ -328,9 +331,31 @@ export default function AgendaPage() {
                 <strong>Procedimento:</strong> {selectedAppointment.procedure.name} ({money(selectedAppointment.procedure.price)})
               </p>
             ) : null}
+            {selectedAppointment.createdVia === 'instagram' ? (
+              <p>
+                <strong>Origem:</strong> Instagram / link público
+              </p>
+            ) : null}
           </div>
           <div className="modal-actions">
-            {selectedAppointment.status !== 'CANCELLED' && selectedAppointment.status !== 'COMPLETED' && (
+            {isAdmin && selectedAppointment.status === 'PENDING' && (
+              <button
+                className="btn btn-primary"
+                disabled={accept.isPending}
+                onClick={() => {
+                  if (window.confirm('Aceitar esta solicitação e confirmar o horário na agenda?')) {
+                    accept.mutate(selectedAppointment.id, {
+                      onSuccess: () => setSelectedAppointmentId(null),
+                    });
+                  }
+                }}
+              >
+                {accept.isPending ? 'Aceitando...' : 'Aceitar agendamento'}
+              </button>
+            )}
+            {selectedAppointment.status !== 'CANCELLED'
+              && selectedAppointment.status !== 'COMPLETED'
+              && selectedAppointment.status !== 'PENDING' && (
               <button
                 className="btn btn-primary"
                 disabled={confirm.isPending || !selectedAppointment.procedure}
@@ -353,14 +378,18 @@ export default function AgendaPage() {
                 className="btn btn-danger"
                 disabled={cancel.isPending}
                 onClick={() => {
-                  if (window.confirm('Cancelar este agendamento?')) {
+                  if (window.confirm(
+                    selectedAppointment.status === 'PENDING'
+                      ? 'Recusar esta solicitação de agendamento?'
+                      : 'Cancelar este agendamento?',
+                  )) {
                     cancel.mutate(selectedAppointment.id, {
                       onSuccess: () => setSelectedAppointmentId(null),
                     });
                   }
                 }}
               >
-                Cancelar agendamento
+                {selectedAppointment.status === 'PENDING' ? 'Recusar solicitação' : 'Cancelar agendamento'}
               </button>
             )}
             <button className="btn btn-secondary" onClick={() => setSelectedAppointmentId(null)}>
