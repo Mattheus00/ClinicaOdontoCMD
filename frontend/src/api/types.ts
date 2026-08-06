@@ -193,7 +193,7 @@ export type Professional = {
   appointmentCount?: number;
 };
 export type Procedure = { id: string; name: string; price: number };
-export type AppointmentStatus = 'SCHEDULED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+export type AppointmentStatus = 'PENDING' | 'SCHEDULED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
 export type Appointment = {
   id: string;
   patient: Patient;
@@ -203,6 +203,7 @@ export type Appointment = {
   endsAt: string;
   durationMinutes?: number;
   status: AppointmentStatus;
+  createdVia?: string | null;
 };
 export type ConversationStatus = 'BOT_ACTIVE' | 'TRANSFERRED' | 'COMPLETED';
 export type Conversation = { id: string; patientName?: string; phone: string; lastMessage: string; updatedAt: string; status: ConversationStatus; unreadCount: number; takenOverByCurrentUser?: boolean };

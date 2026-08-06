@@ -186,6 +186,11 @@
   color: #89a0b2;
 }
 
+.schedule-event-pending {
+  background: linear-gradient(180deg, #fff6e8, #ffefd6);
+  border-color: #f0d2a0;
+}
+
 .schedule-event-scheduled {
   background: linear-gradient(180deg, #e8f4fd, #dff0fc);
   border-color: #b8d9f0;

@@ -41,7 +41,21 @@ export function useCancelAppointment(filters: AppointmentFilters) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.post(`/appointments/${id}/cancel`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['appointments', filters] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointments', filters] });
+      queryClient.invalidateQueries({ queryKey: ['staff-notifications'] });
+    },
+  });
+}
+
+export function useAcceptAppointment(filters: AppointmentFilters) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => (await api.post<Appointment>(`/appointments/${id}/accept`)).data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointments', filters] });
+      queryClient.invalidateQueries({ queryKey: ['staff-notifications'] });
+    },
   });
 }
 

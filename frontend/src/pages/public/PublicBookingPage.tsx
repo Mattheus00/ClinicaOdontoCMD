@@ -80,10 +80,10 @@ export default function PublicBookingPage() {
       <main className="public-booking">
         <div className="public-booking-shell public-booking-success">
           <CheckCircle2 size={42} />
-          <h1>Agendamento confirmado</h1>
+          <h1>Solicitação enviada</h1>
           <p>
-            Olá, <strong>{book.data.patientName}</strong>. Sua consulta na{' '}
-            <strong>{book.data.clinicName}</strong> foi reservada.
+            Olá, <strong>{book.data.patientName}</strong>. Pedido recebido pela{' '}
+            <strong>{book.data.clinicName}</strong>. A equipe vai analisar e confirmar o horário.
           </p>
           <ul>
             <li>
@@ -95,12 +95,12 @@ export default function PublicBookingPage() {
               <strong>{book.data.procedureName}</strong>
             </li>
             <li>
-              <span>Quando</span>
+              <span>Horário solicitado</span>
               <strong>{formatConfirmationDate(book.data.startsAt)}</strong>
             </li>
           </ul>
           <p className="public-booking-success-note">
-            Guarde este horário. A clínica pode entrar em contato pelo WhatsApp para confirmar detalhes.
+            Você pode receber a confirmação pelo WhatsApp. O horário fica reservado enquanto a clínica aceita.
           </p>
         </div>
       </main>

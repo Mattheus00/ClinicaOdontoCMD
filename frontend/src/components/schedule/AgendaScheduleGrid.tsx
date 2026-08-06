@@ -54,6 +54,7 @@ function formatTimeRange(startsAt: string, endsAt: string) {
 }
 
 const statusClass: Record<string, string> = {
+  PENDING: 'schedule-event-pending',
   CONFIRMED: 'schedule-event-confirmed',
   SCHEDULED: 'schedule-event-scheduled',
   CANCELLED: 'schedule-event-cancelled',

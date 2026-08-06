@@ -65,6 +65,13 @@
     white-space: nowrap;
   }
 
+  .mobile-topbar-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
   .mobile-topbar-logout {
     display: inline-flex;
     align-items: center;

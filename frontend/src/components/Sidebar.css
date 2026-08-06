@@ -1,3 +1,20 @@
+.sidebar-notifications {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border: 1px solid rgba(196, 199, 199, 0.4);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.sidebar-notifications span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -47,6 +64,10 @@
 
 /* Sidebar.css loads after the theme — keep mobile bottom bar horizontal. */
 @media (max-width: 800px) {
+  .sidebar-notifications {
+    display: none;
+  }
+
   .sidebar-nav {
     flex-direction: row;
     flex: 1;

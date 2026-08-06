@@ -1,0 +1,130 @@
+.staff-bell {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.staff-bell-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.staff-bell-trigger:hover {
+  border-color: rgba(117, 90, 37, 0.35);
+  color: var(--color-secondary);
+}
+
+.staff-bell-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
+.staff-bell-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  width: min(340px, calc(100vw - 24px));
+  max-height: min(420px, 70vh);
+  overflow: auto;
+  background: #fff;
+  border: 1px solid rgba(196, 199, 199, 0.5);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.staff-bell-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(196, 199, 199, 0.4);
+  position: sticky;
+  top: 0;
+  background: #fff;
+}
+
+.staff-bell-panel-head strong {
+  font-size: 14px;
+}
+
+.staff-bell-empty {
+  margin: 0;
+  padding: 20px 14px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.staff-bell-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.staff-bell-list li button {
+  width: 100%;
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 0;
+  border-bottom: 1px solid rgba(196, 199, 199, 0.28);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.staff-bell-list li.is-unread button {
+  background: rgba(253, 216, 151, 0.22);
+}
+
+.staff-bell-list li button:hover {
+  background: var(--color-bg);
+}
+
+.staff-bell-list strong {
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.staff-bell-list span {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.staff-bell-list small {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.sidebar-notifications .staff-bell-panel {
+  left: 0;
+  right: auto;
+  top: calc(100% + 8px);
+}
+
+@media (max-width: 800px) {
+  .sidebar .staff-bell {
+    display: none;
+  }
+}

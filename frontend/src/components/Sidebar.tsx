@@ -1,7 +1,9 @@
 import { CalendarDays, CircleDollarSign, ClipboardList, Link2, LogOut, Stethoscope, UsersRound } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import StaffNotificationBell from './StaffNotificationBell';
 import './Sidebar.css';
+import './StaffNotificationBell.css';
 
 const LOGO = '/brand/maria-alice-logo.png';
 
@@ -24,6 +26,7 @@ const allNavItems: Array<{
 export default function Sidebar() {
   const { logout, role } = useAuth();
   const navItems = allNavItems.filter((item) => (role ? item.roles.includes(role) : true));
+  const canManageBookings = role === 'ADMIN' || role === 'SECRETARY';
 
   return (
     <aside className="sidebar">
@@ -31,6 +34,13 @@ export default function Sidebar() {
         <img src={LOGO} alt="Maria Alice Odontologia Especializada" />
         <small>{role === 'DENTIST' ? 'Portal do dentista' : 'Portal de gestão'}</small>
       </div>
+
+      {canManageBookings ? (
+        <div className="sidebar-notifications">
+          <StaffNotificationBell />
+          <span>Solicitações online</span>
+        </div>
+      ) : null}
 
       <nav className="sidebar-nav" aria-label="Navegação principal">
         {navItems.map(({ to, label, icon: Icon }) => (

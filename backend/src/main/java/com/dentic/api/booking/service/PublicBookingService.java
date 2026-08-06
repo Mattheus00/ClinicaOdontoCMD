@@ -12,6 +12,8 @@ import com.dentic.api.professional.domain.Professional;
 import com.dentic.api.professional.domain.WorkingHours;
 import com.dentic.api.professional.repository.ProfessionalRepository;
 import com.dentic.api.professional.repository.WorkingHoursRepository;
+import com.dentic.api.staffnotification.domain.StaffNotification;
+import com.dentic.api.staffnotification.repository.StaffNotificationRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,9 @@ import java.util.*;
 @Service
 public class PublicBookingService {
 
-    private static final Set<String> BLOCKING_STATUSES = Set.of("SCHEDULED", "CONFIRMED", "pending", "confirmed");
+    private static final Set<String> BLOCKING_STATUSES = Set.of(
+            "PENDING", "SCHEDULED", "CONFIRMED", "pending", "confirmed"
+    );
     private static final short DEFAULT_DURATION = 30;
 
     private final ClinicRepository clinics;
@@ -35,6 +39,7 @@ public class PublicBookingService {
     private final PatientRepository patients;
     private final AppointmentRepository appointments;
     private final WorkingHoursRepository workingHours;
+    private final StaffNotificationRepository staffNotifications;
     private final ZoneId clinicTimeZone;
 
     public PublicBookingService(
@@ -44,6 +49,7 @@ public class PublicBookingService {
             PatientRepository patients,
             AppointmentRepository appointments,
             WorkingHoursRepository workingHours,
+            StaffNotificationRepository staffNotifications,
             @Value("${dentic.clinic-time-zone:America/Sao_Paulo}") String clinicTimeZone
     ) {
         this.clinics = clinics;
@@ -52,6 +58,7 @@ public class PublicBookingService {
         this.patients = patients;
         this.appointments = appointments;
         this.workingHours = workingHours;
+        this.staffNotifications = staffNotifications;
         this.clinicTimeZone = ZoneId.of(clinicTimeZone);
     }
 
@@ -171,9 +178,22 @@ public class PublicBookingService {
         appointment.setProcedure(procedure);
         appointment.setScheduledAt(startsAt.atZone(clinicTimeZone).toOffsetDateTime());
         appointment.setDurationMinutes(DEFAULT_DURATION);
-        appointment.setStatus("SCHEDULED");
+        appointment.setStatus("PENDING");
         appointment.setCreatedVia("instagram");
         appointment = appointments.save(appointment);
+
+        String whenLabel = startsAt.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm"));
+        StaffNotification notification = new StaffNotification();
+        notification.setClinic(clinic);
+        notification.setAppointment(appointment);
+        notification.setType("BOOKING_REQUEST");
+        notification.setTitle("Nova solicitação de agendamento");
+        notification.setMessage(
+                patient.getName() + " pediu " + procedure.getName()
+                        + " com " + professional.getName()
+                        + " em " + whenLabel + "."
+        );
+        staffNotifications.save(notification);
 
         return new PublicBookingConfirmation(
                 appointment.getId(),

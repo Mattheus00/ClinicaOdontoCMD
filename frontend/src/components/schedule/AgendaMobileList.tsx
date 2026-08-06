@@ -4,6 +4,7 @@ import './AgendaMobileList.css';
 type WeekDay = { date: string; label: string; dayNumber: number; isToday: boolean };
 
 const STATUS: Record<string, { label: string; className: string }> = {
+  PENDING: { label: 'Aguardando aceite', className: 'badge-warning' },
   SCHEDULED: { label: 'Agendada', className: 'badge-info' },
   CONFIRMED: { label: 'Confirmada', className: 'badge-success' },
   COMPLETED: { label: 'Realizada', className: 'badge-success' },
