@@ -127,4 +127,14 @@
   .sidebar .staff-bell {
     display: none;
   }
+
+  /* Anchor to the viewport so the panel is not clipped by the left edge. */
+  .mobile-topbar .staff-bell-panel {
+    position: fixed;
+    top: calc(64px + env(safe-area-inset-top, 0px));
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+  }
 }

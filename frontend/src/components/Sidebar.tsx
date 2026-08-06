@@ -27,7 +27,7 @@ const allNavItems: Array<{
 
 export default function Sidebar() {
   const { logout, role } = useAuth();
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery('(max-width: 800px)');
   const navItems = allNavItems.filter((item) => (role ? item.roles.includes(role) : true));
   const canManageBookings = role === 'ADMIN' || role === 'SECRETARY';
 

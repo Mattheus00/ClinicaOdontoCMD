@@ -9,7 +9,7 @@ const LOGO = '/brand/maria-alice-logo.png';
 
 export default function MobileTopbar() {
   const { logout, role } = useAuth();
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery('(max-width: 800px)');
   const portalLabel = role === 'DENTIST' ? 'Portal do dentista' : 'Portal de gestão';
   const canManageBookings = role === 'ADMIN' || role === 'SECRETARY';
 
