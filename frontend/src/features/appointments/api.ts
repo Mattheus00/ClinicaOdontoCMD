@@ -52,7 +52,14 @@ export function useAcceptAppointment(filters: AppointmentFilters) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => (await api.post<Appointment>(`/appointments/${id}/accept`)).data,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      queryClient.setQueryData<{ content: Appointment[] }>(['appointments', filters], (previous) => {
+        if (!previous) return previous;
+        return {
+          ...previous,
+          content: previous.content.map((item) => (item.id === data.id ? { ...item, ...data } : item)),
+        };
+      });
       queryClient.invalidateQueries({ queryKey: ['appointments', filters] });
       queryClient.invalidateQueries({ queryKey: ['staff-notifications'] });
     },
