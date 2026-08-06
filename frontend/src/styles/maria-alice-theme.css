@@ -118,6 +118,14 @@ a.btn-ghost:hover {
   color: var(--color-secondary);
 }
 
+a.btn-whatsapp {
+  color: #fff;
+}
+
+a.btn-whatsapp:hover {
+  color: #fff;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
