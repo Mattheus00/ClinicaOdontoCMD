@@ -128,3 +128,15 @@
     display: none;
   }
 }
+
+/* Keep the panel inside the viewport when the bell sits mid-header on mobile. */
+@media (max-width: 800px) {
+  .mobile-topbar .staff-bell-panel {
+    position: fixed;
+    top: calc(64px + env(safe-area-inset-top, 0px));
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+  }
+}
