@@ -103,15 +103,36 @@
   box-sizing: border-box;
 }
 
-.public-booking-form input[type='date'] {
+/* iOS Safari date controls ignore width unless appearance is reset. */
+.public-booking-date-field {
+  display: block;
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  overflow: hidden;
+}
+
+.public-booking-form input[type='date'] {
   display: block;
+  width: 100%;
+  width: -webkit-fill-available;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+  overflow: hidden;
 }
 
 .public-booking-form input[type='date']::-webkit-date-and-time-value {
+  min-width: 0;
   text-align: left;
+}
+
+.public-booking-form input[type='date']::-webkit-datetime-edit {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .public-booking-notes {

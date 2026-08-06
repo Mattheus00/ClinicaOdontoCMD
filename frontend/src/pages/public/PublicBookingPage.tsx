@@ -244,7 +244,7 @@ export default function PublicBookingPage() {
               <h2>
                 <CalendarDays size={18} /> Horário
               </h2>
-              <label>
+              <label className="public-booking-date-field">
                 Data
                 <input
                   className="input-field"
