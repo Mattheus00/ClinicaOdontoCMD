@@ -1,4 +1,4 @@
-import { CalendarDays, CircleDollarSign, ClipboardList, LogOut, Stethoscope, UsersRound } from 'lucide-react';
+import { CalendarDays, CircleDollarSign, ClipboardList, Link2, LogOut, Stethoscope, UsersRound } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Sidebar.css';
@@ -18,6 +18,7 @@ const allNavItems: Array<{
   { to: '/dentists', label: 'Dentistas', icon: Stethoscope, roles: ['ADMIN', 'SECRETARY'] },
   { to: '/financial', label: 'Financeiro', icon: CircleDollarSign, roles: ['ADMIN', 'SECRETARY', 'DENTIST'] },
   { to: '/procedures', label: 'Procedimentos', icon: ClipboardList, roles: ['ADMIN', 'SECRETARY'] },
+  { to: '/booking-link', label: 'Link bio', icon: Link2, roles: ['ADMIN', 'SECRETARY'] },
 ];
 
 export default function Sidebar() {

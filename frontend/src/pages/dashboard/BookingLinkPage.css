@@ -1,0 +1,129 @@
+.booking-link-page {
+  display: grid;
+  gap: 18px;
+  max-width: 820px;
+}
+
+.booking-link-hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #fff 0%, #f7f2e8 100%);
+  border: 1px solid rgba(196, 199, 199, 0.45);
+}
+
+.booking-link-hero-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--color-secondary-container);
+  color: var(--color-secondary);
+  flex-shrink: 0;
+}
+
+.booking-link-hero h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+
+.booking-link-hero p {
+  margin: 6px 0 0;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+  font-size: 14px;
+}
+
+.booking-link-card {
+  display: grid;
+  gap: 14px;
+}
+
+.booking-link-card h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.booking-link-url-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.booking-link-url-row code {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  border: 1px solid rgba(196, 199, 199, 0.45);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.booking-link-caption-label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.booking-link-caption {
+  min-height: 110px;
+  padding: 12px 14px;
+  resize: vertical;
+  font-weight: 500;
+}
+
+.booking-link-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.booking-link-tips {
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  background: #fff;
+  border: 1px solid rgba(196, 199, 199, 0.45);
+}
+
+.booking-link-tips h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+}
+
+.booking-link-tips ol {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--color-text-secondary);
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+@media (max-width: 800px) {
+  .booking-link-url-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .booking-link-actions {
+    flex-direction: column;
+  }
+
+  .booking-link-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

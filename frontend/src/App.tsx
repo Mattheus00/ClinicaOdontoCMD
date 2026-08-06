@@ -19,6 +19,8 @@ const DentistsPage = lazy(() => import('./pages/dashboard/DentistsPage'));
 const FinancialDashboardPage = lazy(() => import('./pages/dashboard/FinancialDashboardPage'));
 const ProceduresPage = lazy(() => import('./pages/dashboard/ProceduresPage'));
 const OnboardingPage = lazy(() => import('./pages/dashboard/OnboardingPage'));
+const BookingLinkPage = lazy(() => import('./pages/dashboard/BookingLinkPage'));
+const PublicBookingPage = lazy(() => import('./pages/public/PublicBookingPage'));
 
 type AppRole = 'ADMIN' | 'SECRETARY' | 'DENTIST';
 
@@ -66,6 +68,7 @@ function AppRoutes() {
         <Route path="/cadastro" element={<RegisterPage />} />
         <Route path="/confirmar-email" element={<ConfirmEmailPage />} />
         <Route path="/convite/:token" element={<DentistInvitePage />} />
+        <Route path="/agendar/:slug" element={<PublicBookingPage />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/agenda" element={<AgendaPage />} />
@@ -99,6 +102,14 @@ function AppRoutes() {
               element={
                 <RequireRole roles={['ADMIN', 'SECRETARY']}>
                   <ProceduresPage />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/booking-link"
+              element={
+                <RequireRole roles={['ADMIN', 'SECRETARY']}>
+                  <BookingLinkPage />
                 </RequireRole>
               }
             />

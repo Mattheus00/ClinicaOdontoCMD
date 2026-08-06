@@ -45,6 +45,8 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
 
     Optional<Patient> findByIdAndClinic_Id(UUID id, UUID clinicId);
 
+    Optional<Patient> findByClinicIdAndPhone(UUID clinicId, String phone);
+
     @Query("""
         SELECT p FROM Patient p
         LEFT JOIN FETCH p.preferredProfessional
