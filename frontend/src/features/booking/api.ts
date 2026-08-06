@@ -65,7 +65,8 @@ export function usePublicBookingPage(slug: string | undefined) {
   return useQuery({
     queryKey: ['public-booking', slug],
     enabled: Boolean(slug),
-    queryFn: async () => (await api.get<BookingPage>(`/public/booking/${slug}`)).data,
+    queryFn: async () =>
+      (await api.get<BookingPage>(`/public/booking/${slug}`, { skipGlobalError: true })).data,
     retry: false,
   });
 }
@@ -78,6 +79,7 @@ export function usePublicAvailability(slug: string | undefined, professionalId: 
       (
         await api.get<{ date: string; slots: string[] }>(`/public/booking/${slug}/availability`, {
           params: { professionalId, date },
+          skipGlobalError: true,
         })
       ).data,
   });
@@ -86,6 +88,10 @@ export function usePublicAvailability(slug: string | undefined, professionalId: 
 export function usePublicBook(slug: string | undefined) {
   return useMutation({
     mutationFn: async (input: PublicBookInput) =>
-      (await api.post<PublicBookingConfirmation>(`/public/booking/${slug}/appointments`, input)).data,
+      (
+        await api.post<PublicBookingConfirmation>(`/public/booking/${slug}/appointments`, input, {
+          skipGlobalError: true,
+        })
+      ).data,
   });
 }

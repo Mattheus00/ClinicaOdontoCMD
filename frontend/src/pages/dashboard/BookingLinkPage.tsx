@@ -42,9 +42,9 @@ export default function BookingLinkPage() {
     <div className="booking-link-page">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Link do Instagram</h1>
+          <h1 className="page-title">Link da bio</h1>
           <p className="page-subtitle">
-            Gere um link para a bio ou stories. Quem abrir consegue marcar uma consulta online.
+            Gere um link para a bio ou stories. Quem abrir consegue solicitar uma consulta online.
           </p>
         </div>
       </div>
@@ -56,8 +56,8 @@ export default function BookingLinkPage() {
         <div>
           <h2>Agendamento público</h2>
           <p>
-            Pacientes chegam por este link, escolhem dentista, procedimento e horário. O horário entra
-            direto na agenda da clínica.
+            Pacientes chegam por este link, escolhem dentista, procedimento e horário. A solicitação
+            fica pendente até a equipe aceitar na agenda.
           </p>
         </div>
       </section>
@@ -115,7 +115,7 @@ export default function BookingLinkPage() {
         <ol>
           <li>Copie o link e cole na bio do perfil da clínica.</li>
           <li>Ou use a legenda sugerida em um post/story com o link na bio.</li>
-          <li>Confira os horários na agenda — reservas do Instagram entram como agendamentos normais.</li>
+          <li>Acompanhe as solicitações no sino da agenda e aceite ou recuse cada pedido.</li>
         </ol>
       </section>
     </div>

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
+import { useAuth } from '../../contexts/AuthContext';
 import {
   useCreateProcedure,
   useDeleteProcedure,
@@ -12,6 +13,8 @@ import type { Procedure } from '../../api/types';
 import './ProceduresPage.css';
 
 export default function ProceduresPage() {
+  const { role } = useAuth();
+  const canDelete = role === 'ADMIN';
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [editing, setEditing] = useState<Procedure | null>(null);
@@ -129,14 +132,16 @@ export default function ProceduresPage() {
                       <button type="button" className="btn btn-ghost btn-sm" onClick={() => openEdit(procedure)}>
                         Editar
                       </button>
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-sm procedure-delete"
-                        disabled={remove.isPending}
-                        onClick={() => handleDelete(procedure)}
-                      >
-                        Excluir
-                      </button>
+                      {canDelete ? (
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-sm procedure-delete"
+                          disabled={remove.isPending}
+                          onClick={() => handleDelete(procedure)}
+                        >
+                          Excluir
+                        </button>
+                      ) : null}
                     </div>
                   </td>
                 </tr>

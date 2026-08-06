@@ -7,6 +7,7 @@ export type StaffNotification = {
   title: string;
   message: string;
   appointmentId?: string | null;
+  appointmentStartsAt?: string | null;
   createdAt: string;
   readAt?: string | null;
 };

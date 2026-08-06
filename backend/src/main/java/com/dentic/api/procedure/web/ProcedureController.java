@@ -5,10 +5,8 @@ import com.dentic.api.onboarding.repository.ClinicRepository;
 import com.dentic.api.procedure.domain.Procedure;
 import com.dentic.api.procedure.repository.ProcedureRepository;
 import com.dentic.api.security.SecurityUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,14 +24,10 @@ public class ProcedureController {
         this.clinics = clinics;
     }
 
-    @ModelAttribute
-    void requireAdminAccess() {
-        SecurityUtils.requireAdmin();
-    }
-
     @GetMapping
     @Transactional(readOnly = true)
     public PageResponse<ProcedureResponse> list() {
+        SecurityUtils.requireAdminOrSecretary();
         List<ProcedureResponse> data = procedures.findByClinicIdOrderByNameAsc(tenant()).stream()
                 .map(ProcedureResponse::from)
                 .toList();
@@ -43,6 +37,7 @@ public class ProcedureController {
     @PostMapping
     @Transactional
     public ProcedureResponse create(@RequestBody ProcedureRequest request) {
+        SecurityUtils.requireAdminOrSecretary();
         Procedure value = new Procedure();
         value.setClinic(clinics.getReferenceById(tenant()));
         apply(value, request);
@@ -52,6 +47,7 @@ public class ProcedureController {
     @PutMapping("/{id}")
     @Transactional
     public ProcedureResponse update(@PathVariable UUID id, @RequestBody ProcedureRequest request) {
+        SecurityUtils.requireAdminOrSecretary();
         Procedure value = requireProcedure(id);
         apply(value, request);
         return ProcedureResponse.from(procedures.save(value));
@@ -60,6 +56,7 @@ public class ProcedureController {
     @DeleteMapping("/{id}")
     @Transactional
     public void delete(@PathVariable UUID id) {
+        SecurityUtils.requireAdmin();
         Procedure value = requireProcedure(id);
         procedures.delete(value);
     }

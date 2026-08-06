@@ -10,7 +10,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProfessionalRepository extends JpaRepository<Professional, UUID> {
-    List<Professional> findByClinicId(UUID clinicId);
+    @Query("""
+        SELECT DISTINCT p FROM Professional p
+        LEFT JOIN FETCH p.user
+        WHERE p.clinic.id = :clinicId
+        """)
+    List<Professional> findByClinicId(@Param("clinicId") UUID clinicId);
 
     Optional<Professional> findByIdAndClinicId(UUID id, UUID clinicId);
 

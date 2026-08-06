@@ -82,7 +82,7 @@ public class AppointmentController {
     @PostMapping
     @Transactional
     public ResponseEntity<AppointmentResponse> create(@RequestBody AppointmentRequest request) {
-        SecurityUtils.requireAdmin();
+        SecurityUtils.requireAdminOrSecretary();
         UUID clinic = tenant();
         var patient = patients.findById(request.patientId())
                 .filter(v -> v.getClinic().getId().equals(clinic))
@@ -102,18 +102,28 @@ public class AppointmentController {
         value.setScheduledAt(start);
         value.setDurationMinutes(resolveDurationMinutes(request.durationMinutes()));
         value.setStatus("SCHEDULED");
-        return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+        try {
+            return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            throw new IllegalArgumentException("Este horário não está mais disponível. Escolha outro.");
+        }
     }
 
     @PatchMapping("/{id}/reschedule")
     @Transactional
     public ResponseEntity<AppointmentResponse> reschedule(@PathVariable UUID id, @RequestBody RescheduleRequest request) {
-        SecurityUtils.requireAdmin();
+        SecurityUtils.requireAdminOrSecretary();
         Appointment value = appointments.findById(id)
                 .filter(v -> v.getClinic().getId().equals(tenant()))
                 .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
         if ("CANCELLED".equals(value.getStatus())) {
             throw new IllegalArgumentException("Não é possível remarcar um agendamento cancelado.");
+        }
+        if ("PENDING".equals(value.getStatus())) {
+            throw new IllegalArgumentException("Aceite a solicitação antes de remarcar.");
+        }
+        if ("COMPLETED".equals(value.getStatus()) || "NO_SHOW".equals(value.getStatus())) {
+            throw new IllegalArgumentException("Não é possível remarcar um agendamento finalizado.");
         }
         OffsetDateTime start = localAppointmentTime(request.startsAt());
         value.setScheduledAt(start);
@@ -126,7 +136,11 @@ public class AppointmentController {
                     .orElseThrow(() -> new IllegalArgumentException("Profissional não encontrado"));
             value.setProfessional(professional);
         }
-        return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+        try {
+            return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            throw new IllegalArgumentException("Este horário não está mais disponível. Escolha outro.");
+        }
     }
 
     @PostMapping("/{id}/cancel")

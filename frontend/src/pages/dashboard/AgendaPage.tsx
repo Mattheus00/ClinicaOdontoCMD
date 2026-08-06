@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -87,14 +87,29 @@ function toDateTimeLocalValue(value: string) {
 
 export default function AgendaPage() {
   const { role, professionalId } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const isAdmin = role === 'ADMIN' || role === 'SECRETARY';
   const isDentist = role === 'DENTIST';
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  const [anchorDate, setAnchorDate] = useState(today());
+  const deepLinkAppointmentId = searchParams.get('appointmentId');
+  const deepLinkDate = searchParams.get('date');
+
+  const [anchorDate, setAnchorDate] = useState(deepLinkDate && /^\d{4}-\d{2}-\d{2}$/.test(deepLinkDate) ? deepLinkDate : today());
   const [open, setOpen] = useState(false);
-  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(deepLinkAppointmentId);
   const [selectedProfessionalId, setSelectedProfessionalId] = useState('');
+
+  useEffect(() => {
+    if (!deepLinkAppointmentId && !deepLinkDate) return;
+    if (deepLinkDate && /^\d{4}-\d{2}-\d{2}$/.test(deepLinkDate)) {
+      setAnchorDate(deepLinkDate);
+    }
+    if (deepLinkAppointmentId) {
+      setSelectedAppointmentId(deepLinkAppointmentId);
+    }
+    setSearchParams({}, { replace: true });
+  }, [deepLinkAppointmentId, deepLinkDate, setSearchParams]);
 
   const weekDays = useMemo(() => getWeekDays(anchorDate), [anchorDate]);
   const weekFrom = weekDays[0]?.date ?? anchorDate;

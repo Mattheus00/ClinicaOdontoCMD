@@ -119,7 +119,7 @@ export default function LandingPage() {
               Área da clínica
             </Link>
             <a href="#contato" className="landing-btn landing-btn-primary" onClick={closeMenu}>
-              Agendar consulta
+              Fale conosco
             </a>
             <button
               type="button"
@@ -151,7 +151,7 @@ export default function LandingPage() {
               Área da clínica
             </Link>
             <a href="#contato" className="landing-btn landing-btn-outline" onClick={closeMenu}>
-              Agendar consulta
+              Fale conosco
             </a>
           </div>
         </div>

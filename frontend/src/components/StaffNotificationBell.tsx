@@ -17,12 +17,22 @@ function formatWhen(value: string) {
   }).format(new Date(value));
 }
 
-export default function StaffNotificationBell() {
+function clinicDateKey(value: string) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(value));
+}
+
+export default function StaffNotificationBell({ enabled = true }: { enabled?: boolean }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const previousUnread = useRef<number | null>(null);
-  const notifications = useStaffNotifications(true);
+  const notifications = useStaffNotifications(enabled);
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
 
@@ -30,6 +40,7 @@ export default function StaffNotificationBell() {
   const items = notifications.data?.items ?? [];
 
   useEffect(() => {
+    if (!enabled) return;
     if (previousUnread.current === null) {
       previousUnread.current = unreadCount;
       return;
@@ -42,7 +53,7 @@ export default function StaffNotificationBell() {
       );
     }
     previousUnread.current = unreadCount;
-  }, [unreadCount]);
+  }, [enabled, unreadCount]);
 
   useEffect(() => {
     if (!open) return;
@@ -51,9 +62,21 @@ export default function StaffNotificationBell() {
         setOpen(false);
       }
     };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    };
     window.addEventListener('mousedown', onPointer);
-    return () => window.removeEventListener('mousedown', onPointer);
+    window.addEventListener('keydown', onKeyDown);
+    panelRef.current?.querySelector<HTMLElement>('button, [href], input')?.focus();
+    return () => {
+      window.removeEventListener('mousedown', onPointer);
+      window.removeEventListener('keydown', onKeyDown);
+    };
   }, [open]);
+
+  if (!enabled) return null;
 
   return (
     <div className="staff-bell" ref={rootRef}>
@@ -62,6 +85,7 @@ export default function StaffNotificationBell() {
         className="staff-bell-trigger"
         aria-label="Notificações de agendamento"
         aria-expanded={open}
+        aria-haspopup="dialog"
         onClick={() => setOpen((value) => !value)}
       >
         <Bell size={18} strokeWidth={1.8} />
@@ -69,7 +93,7 @@ export default function StaffNotificationBell() {
       </button>
 
       {open ? (
-        <div className="staff-bell-panel" role="dialog" aria-label="Notificações">
+        <div className="staff-bell-panel" role="dialog" aria-label="Notificações" ref={panelRef}>
           <header className="staff-bell-panel-head">
             <strong>Solicitações</strong>
             {unreadCount > 0 ? (
@@ -97,7 +121,15 @@ export default function StaffNotificationBell() {
                     onClick={() => {
                       if (!item.readAt) markRead.mutate(item.id);
                       setOpen(false);
-                      navigate('/agenda');
+                      if (item.appointmentId) {
+                        const params = new URLSearchParams({ appointmentId: item.appointmentId });
+                        if (item.appointmentStartsAt) {
+                          params.set('date', clinicDateKey(item.appointmentStartsAt));
+                        }
+                        navigate(`/agenda?${params.toString()}`);
+                      } else {
+                        navigate('/agenda');
+                      }
                     }}
                   >
                     <strong>{item.title}</strong>

@@ -41,7 +41,7 @@ public class ClinicController {
     @PostMapping("/me/booking-link/regenerate")
     @Transactional
     public BookingLinkResponse regenerateBookingLink() {
-        SecurityUtils.requireAdmin();
+        SecurityUtils.requireAdminOrSecretary();
         Clinic clinic = requireClinic();
         String slug = bookingSlugs.regenerateSlug(clinic);
         return toResponse(clinic.getName(), slug);
