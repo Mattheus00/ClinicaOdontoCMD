@@ -127,10 +127,8 @@
   .sidebar .staff-bell {
     display: none;
   }
-}
 
-/* Keep the panel inside the viewport when the bell sits mid-header on mobile. */
-@media (max-width: 800px) {
+  /* Anchor to the viewport so the panel is not clipped by the left edge. */
   .mobile-topbar .staff-bell-panel {
     position: fixed;
     top: calc(64px + env(safe-area-inset-top, 0px));
