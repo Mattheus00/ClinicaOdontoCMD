@@ -613,9 +613,21 @@ public class PatientController {
 
     public record BillingSummary(BigDecimal approved, BigDecimal pending, BigDecimal paid, BigDecimal overdue, BigDecimal openBalance) {}
     public record PatientSummaryResponse(PatientResponse patient, OffsetDateTime lastVisitAt, boolean pregnantFlag, boolean hasAllergies, BillingSummary billing) {}
-    public record AppointmentHistoryResponse(UUID id, OffsetDateTime startsAt, String status, String professionalName) {
+    public record AppointmentHistoryResponse(
+            UUID id,
+            OffsetDateTime startsAt,
+            String status,
+            String professionalName,
+            String report
+    ) {
         static AppointmentHistoryResponse from(Appointment a) {
-            return new AppointmentHistoryResponse(a.getId(), a.getScheduledAt(), a.getStatus(), a.getProfessional().getName());
+            return new AppointmentHistoryResponse(
+                    a.getId(),
+                    a.getScheduledAt(),
+                    a.getStatus(),
+                    a.getProfessional().getName(),
+                    a.getReport()
+            );
         }
     }
     public record AccessLogResponse(UUID id, UUID userId, String action, String resource, OffsetDateTime createdAt) {

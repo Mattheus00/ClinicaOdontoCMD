@@ -69,14 +69,28 @@ export function useAcceptAppointment(filters: AppointmentFilters) {
 export function useConfirmAppointment(filters: AppointmentFilters) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: string) => (await api.post<Appointment>(`/appointments/${id}/confirm`)).data,
+    mutationFn: async ({ id, report }: { id: string; report?: string }) =>
+      (await api.post<Appointment>(`/appointments/${id}/confirm`, { report: report || null })).data,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['appointments', filters] });
       queryClient.invalidateQueries({ queryKey: ['financial-dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['patient-appointments', data.patient.id] });
       const patientId = data.patient.id;
       queryClient.invalidateQueries({ queryKey: ['billing-summary', patientId] });
       queryClient.invalidateQueries({ queryKey: ['patient-payments', patientId] });
       queryClient.invalidateQueries({ queryKey: ['patient-summary', patientId] });
+    },
+  });
+}
+
+export function useUpdateAppointmentReport(filters: AppointmentFilters) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, report }: { id: string; report: string }) =>
+      (await api.patch<Appointment>(`/appointments/${id}/report`, { report: report || null })).data,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['appointments', filters] });
+      queryClient.invalidateQueries({ queryKey: ['patient-appointments', data.patient.id] });
     },
   });
 }

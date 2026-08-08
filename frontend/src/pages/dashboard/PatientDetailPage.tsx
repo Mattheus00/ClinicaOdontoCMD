@@ -449,7 +449,9 @@ export default function PatientDetailPage() {
             <div className="consultas-header">
               <div>
                 <h3 className="section-title">Histórico de consultas</h3>
-                <p className="page-subtitle">Agendamentos feitos na agenda para este paciente.</p>
+                <p className="page-subtitle">
+                  Agendamentos e relatórios clínicos deste paciente — útil quando outro dentista assume o atendimento.
+                </p>
               </div>
               <Link className="btn btn-secondary btn-sm" to="/agenda">
                 Ir para agenda
@@ -460,13 +462,14 @@ export default function PatientDetailPage() {
               <LoadingState />
             ) : history.data?.length ? (
               <div className="table-wrap">
-                <table className="data-table">
+                <table className="data-table consultas-table">
                   <thead>
                     <tr>
                       <th>Data</th>
                       <th>Horário</th>
                       <th>Dentista</th>
                       <th>Status</th>
+                      <th>Relatório</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -495,6 +498,13 @@ export default function PatientDetailPage() {
                           <td>{item.professionalName}</td>
                           <td>
                             <span className={`badge ${status.className}`}>{status.label}</span>
+                          </td>
+                          <td className="consulta-report-cell">
+                            {item.report?.trim() ? (
+                              <p className="consulta-report-text">{item.report}</p>
+                            ) : (
+                              <span className="consulta-report-empty">Sem relatório</span>
+                            )}
                           </td>
                         </tr>
                       );

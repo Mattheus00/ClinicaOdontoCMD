@@ -174,10 +174,12 @@ public class AppointmentController {
 
     @PostMapping("/{id}/confirm")
     @Transactional
-    public ResponseEntity<AppointmentResponse> confirm(@PathVariable UUID id) {
-        Appointment value = appointments.findById(id)
-                .filter(v -> v.getClinic().getId().equals(tenant()))
-                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
+    public ResponseEntity<AppointmentResponse> confirm(
+            @PathVariable UUID id,
+            @RequestBody(required = false) ConfirmRequest request
+    ) {
+        Appointment value = requireAppointmentInTenant(id);
+        requireCanManageAppointment(value);
 
         if ("CANCELLED".equals(value.getStatus())) {
             throw new IllegalArgumentException("Não é possível confirmar um agendamento cancelado.");
@@ -188,12 +190,9 @@ public class AppointmentController {
         if (value.getProcedure() == null) {
             throw new IllegalArgumentException("Este agendamento não possui procedimento vinculado.");
         }
-        if (SecurityUtils.isDentist()) {
-            if (!value.getProfessional().getId().equals(SecurityUtils.requireProfessionalId())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
-            }
-        } else {
-            SecurityUtils.requireAdminOrSecretary();
+
+        if (request != null && request.report() != null) {
+            value.setReport(normalizeReport(request.report()));
         }
 
         payments.findByAppointmentId(id).orElseGet(() -> {
@@ -210,9 +209,47 @@ public class AppointmentController {
 
         if (!"COMPLETED".equals(value.getStatus())) {
             value.setStatus("COMPLETED");
-            appointments.save(value);
         }
+        appointments.save(value);
         return ResponseEntity.ok(AppointmentResponse.from(value));
+    }
+
+    @PatchMapping("/{id}/report")
+    @Transactional
+    public ResponseEntity<AppointmentResponse> updateReport(
+            @PathVariable UUID id,
+            @RequestBody ReportRequest request
+    ) {
+        Appointment value = requireAppointmentInTenant(id);
+        requireCanManageAppointment(value);
+
+        if ("CANCELLED".equals(value.getStatus())) {
+            throw new IllegalArgumentException("Não é possível editar o relatório de um agendamento cancelado.");
+        }
+        value.setReport(normalizeReport(request == null ? null : request.report()));
+        return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+    }
+
+    private Appointment requireAppointmentInTenant(UUID id) {
+        return appointments.findById(id)
+                .filter(v -> v.getClinic().getId().equals(tenant()))
+                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
+    }
+
+    private void requireCanManageAppointment(Appointment value) {
+        if (SecurityUtils.isDentist()) {
+            if (!value.getProfessional().getId().equals(SecurityUtils.requireProfessionalId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
+            }
+        } else {
+            SecurityUtils.requireAdminOrSecretary();
+        }
+    }
+
+    private static String normalizeReport(String report) {
+        if (report == null) return null;
+        String trimmed = report.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     private void markBookingNotificationsRead(UUID appointmentId) {
@@ -246,6 +283,10 @@ public class AppointmentController {
 
     public record RescheduleRequest(String startsAt, UUID professionalId, Integer durationMinutes) {}
 
+    public record ConfirmRequest(String report) {}
+
+    public record ReportRequest(String report) {}
+
     public record PatientData(UUID id, String name, String phone) {}
 
     public record ProfessionalData(UUID id, String name) {}
@@ -261,7 +302,8 @@ public class AppointmentController {
             OffsetDateTime endsAt,
             short durationMinutes,
             String status,
-            String createdVia
+            String createdVia,
+            String report
     ) {
         static AppointmentResponse from(Appointment value) {
             var procedure = value.getProcedure();
@@ -275,7 +317,8 @@ public class AppointmentController {
                     value.getScheduledAt().plusMinutes(value.getDurationMinutes()),
                     value.getDurationMinutes(),
                     value.getStatus(),
-                    value.getCreatedVia()
+                    value.getCreatedVia(),
+                    value.getReport()
             );
         }
     }

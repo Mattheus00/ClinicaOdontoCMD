@@ -14,6 +14,7 @@ import com.dentic.api.procedure.repository.ProcedureRepository;
 import com.dentic.api.professional.domain.Professional;
 import com.dentic.api.professional.repository.ProfessionalRepository;
 import com.dentic.api.security.AuthAttributes;
+import com.dentic.api.staffnotification.repository.StaffNotificationRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,7 @@ class AppointmentControllerTest {
     @Mock private ProcedureRepository procedures;
     @Mock private PatientPaymentRepository payments;
     @Mock private ClinicRepository clinics;
+    @Mock private StaffNotificationRepository staffNotifications;
 
     private final UUID clinicId = UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private final UUID professionalId = UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
@@ -57,7 +59,7 @@ class AppointmentControllerTest {
     @BeforeEach
     void setUp() {
         controller = new AppointmentController(
-                appointments, patients, professionals, procedures, payments, clinics, "America/Sao_Paulo"
+                appointments, patients, professionals, procedures, payments, clinics, staffNotifications, "America/Sao_Paulo"
         );
         TenantContext.setCurrentTenant(clinicId);
         AuthAttributes.setProfessionalId(professionalId);
@@ -100,10 +102,14 @@ class AppointmentControllerTest {
         when(payments.save(any(PatientPayment.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(appointments.save(appointment)).thenReturn(appointment);
 
-        var response = controller.confirm(appointmentId);
+        var response = controller.confirm(
+                appointmentId,
+                new AppointmentController.ConfirmRequest("Realizada limpeza e orientação de higiene.")
+        );
 
         assertNotNull(response.getBody());
         assertEquals("COMPLETED", response.getBody().status());
+        assertEquals("Realizada limpeza e orientação de higiene.", response.getBody().report());
         ArgumentCaptor<PatientPayment> payment = ArgumentCaptor.forClass(PatientPayment.class);
         verify(payments).save(payment.capture());
         assertEquals(new BigDecimal("150.00"), payment.getValue().getAmount());

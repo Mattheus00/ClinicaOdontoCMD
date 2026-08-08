@@ -16,6 +16,7 @@ import {
   useConfirmAppointment,
   useCreateAppointment,
   useRescheduleAppointment,
+  useUpdateAppointmentReport,
 } from '../../features/appointments/api';
 import { usePatients } from '../../features/patients/api';
 import { useProcedures } from '../../features/procedures/api';
@@ -100,6 +101,7 @@ export default function AgendaPage() {
   const [open, setOpen] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(deepLinkAppointmentId);
   const [selectedProfessionalId, setSelectedProfessionalId] = useState('');
+  const [reportDraft, setReportDraft] = useState('');
 
   useEffect(() => {
     if (!deepLinkAppointmentId && !deepLinkDate) return;
@@ -138,6 +140,7 @@ export default function AgendaPage() {
   const cancel = useCancelAppointment(filters);
   const accept = useAcceptAppointment(filters);
   const confirm = useConfirmAppointment(filters);
+  const updateReport = useUpdateAppointmentReport(filters);
   const reschedule = useRescheduleAppointment(filters);
 
   const form = useForm<FormInput, unknown, FormData>({
@@ -167,6 +170,16 @@ export default function AgendaPage() {
   const selectedAppointment = appointments.data?.content.find((item) => item.id === selectedAppointmentId);
   const dentistsList = dentists.data?.content ?? [];
   const proceduresList = procedureList.data?.content ?? [];
+
+  useEffect(() => {
+    setReportDraft(selectedAppointment?.report ?? '');
+  }, [selectedAppointment?.id, selectedAppointment?.report]);
+
+  const canEditReport =
+    Boolean(selectedAppointment) &&
+    selectedAppointment?.status !== 'CANCELLED' &&
+    (isAdmin || (isDentist && selectedAppointment?.professional.id === professionalId));
+  const reportDirty = (selectedAppointment?.report ?? '') !== reportDraft.trim();
 
   const selectedDentist = isDentist
     ? null
@@ -371,6 +384,19 @@ export default function AgendaPage() {
                 Envie a confirmação pelo WhatsApp para o paciente ficar ciente do horário.
               </p>
             ) : null}
+            <label className="appointment-report-field">
+              Relatório da consulta
+              <textarea
+                rows={4}
+                value={reportDraft}
+                onChange={(e) => setReportDraft(e.target.value)}
+                disabled={!canEditReport || confirm.isPending || updateReport.isPending}
+                placeholder="Descreva o que foi feito nesta consulta (procedimentos, observações, orientações). Fica no histórico do paciente para outros dentistas."
+              />
+              <small>
+                Esse relatório aparece no histórico do paciente e ajuda outro dentista a saber o que já foi feito.
+              </small>
+            </label>
           </div>
           <div className="modal-actions">
             {isAdmin && selectedAppointment.status === 'PENDING' && (
@@ -410,19 +436,38 @@ export default function AgendaPage() {
               && selectedAppointment.status !== 'PENDING' && (
               <button
                 className="btn btn-primary"
-                disabled={confirm.isPending || !selectedAppointment.procedure}
+                disabled={confirm.isPending || !selectedAppointment.procedure || !canEditReport}
                 onClick={() => {
                   const label = selectedAppointment.procedure
                     ? `Confirmar atendimento e registrar pagamento de ${money(selectedAppointment.procedure.price)}?`
                     : 'Confirmar atendimento?';
                   if (window.confirm(label)) {
-                    confirm.mutate(selectedAppointment.id, {
-                      onSuccess: () => setSelectedAppointmentId(null),
-                    });
+                    confirm.mutate(
+                      { id: selectedAppointment.id, report: reportDraft },
+                      {
+                        onSuccess: () => setSelectedAppointmentId(null),
+                      },
+                    );
                   }
                 }}
               >
                 {confirm.isPending ? 'Confirmando...' : 'Confirmar atendimento'}
+              </button>
+            )}
+            {selectedAppointment.status === 'COMPLETED' && canEditReport && (
+              <button
+                className="btn btn-primary"
+                disabled={updateReport.isPending || !reportDirty}
+                onClick={() => {
+                  updateReport.mutate(
+                    { id: selectedAppointment.id, report: reportDraft },
+                    {
+                      onSuccess: () => setSelectedAppointmentId(null),
+                    },
+                  );
+                }}
+              >
+                {updateReport.isPending ? 'Salvando...' : 'Salvar relatório'}
               </button>
             )}
             {isAdmin && selectedAppointment.status !== 'CANCELLED' && selectedAppointment.status !== 'COMPLETED' && (

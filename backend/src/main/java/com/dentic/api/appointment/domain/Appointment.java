@@ -54,6 +54,10 @@ public class Appointment {
     @Column(name = "created_via", nullable = false)
     private String createdVia = "manual"; // whatsapp, manual, instagram
 
+    /** What was done in the visit — readable by any dentist on the patient's history. */
+    @Column(columnDefinition = "TEXT")
+    private String report;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 

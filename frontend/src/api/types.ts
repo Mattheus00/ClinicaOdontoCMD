@@ -172,6 +172,7 @@ export type AppointmentHistory = {
   startsAt: string;
   status: string;
   professionalName: string;
+  report?: string | null;
 };
 
 export type AccessLog = {
@@ -204,6 +205,7 @@ export type Appointment = {
   durationMinutes?: number;
   status: AppointmentStatus;
   createdVia?: string | null;
+  report?: string | null;
 };
 export type ConversationStatus = 'BOT_ACTIVE' | 'TRANSFERRED' | 'COMPLETED';
 export type Conversation = { id: string; patientName?: string; phone: string; lastMessage: string; updatedAt: string; status: ConversationStatus; unreadCount: number; takenOverByCurrentUser?: boolean };
