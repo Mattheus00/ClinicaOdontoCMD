@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { CalendarDays, CheckCircle2, Share2 } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
 import { usePublicAvailability, usePublicBook, usePublicBookingPage } from '../../features/booking/api';
+import { maskPhone } from '../../lib/masks';
 import { money } from '../../lib/money';
 import './PublicBookingPage.css';
 
@@ -180,7 +181,7 @@ export default function PublicBookingPage() {
                 <input
                   className="input-field"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(maskPhone(e.target.value))}
                   inputMode="tel"
                   placeholder="(11) 99999-9999"
                   required

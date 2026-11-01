@@ -194,6 +194,26 @@ export type Professional = {
   appointmentCount?: number;
 };
 export type Procedure = { id: string; name: string; price: number };
+export type StockCategory = 'DENTAL' | 'CLINIC';
+export type StockMovementType = 'IN' | 'OUT' | 'ADJUST';
+export type StockItem = {
+  id: string;
+  name: string;
+  category: StockCategory;
+  unit: string;
+  quantity: number;
+  minimumQuantity: number;
+  notes?: string | null;
+  lowStock: boolean;
+};
+export type StockMovement = {
+  id: string;
+  type: StockMovementType;
+  quantity: number;
+  balanceAfter: number;
+  note?: string | null;
+  createdAt: string;
+};
 export type AppointmentStatus = 'PENDING' | 'SCHEDULED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
 export type Appointment = {
   id: string;

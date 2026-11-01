@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link } from 'react-router-dom';
+import { maskPhone, withMask } from '../../lib/masks';
 import { api } from '../../services/api';
 import './Login.css';
 
@@ -107,20 +108,25 @@ export default function RegisterPage() {
           <p className="auth-lead">Preencha os dados abaixo para criar seu acesso à plataforma.</p>
 
           <form className="auth-form" onSubmit={submit}>
-            {fields.map(([field, label, Icon, placeholder]) => (
-              <label key={field}>
-                {label}
-                <span className="auth-input">
-                  <Icon size={18} />
-                  <input
-                    type={field === 'password' ? 'password' : field === 'email' ? 'email' : 'text'}
-                    placeholder={placeholder}
-                    {...form.register(field)}
-                  />
-                </span>
-                <small>{form.formState.errors[field]?.message}</small>
-              </label>
-            ))}
+            {fields.map(([field, label, Icon, placeholder]) => {
+              const registration = form.register(field);
+              return (
+                <label key={field}>
+                  {label}
+                  <span className="auth-input">
+                    <Icon size={18} />
+                    <input
+                      type={field === 'password' ? 'password' : field === 'email' ? 'email' : 'text'}
+                      inputMode={field === 'phone' ? 'tel' : undefined}
+                      placeholder={placeholder}
+                      {...registration}
+                      onChange={field === 'phone' ? withMask(maskPhone, registration.onChange) : registration.onChange}
+                    />
+                  </span>
+                  <small>{form.formState.errors[field]?.message}</small>
+                </label>
+              );
+            })}
 
             {error && <p className="form-error">{error}</p>}
 

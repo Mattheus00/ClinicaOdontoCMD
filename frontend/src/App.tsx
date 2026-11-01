@@ -18,6 +18,7 @@ const PatientDetailPage = lazy(() => import('./pages/dashboard/PatientDetailPage
 const DentistsPage = lazy(() => import('./pages/dashboard/DentistsPage'));
 const FinancialDashboardPage = lazy(() => import('./pages/dashboard/FinancialDashboardPage'));
 const ProceduresPage = lazy(() => import('./pages/dashboard/ProceduresPage'));
+const StockPage = lazy(() => import('./pages/dashboard/StockPage'));
 const OnboardingPage = lazy(() => import('./pages/dashboard/OnboardingPage'));
 const BookingLinkPage = lazy(() => import('./pages/dashboard/BookingLinkPage'));
 const PublicBookingPage = lazy(() => import('./pages/public/PublicBookingPage'));
@@ -102,6 +103,14 @@ function AppRoutes() {
               element={
                 <RequireRole roles={['ADMIN', 'SECRETARY']}>
                   <ProceduresPage />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/estoque"
+              element={
+                <RequireRole roles={['ADMIN', 'SECRETARY', 'DENTIST']}>
+                  <StockPage />
                 </RequireRole>
               }
             />

@@ -1,0 +1,509 @@
+import { ArrowDownToLine, ArrowUpFromLine, Pencil, Trash2 } from 'lucide-react';
+import { useMemo, useState, type FormEvent } from 'react';
+import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
+import { Modal } from '../../components/Modal';
+import { useAuth } from '../../contexts/AuthContext';
+import {
+  useCreateStockItem,
+  useCreateStockMovement,
+  useDeleteStockItem,
+  useStockItems,
+  useStockMovements,
+  useUpdateStockItem,
+} from '../../features/stock/api';
+import type { StockCategory, StockItem, StockMovementType } from '../../api/types';
+import './StockPage.css';
+
+const UNITS = ['un', 'caixa', 'pacote', 'frasco', 'tubete', 'ml', 'L', 'g', 'kg'];
+
+const CATEGORY_LABEL: Record<StockCategory, string> = {
+  DENTAL: 'Odontológico',
+  CLINIC: 'Clínica',
+};
+
+const MOVEMENT_LABEL: Record<StockMovementType, string> = {
+  IN: 'Entrada',
+  OUT: 'Saída',
+  ADJUST: 'Ajuste',
+};
+
+type Filter = 'ALL' | StockCategory | 'LOW';
+
+const formatQty = (value: number) =>
+  new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(value);
+
+const formatWhen = (value: string) =>
+  new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value));
+
+export default function StockPage() {
+  const { role } = useAuth();
+  const canManage = role === 'ADMIN' || role === 'SECRETARY';
+  const canDelete = role === 'ADMIN';
+
+  const items = useStockItems();
+  const create = useCreateStockItem();
+  const update = useUpdateStockItem();
+  const remove = useDeleteStockItem();
+  const move = useCreateStockMovement();
+
+  const [filter, setFilter] = useState<Filter>('ALL');
+  const [search, setSearch] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [name, setName] = useState('');
+  const [category, setCategory] = useState<StockCategory>('DENTAL');
+  const [unit, setUnit] = useState('un');
+  const [quantity, setQuantity] = useState('0');
+  const [minimum, setMinimum] = useState('0');
+  const [notes, setNotes] = useState('');
+
+  const [editing, setEditing] = useState<StockItem | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editCategory, setEditCategory] = useState<StockCategory>('DENTAL');
+  const [editUnit, setEditUnit] = useState('un');
+  const [editMinimum, setEditMinimum] = useState('0');
+  const [editNotes, setEditNotes] = useState('');
+
+  const [moving, setMoving] = useState<StockItem | null>(null);
+  const [movementType, setMovementType] = useState<StockMovementType>('OUT');
+  const [movementQty, setMovementQty] = useState('');
+  const [movementNote, setMovementNote] = useState('');
+  const history = useStockMovements(moving?.id);
+
+  const list = items.data?.content ?? [];
+  const lowCount = list.filter((item) => item.lowStock).length;
+  const visible = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return list.filter((item) => {
+      if (filter === 'LOW' && !item.lowStock) return false;
+      if (filter === 'DENTAL' || filter === 'CLINIC') {
+        if (item.category !== filter) return false;
+      }
+      if (term && !item.name.toLowerCase().includes(term)) return false;
+      return true;
+    });
+  }, [filter, list, search]);
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    const parsedQuantity = Number(quantity);
+    const parsedMinimum = Number(minimum);
+    if (!name.trim() || Number.isNaN(parsedQuantity) || Number.isNaN(parsedMinimum)) return;
+    create.mutate(
+      {
+        name: name.trim(),
+        category,
+        unit,
+        quantity: parsedQuantity,
+        minimumQuantity: parsedMinimum,
+        notes: notes.trim() || undefined,
+      },
+      {
+        onSuccess: () => {
+          setName('');
+          setCategory('DENTAL');
+          setUnit('un');
+          setQuantity('0');
+          setMinimum('0');
+          setNotes('');
+          setCreating(false);
+        },
+      },
+    );
+  };
+
+  const openEdit = (item: StockItem) => {
+    setEditing(item);
+    setEditName(item.name);
+    setEditCategory(item.category);
+    setEditUnit(item.unit);
+    setEditMinimum(String(item.minimumQuantity));
+    setEditNotes(item.notes ?? '');
+  };
+
+  const submitEdit = (event: FormEvent) => {
+    event.preventDefault();
+    if (!editing) return;
+    const parsedMinimum = Number(editMinimum);
+    if (!editName.trim() || Number.isNaN(parsedMinimum)) return;
+    update.mutate(
+      {
+        id: editing.id,
+        name: editName.trim(),
+        category: editCategory,
+        unit: editUnit,
+        minimumQuantity: parsedMinimum,
+        notes: editNotes.trim() || undefined,
+      },
+      { onSuccess: () => setEditing(null) },
+    );
+  };
+
+  const openMove = (item: StockItem, type: StockMovementType) => {
+    setMoving(item);
+    setMovementType(type);
+    setMovementQty('');
+    setMovementNote('');
+  };
+
+  const submitMove = (event: FormEvent) => {
+    event.preventDefault();
+    if (!moving) return;
+    const parsed = Number(movementQty);
+    if (Number.isNaN(parsed) || parsed <= 0) return;
+    move.mutate(
+      {
+        id: moving.id,
+        type: movementType,
+        quantity: parsed,
+        note: movementNote.trim() || undefined,
+      },
+      {
+        onSuccess: (updated) => {
+          setMoving(updated);
+          setMovementQty('');
+          setMovementNote('');
+        },
+      },
+    );
+  };
+
+  return (
+    <div className="stock-page">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Estoque</h1>
+          <p className="page-subtitle">Controle materiais odontológicos e os demais itens da clínica.</p>
+        </div>
+        {canManage ? (
+          <button type="button" className="btn btn-primary" onClick={() => setCreating(true)}>
+            Registrar material
+          </button>
+        ) : null}
+      </div>
+
+      <div className="stock-summary">
+        <article>
+          <span>Itens cadastrados</span>
+          <strong>{list.length}</strong>
+        </article>
+        <article className={lowCount ? 'is-alert' : undefined}>
+          <span>Abaixo do mínimo</span>
+          <strong>{lowCount}</strong>
+        </article>
+      </div>
+
+      <div className="stock-toolbar">
+        <input
+          className="input-field"
+          placeholder="Buscar material"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <div className="stock-filters" role="tablist" aria-label="Filtrar estoque">
+          {(
+            [
+              ['ALL', 'Todos'],
+              ['DENTAL', 'Odontológico'],
+              ['CLINIC', 'Clínica'],
+              ['LOW', 'Abaixo do mínimo'],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              className={filter === value ? 'is-active' : undefined}
+              onClick={() => setFilter(value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {items.isLoading ? (
+        <LoadingState />
+      ) : items.isError ? (
+        <ErrorState onRetry={() => items.refetch()} />
+      ) : visible.length ? (
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Tipo</th>
+                <th>Saldo</th>
+                <th>Mínimo</th>
+                <th>Status</th>
+                <th className="col-actions">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visible.map((item) => (
+                <tr key={item.id} className={item.lowStock ? 'is-low' : undefined}>
+                  <td>
+                    <strong>{item.name}</strong>
+                    {item.notes ? <small>{item.notes}</small> : null}
+                  </td>
+                  <td>{CATEGORY_LABEL[item.category]}</td>
+                  <td>
+                    {formatQty(item.quantity)} {item.unit}
+                  </td>
+                  <td>
+                    {formatQty(item.minimumQuantity)} {item.unit}
+                  </td>
+                  <td>
+                    <span className={`badge ${item.lowStock ? 'badge-warning' : 'badge-success'}`}>
+                      {item.lowStock ? 'Repor' : 'Ok'}
+                    </span>
+                  </td>
+                  <td className="col-actions">
+                    <div className="stock-actions">
+                      <button type="button" className="stock-action" onClick={() => openMove(item, 'IN')}>
+                        <ArrowDownToLine size={15} aria-hidden />
+                        Entrada
+                      </button>
+                      <button type="button" className="stock-action" onClick={() => openMove(item, 'OUT')}>
+                        <ArrowUpFromLine size={15} aria-hidden />
+                        Saída
+                      </button>
+                      {canManage ? (
+                        <button type="button" className="stock-action stock-action-icon" aria-label="Editar" title="Editar" onClick={() => openEdit(item)}>
+                          <Pencil size={15} aria-hidden />
+                        </button>
+                      ) : null}
+                      {canDelete ? (
+                        <button
+                          type="button"
+                          className="stock-action stock-action-icon stock-delete"
+                          aria-label="Excluir"
+                          title="Excluir"
+                          disabled={remove.isPending}
+                          onClick={() => {
+                            if (window.confirm(`Excluir "${item.name}" do estoque?`)) remove.mutate(item.id);
+                          }}
+                        >
+                          <Trash2 size={15} aria-hidden />
+                        </button>
+                      ) : null}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <EmptyState
+          title={list.length ? 'Nenhum material nesse filtro' : 'Nenhum material cadastrado'}
+          description="Cadastre luvas, resinas, anestésicos e também papel, álcool e os demais itens da clínica."
+        />
+      )}
+
+      {creating ? (
+        <Modal title="Registrar material" onClose={() => setCreating(false)}>
+          <form className="form-grid" onSubmit={submit}>
+            <label className="full-width">
+              Nome
+              <input
+                required
+                className="input-field"
+                placeholder="Ex.: Luvas, Resina, Álcool 70%"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </label>
+            <label>
+              Tipo
+              <select className="input-field" value={category} onChange={(e) => setCategory(e.target.value as StockCategory)}>
+                <option value="DENTAL">Material odontológico</option>
+                <option value="CLINIC">Demais materiais da clínica</option>
+              </select>
+            </label>
+            <label>
+              Unidade
+              <select className="input-field" value={unit} onChange={(e) => setUnit(e.target.value)}>
+                {UNITS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Quantidade inicial
+              <input
+                required
+                type="number"
+                min="0"
+                step="0.01"
+                className="input-field"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+              />
+            </label>
+            <label>
+              Estoque mínimo
+              <input
+                required
+                type="number"
+                min="0"
+                step="0.01"
+                className="input-field"
+                value={minimum}
+                onChange={(e) => setMinimum(e.target.value)}
+              />
+            </label>
+            <label className="full-width">
+              Observação
+              <input
+                className="input-field"
+                placeholder="Opcional"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </label>
+            <div className="modal-actions full-width">
+              <button type="button" className="btn btn-secondary" onClick={() => setCreating(false)}>
+                Cancelar
+              </button>
+              <button className="btn btn-primary" disabled={create.isPending}>
+                {create.isPending ? 'Salvando...' : 'Cadastrar material'}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
+
+      {editing ? (
+        <Modal title="Editar material" onClose={() => setEditing(null)}>
+          <form className="form-grid" onSubmit={submitEdit}>
+            <label className="full-width">
+              Nome
+              <input required className="input-field" value={editName} onChange={(e) => setEditName(e.target.value)} />
+            </label>
+            <label>
+              Tipo
+              <select className="input-field" value={editCategory} onChange={(e) => setEditCategory(e.target.value as StockCategory)}>
+                <option value="DENTAL">Material odontológico</option>
+                <option value="CLINIC">Demais materiais da clínica</option>
+              </select>
+            </label>
+            <label>
+              Unidade
+              <select className="input-field" value={editUnit} onChange={(e) => setEditUnit(e.target.value)}>
+                {UNITS.includes(editUnit) ? null : <option value={editUnit}>{editUnit}</option>}
+                {UNITS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="full-width">
+              Estoque mínimo
+              <input
+                required
+                type="number"
+                min="0"
+                step="0.01"
+                className="input-field"
+                value={editMinimum}
+                onChange={(e) => setEditMinimum(e.target.value)}
+              />
+            </label>
+            <label className="full-width">
+              Observação
+              <input className="input-field" value={editNotes} onChange={(e) => setEditNotes(e.target.value)} />
+            </label>
+            <div className="modal-actions full-width">
+              <button type="button" className="btn btn-secondary" onClick={() => setEditing(null)}>
+                Cancelar
+              </button>
+              <button className="btn btn-primary" disabled={update.isPending}>
+                {update.isPending ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
+
+      {moving ? (
+        <Modal title={moving.name} onClose={() => setMoving(null)}>
+          <p className="stock-balance">
+            Saldo atual: <strong>{formatQty(moving.quantity)} {moving.unit}</strong>
+          </p>
+          <form className="form-grid" onSubmit={submitMove}>
+            <label className="full-width">
+              Movimentação
+              <select
+                className="input-field"
+                value={movementType}
+                onChange={(e) => setMovementType(e.target.value as StockMovementType)}
+              >
+                <option value="IN">Entrada</option>
+                <option value="OUT">Saída</option>
+                <option value="ADJUST">Ajuste de contagem</option>
+              </select>
+            </label>
+            <label className="full-width">
+              {movementType === 'ADJUST' ? 'Novo saldo' : 'Quantidade'}
+              <input
+                required
+                type="number"
+                min="0.01"
+                step="0.01"
+                className="input-field"
+                value={movementQty}
+                onChange={(e) => setMovementQty(e.target.value)}
+              />
+            </label>
+            <label className="full-width">
+              Observação
+              <input
+                className="input-field"
+                placeholder="Opcional. Ex.: usado na consulta, compra do fornecedor"
+                value={movementNote}
+                onChange={(e) => setMovementNote(e.target.value)}
+              />
+            </label>
+            <div className="modal-actions full-width">
+              <button type="button" className="btn btn-secondary" onClick={() => setMoving(null)}>
+                Fechar
+              </button>
+              <button className="btn btn-primary" disabled={move.isPending}>
+                {move.isPending ? 'Registrando...' : 'Registrar'}
+              </button>
+            </div>
+          </form>
+          <div className="stock-history">
+            <h3>Últimas movimentações</h3>
+            {history.isLoading ? (
+              <p>Carregando...</p>
+            ) : history.data?.length ? (
+              <ul>
+                {history.data.map((entry) => (
+                  <li key={entry.id}>
+                    <span>
+                      {MOVEMENT_LABEL[entry.type]} · {formatQty(entry.quantity)} {moving.unit}
+                    </span>
+                    <small>
+                      saldo {formatQty(entry.balanceAfter)} · {formatWhen(entry.createdAt)}
+                      {entry.note ? ` · ${entry.note}` : ''}
+                    </small>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Nenhuma movimentação ainda.</p>
+            )}
+          </div>
+        </Modal>
+      ) : null}
+    </div>
+  );
+}

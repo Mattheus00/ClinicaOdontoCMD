@@ -21,6 +21,7 @@ import {
   useUpdatePatient,
 } from '../../features/patients/api';
 import type { Anamnesis, Patient, PatientInput } from '../../api/types';
+import { maskCpf, maskPhone, withMask } from '../../lib/masks';
 import './PatientDetailPage.css';
 
 const phoneSchema = z.string().refine(
@@ -59,10 +60,10 @@ type PatientCadastroForm = z.infer<typeof patientCadastroSchema>;
 function mapPatientToForm(patient: Patient): PatientCadastroForm {
   return {
     name: patient.name,
-    phone: patient.phone,
+    phone: maskPhone(patient.phone),
     phoneIsWhatsapp: patient.phoneIsWhatsapp ?? true,
     email: patient.email ?? '',
-    cpf: patient.cpf ?? '',
+    cpf: maskCpf(patient.cpf ?? ''),
     rg: patient.rg ?? '',
     birthDate: patient.birthDate ?? '',
     gender: patient.gender ?? '',
@@ -74,8 +75,8 @@ function mapPatientToForm(patient: Patient): PatientCadastroForm {
     addressState: patient.addressState ?? '',
     addressZip: patient.addressZip ?? '',
     guardianName: patient.guardianName ?? '',
-    guardianPhone: patient.guardianPhone ?? '',
-    guardianCpf: patient.guardianCpf ?? '',
+    guardianPhone: maskPhone(patient.guardianPhone ?? ''),
+    guardianCpf: maskCpf(patient.guardianCpf ?? ''),
     referralSource: patient.referralSource ?? '',
     referralNotes: patient.referralNotes ?? '',
     notes: patient.notes ?? '',
@@ -166,6 +167,10 @@ export default function PatientDetailPage() {
       email: '',
     },
   });
+  const phoneField = cadastroForm.register('phone');
+  const cpfField = cadastroForm.register('cpf');
+  const guardianPhoneField = cadastroForm.register('guardianPhone');
+  const guardianCpfField = cadastroForm.register('guardianCpf');
   const anamnesisForm = useForm<Anamnesis>();
   const planForm = useForm<{ title: string; dueDate?: string; description: string; unitPrice: number; status: string }>();
   const paymentForm = useForm<{ amount: number; method: string; notes?: string }>();
@@ -209,8 +214,8 @@ export default function PatientDetailPage() {
           </Link>
           <h1 className="page-title">{data.name}</h1>
           <p className="page-subtitle">
-            {data.phone}
-            {data.cpf ? ` · CPF ${data.cpf}` : ''}
+            {maskPhone(data.phone)}
+            {data.cpf ? ` · CPF ${maskCpf(data.cpf)}` : ''}
             {summary.data?.hasAllergies ? ' · Alergias registradas' : ''}
             {summary.data?.pregnantFlag ? ' · Gestante' : ''}
           </p>
@@ -270,7 +275,12 @@ export default function PatientDetailPage() {
             </label>
             <label>
               Telefone
-              <input {...cadastroForm.register('phone')} />
+              <input
+                inputMode="tel"
+                placeholder="(11) 99999-9999"
+                {...phoneField}
+                onChange={withMask(maskPhone, phoneField.onChange)}
+              />
               <small>{cadastroForm.formState.errors.phone?.message}</small>
             </label>
             <label>
@@ -286,7 +296,12 @@ export default function PatientDetailPage() {
             <h3 className="full-width section-title">Documentos</h3>
             <label>
               CPF
-              <input {...cadastroForm.register('cpf')} />
+              <input
+                inputMode="numeric"
+                placeholder="000.000.000-00"
+                {...cpfField}
+                onChange={withMask(maskCpf, cpfField.onChange)}
+              />
             </label>
             <label>
               RG
@@ -343,11 +358,21 @@ export default function PatientDetailPage() {
             </label>
             <label>
               Telefone
-              <input {...cadastroForm.register('guardianPhone')} />
+              <input
+                inputMode="tel"
+                placeholder="(11) 99999-9999"
+                {...guardianPhoneField}
+                onChange={withMask(maskPhone, guardianPhoneField.onChange)}
+              />
             </label>
             <label>
               CPF
-              <input {...cadastroForm.register('guardianCpf')} />
+              <input
+                inputMode="numeric"
+                placeholder="000.000.000-00"
+                {...guardianCpfField}
+                onChange={withMask(maskCpf, guardianCpfField.onChange)}
+              />
             </label>
 
             <h3 className="full-width section-title">Origem e preferências</h3>

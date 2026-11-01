@@ -1,4 +1,4 @@
-import { CalendarDays, CircleDollarSign, ClipboardList, Link2, LogOut, Stethoscope, UsersRound } from 'lucide-react';
+import { CalendarDays, CircleDollarSign, ClipboardList, Link2, LogOut, Package, Stethoscope, UsersRound } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useMediaQuery } from '../lib/useMediaQuery';
@@ -22,6 +22,7 @@ const allNavItems: Array<{
   { to: '/dentists', label: 'Dentistas', shortLabel: 'Dentistas', icon: Stethoscope, roles: ['ADMIN', 'SECRETARY'] },
   { to: '/financial', label: 'Financeiro', shortLabel: 'Finanças', icon: CircleDollarSign, roles: ['ADMIN', 'SECRETARY', 'DENTIST'] },
   { to: '/procedures', label: 'Procedimentos', shortLabel: 'Proced.', icon: ClipboardList, roles: ['ADMIN', 'SECRETARY'] },
+  { to: '/estoque', label: 'Estoque', shortLabel: 'Estoque', icon: Package, roles: ['ADMIN', 'SECRETARY', 'DENTIST'] },
   { to: '/booking-link', label: 'Link da bio', shortLabel: 'Link bio', icon: Link2, roles: ['ADMIN', 'SECRETARY'] },
 ];
 

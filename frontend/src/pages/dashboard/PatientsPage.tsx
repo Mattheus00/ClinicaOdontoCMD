@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
+import { maskCpf, maskPhone, withMask } from '../../lib/masks';
 import { useDebouncedValue } from '../../lib/useDebouncedValue';
 import { useCreatePatient, usePatients } from '../../features/patients/api';
 import './PatientsPage.css';
@@ -32,6 +33,8 @@ export default function PatientsPage() {
   const patients = usePatients(useDebouncedValue(search), page);
   const create = useCreatePatient();
   const form = useForm<PatientForm>({ resolver: zodResolver(schema) });
+  const phoneField = form.register('phone');
+  const cpfField = form.register('cpf');
 
   const submit = form.handleSubmit(async (data) => {
     await create.mutateAsync({
@@ -92,8 +95,8 @@ export default function PatientsPage() {
                 {patients.data.content.map((patient) => (
                   <tr key={patient.id}>
                     <td className="patient-name">{patient.name}</td>
-                    <td>{patient.phone}</td>
-                    <td>{patient.cpf ?? '—'}</td>
+                    <td>{maskPhone(patient.phone)}</td>
+                    <td>{patient.cpf ? maskCpf(patient.cpf) : '—'}</td>
                     <td>{patient.email ?? '—'}</td>
                     <td>
                       <Link className="btn btn-ghost btn-sm" to={`/patients/${patient.id}`}>
@@ -143,12 +146,22 @@ export default function PatientsPage() {
             </label>
             <label>
               Telefone / WhatsApp
-              <input placeholder="11999999999" {...form.register('phone')} />
+              <input
+                inputMode="tel"
+                placeholder="(11) 99999-9999"
+                {...phoneField}
+                onChange={withMask(maskPhone, phoneField.onChange)}
+              />
               <small>{form.formState.errors.phone?.message}</small>
             </label>
             <label>
               CPF
-              <input placeholder="000.000.000-00" {...form.register('cpf')} />
+              <input
+                inputMode="numeric"
+                placeholder="000.000.000-00"
+                {...cpfField}
+                onChange={withMask(maskCpf, cpfField.onChange)}
+              />
             </label>
             <label>
               Data de nascimento
