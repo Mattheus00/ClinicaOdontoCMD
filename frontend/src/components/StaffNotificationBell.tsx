@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Bell, Trash2 } from 'lucide-react';
+import { Bell, CalendarDays, CheckCheck, ChevronRight, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import {
   useClearStaffNotifications,
   useMarkAllNotificationsRead,
@@ -32,16 +33,19 @@ type PanelCoords = { top: number; left: number; width: number; maxHeight: number
 
 export default function StaffNotificationBell({ enabled = true }: { enabled?: boolean }) {
   const navigate = useNavigate();
+  const { role } = useAuth();
   const [open, setOpen] = useState(false);
   const [panelCoords, setPanelCoords] = useState<PanelCoords | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const panelId = useId();
   const previousUnread = useRef<number | null>(null);
   const notifications = useStaffNotifications(enabled);
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
   const clearAll = useClearStaffNotifications();
+  const isDentist = role === 'DENTIST';
 
   const unreadCount = notifications.data?.unreadCount ?? 0;
   const items = notifications.data?.items ?? [];
@@ -55,12 +59,16 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
     if (unreadCount > previousUnread.current) {
       window.dispatchEvent(
         new CustomEvent('app:toast', {
-          detail: { message: 'Nova solicitação de agendamento recebida.' },
+          detail: {
+            message: isDentist
+              ? 'Nova consulta marcada na sua agenda.'
+              : 'Nova solicitação de agendamento recebida.',
+          },
         }),
       );
     }
     previousUnread.current = unreadCount;
-  }, [enabled, unreadCount]);
+  }, [enabled, unreadCount, isDentist]);
 
   useEffect(() => {
     if (!open) {
@@ -73,7 +81,7 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
       if (!trigger) return;
       const rect = trigger.getBoundingClientRect();
       const gutter = 12;
-      const preferredWidth = Math.min(340, window.innerWidth - gutter * 2);
+      const preferredWidth = Math.min(380, window.innerWidth - gutter * 2);
       // Prefer aligning with the trigger; clamp into the viewport.
       let left = rect.left;
       if (left + preferredWidth > window.innerWidth - gutter) {
@@ -101,16 +109,18 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setOpen(false);
+        triggerRef.current?.focus();
       }
     };
     window.addEventListener('mousedown', onPointer);
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('resize', updatePosition);
     window.addEventListener('scroll', updatePosition, true);
-    requestAnimationFrame(() => {
+    const focusFrame = requestAnimationFrame(() => {
       panelRef.current?.querySelector<HTMLElement>('button, [href], input')?.focus();
     });
     return () => {
+      cancelAnimationFrame(focusFrame);
       window.removeEventListener('mousedown', onPointer);
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('resize', updatePosition);
@@ -126,6 +136,7 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
           <div
             className={`staff-bell-panel${panelCoords ? ' is-positioned' : ''}`}
             role="dialog"
+            id={panelId}
             aria-label="Notificações"
             ref={panelRef}
             style={
@@ -142,16 +153,22 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
             }
           >
             <header className="staff-bell-panel-head">
-              <strong>Solicitações</strong>
+              <div className="staff-bell-panel-heading">
+                <strong>{isDentist ? 'Notificações' : 'Solicitações online'}</strong>
+                <small>{unreadCount > 0 ? `${unreadCount} ${unreadCount === 1 ? 'não lida' : 'não lidas'}` : 'Você está em dia'}</small>
+              </div>
               <div className="staff-bell-panel-actions">
                 {unreadCount > 0 ? (
                   <button
                     type="button"
-                    className="btn btn-ghost btn-sm"
+                    className="staff-bell-mark-all"
+                    aria-label="Marcar todas as notificações como lidas"
+                    title="Marcar todas como lidas"
                     disabled={markAllRead.isPending || clearAll.isPending}
                     onClick={() => markAllRead.mutate()}
                   >
-                    Marcar todas
+                    <CheckCheck size={15} aria-hidden="true" />
+                    Marcar lidas
                   </button>
                 ) : null}
                 {items.length > 0 ? (
@@ -206,9 +223,16 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
                         }
                       }}
                     >
-                      <strong>{item.title}</strong>
-                      <span>{item.message}</span>
-                      <small>{formatWhen(item.createdAt)}</small>
+                      <span className="staff-bell-item-icon" aria-hidden="true"><CalendarDays size={18} strokeWidth={1.6} /></span>
+                      <span className="staff-bell-item-content">
+                        <strong>{item.title}</strong>
+                        <span className="staff-bell-message">{item.message}</span>
+                        <span className="staff-bell-item-meta">
+                          <time dateTime={item.createdAt}>{formatWhen(item.createdAt)}</time>
+                          {!item.readAt && <span className="staff-bell-unread-label"><i aria-hidden="true" />Não lida</span>}
+                        </span>
+                      </span>
+                      <ChevronRight className="staff-bell-item-arrow" size={15} aria-hidden="true" />
                     </button>
                   </li>
                 ))}
@@ -224,14 +248,15 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
       <button
         type="button"
         ref={triggerRef}
-        className="staff-bell-trigger"
-        aria-label="Notificações de agendamento"
+        className={`staff-bell-trigger${unreadCount > 0 ? ' has-unread' : ''}`}
+        aria-label={`Notificações de agendamento${unreadCount > 0 ? `, ${unreadCount} não lidas` : ''}`}
         aria-expanded={open}
+        aria-controls={open ? panelId : undefined}
         aria-haspopup="dialog"
         onClick={() => setOpen((value) => !value)}
       >
         <Bell size={18} strokeWidth={1.8} />
-        {unreadCount > 0 ? <span className="staff-bell-badge">{unreadCount > 9 ? '9+' : unreadCount}</span> : null}
+        {unreadCount > 0 ? <span className="staff-bell-badge" aria-hidden="true">{unreadCount > 9 ? '9+' : unreadCount}</span> : null}
       </button>
       {panel}
     </div>

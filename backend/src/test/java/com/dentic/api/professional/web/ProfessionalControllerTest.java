@@ -2,6 +2,7 @@ package com.dentic.api.professional.web;
 
 import com.dentic.api.appointment.repository.AppointmentRepository;
 import com.dentic.api.multitenant.TenantContext;
+import com.dentic.api.odontogram.repository.ToothProcedureRepository;
 import com.dentic.api.onboarding.repository.ClinicRepository;
 import com.dentic.api.onboarding.repository.UserRepository;
 import com.dentic.api.patient.repository.OdontogramEntryRepository;
@@ -50,6 +51,8 @@ class ProfessionalControllerTest {
     @Mock
     private OdontogramEntryRepository odontogramEntries;
     @Mock
+    private ToothProcedureRepository toothProcedures;
+    @Mock
     private RefreshTokenRepository refreshTokens;
 
     private ProfessionalController controller;
@@ -69,6 +72,7 @@ class ProfessionalControllerTest {
                 patientPayments,
                 treatmentRecords,
                 odontogramEntries,
+                toothProcedures,
                 refreshTokens,
                 "http://localhost:5173"
         );
@@ -102,6 +106,8 @@ class ProfessionalControllerTest {
         verify(patients).clearPreferredProfessional(professionalId);
         verify(treatmentRecords).clearProfessional(professionalId);
         verify(odontogramEntries).clearProfessional(professionalId);
+        verify(toothProcedures).clearProfessional(professionalId);
+        verify(toothProcedures).clearAppointmentByProfessionalId(professionalId);
         verify(patientPayments).clearAppointmentByProfessionalId(professionalId);
         verify(appointments).deleteByProfessionalId(professionalId);
         verify(professionals).deleteById(professionalId);

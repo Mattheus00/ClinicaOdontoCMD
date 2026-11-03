@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +9,7 @@ import DateTimePicker from '../../components/DateTimePicker';
 import { Modal } from '../../components/Modal';
 import AgendaScheduleGrid, { getWeekDays } from '../../components/schedule/AgendaScheduleGrid';
 import AgendaMobileList from '../../components/schedule/AgendaMobileList';
+import { AppointmentDetailsModal } from '../../components/schedule/AppointmentDetailsModal';
 import {
   useAcceptAppointment,
   useAppointments,
@@ -23,7 +24,7 @@ import { useProcedures } from '../../features/procedures/api';
 import { useProfessionals } from '../../features/professionals/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useMediaQuery } from '../../lib/useMediaQuery';
-import { APPOINTMENT_DURATION_OPTIONS, DEFAULT_APPOINTMENT_DURATION, formatAppointmentDuration } from '../../lib/appointment-duration';
+import { APPOINTMENT_DURATION_OPTIONS, DEFAULT_APPOINTMENT_DURATION } from '../../lib/appointment-duration';
 import { money } from '../../lib/money';
 import { buildAppointmentConfirmationMessage, buildWhatsAppUrl } from '../../lib/whatsapp';
 import './AgendaPage.css';
@@ -65,15 +66,6 @@ const formatWeekRange = (from: string, to: string, compact = false) => {
   }
   const formatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
   return `${formatter.format(fromDate)} — ${formatter.format(toDate)}`;
-};
-
-const APPOINTMENT_STATUS: Record<string, { label: string; className: string }> = {
-  PENDING: { label: 'Aguardando aceite', className: 'badge-warning' },
-  SCHEDULED: { label: 'Agendada', className: 'badge-info' },
-  CONFIRMED: { label: 'Confirmada', className: 'badge-success' },
-  COMPLETED: { label: 'Realizada', className: 'badge-success' },
-  CANCELLED: { label: 'Cancelada', className: 'badge-danger' },
-  NO_SHOW: { label: 'Faltou', className: 'badge-warning' },
 };
 
 function toDateTimeLocalValue(value: string) {
@@ -179,7 +171,6 @@ export default function AgendaPage() {
     Boolean(selectedAppointment) &&
     selectedAppointment?.status !== 'CANCELLED' &&
     (isAdmin || (isDentist && selectedAppointment?.professional.id === professionalId));
-  const reportDirty = (selectedAppointment?.report ?? '') !== reportDraft.trim();
 
   const selectedDentist = isDentist
     ? null
@@ -332,168 +323,51 @@ export default function AgendaPage() {
       )}
 
       {selectedAppointment && (
-        <Modal title="Detalhes do agendamento" onClose={() => setSelectedAppointmentId(null)}>
-          <div className="appointment-detail">
-            <p>
-              <strong>Paciente:</strong> {selectedAppointment.patient.name}
-            </p>
-            <p>
-              <strong>Dentista:</strong> {selectedAppointment.professional.name}
-            </p>
-            <p>
-              <strong>Horário:</strong>{' '}
-              {new Intl.DateTimeFormat('pt-BR', {
-                weekday: 'long',
-                hour: '2-digit',
-                minute: '2-digit',
-                day: '2-digit',
-                month: '2-digit',
-              }).format(new Date(selectedAppointment.startsAt))}
-            </p>
-            <p>
-              <strong>Duração:</strong>{' '}
-              {formatAppointmentDuration(
-                selectedAppointment.durationMinutes ??
-                  Math.max(
-                    15,
-                    Math.round(
-                      (new Date(selectedAppointment.endsAt).getTime() - new Date(selectedAppointment.startsAt).getTime()) /
-                        60000,
-                    ),
-                  ),
-              )}
-            </p>
-            <p>
-              <strong>Status:</strong>{' '}
-              <span className={`badge ${APPOINTMENT_STATUS[selectedAppointment.status]?.className ?? 'badge-info'}`}>
-                {APPOINTMENT_STATUS[selectedAppointment.status]?.label ?? selectedAppointment.status}
-              </span>
-            </p>
-            {selectedAppointment.procedure ? (
-              <p>
-                <strong>Procedimento:</strong> {selectedAppointment.procedure.name} ({money(selectedAppointment.procedure.price)})
-              </p>
-            ) : null}
-            {selectedAppointment.createdVia === 'instagram' ? (
-              <p>
-                <strong>Origem:</strong> Instagram / link público
-              </p>
-            ) : null}
-            {whatsappConfirmUrl ? (
-              <p className="appointment-whatsapp-hint">
-                Envie a confirmação pelo WhatsApp para o paciente ficar ciente do horário.
-              </p>
-            ) : null}
-            <label className="appointment-report-field">
-              Relatório da consulta
-              <textarea
-                rows={4}
-                value={reportDraft}
-                onChange={(e) => setReportDraft(e.target.value)}
-                disabled={!canEditReport || confirm.isPending || updateReport.isPending}
-                placeholder="Descreva o que foi feito nesta consulta (procedimentos, observações, orientações). Fica no histórico do paciente para outros dentistas."
-              />
-              <small>
-                Esse relatório aparece no histórico do paciente e ajuda outro dentista a saber o que já foi feito.
-              </small>
-            </label>
-          </div>
-          <div className="modal-actions">
-            {isAdmin && selectedAppointment.status === 'PENDING' && (
-              <button
-                className="btn btn-primary"
-                disabled={accept.isPending}
-                onClick={() => {
-                  if (window.confirm('Aceitar esta solicitação e confirmar o horário na agenda?')) {
-                    accept.mutate(selectedAppointment.id, {
-                      onSuccess: () => {
-                        window.dispatchEvent(
-                          new CustomEvent('app:toast', {
-                            detail: { message: 'Agendamento aceito. Envie a confirmação pelo WhatsApp.' },
-                          }),
-                        );
-                      },
-                    });
-                  }
-                }}
-              >
-                {accept.isPending ? 'Aceitando...' : 'Aceitar agendamento'}
-              </button>
-            )}
-            {whatsappConfirmUrl ? (
-              <a
-                className="btn btn-whatsapp"
-                href={whatsappConfirmUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <MessageCircle size={16} strokeWidth={2} />
-                Confirmar no WhatsApp
-              </a>
-            ) : null}
-            {selectedAppointment.status !== 'CANCELLED'
-              && selectedAppointment.status !== 'COMPLETED'
-              && selectedAppointment.status !== 'PENDING' && (
-              <button
-                className="btn btn-primary"
-                disabled={confirm.isPending || !selectedAppointment.procedure || !canEditReport}
-                onClick={() => {
-                  const label = selectedAppointment.procedure
-                    ? `Confirmar atendimento e registrar pagamento de ${money(selectedAppointment.procedure.price)}?`
-                    : 'Confirmar atendimento?';
-                  if (window.confirm(label)) {
-                    confirm.mutate(
-                      { id: selectedAppointment.id, report: reportDraft },
-                      {
-                        onSuccess: () => setSelectedAppointmentId(null),
-                      },
-                    );
-                  }
-                }}
-              >
-                {confirm.isPending ? 'Confirmando...' : 'Confirmar atendimento'}
-              </button>
-            )}
-            {selectedAppointment.status === 'COMPLETED' && canEditReport && (
-              <button
-                className="btn btn-primary"
-                disabled={updateReport.isPending || !reportDirty}
-                onClick={() => {
-                  updateReport.mutate(
-                    { id: selectedAppointment.id, report: reportDraft },
-                    {
-                      onSuccess: () => setSelectedAppointmentId(null),
-                    },
-                  );
-                }}
-              >
-                {updateReport.isPending ? 'Salvando...' : 'Salvar relatório'}
-              </button>
-            )}
-            {isAdmin && selectedAppointment.status !== 'CANCELLED' && selectedAppointment.status !== 'COMPLETED' && (
-              <button
-                className="btn btn-danger"
-                disabled={cancel.isPending}
-                onClick={() => {
-                  if (window.confirm(
-                    selectedAppointment.status === 'PENDING'
-                      ? 'Recusar esta solicitação de agendamento?'
-                      : 'Cancelar este agendamento?',
-                  )) {
-                    cancel.mutate(selectedAppointment.id, {
-                      onSuccess: () => setSelectedAppointmentId(null),
-                    });
-                  }
-                }}
-              >
-                {selectedAppointment.status === 'PENDING' ? 'Recusar solicitação' : 'Cancelar agendamento'}
-              </button>
-            )}
-            <button className="btn btn-secondary" onClick={() => setSelectedAppointmentId(null)}>
-              Fechar
-            </button>
-          </div>
-        </Modal>
+        <AppointmentDetailsModal
+          appointment={selectedAppointment}
+          report={reportDraft}
+          onReportChange={setReportDraft}
+          canEditReport={canEditReport}
+          isAdmin={isAdmin}
+          whatsappUrl={whatsappConfirmUrl}
+          busy={{ accept: accept.isPending, confirm: confirm.isPending, save: updateReport.isPending, cancel: cancel.isPending }}
+          onClose={() => setSelectedAppointmentId(null)}
+          onAccept={() => {
+            if (window.confirm('Aceitar esta solicitação e confirmar o horário na agenda?')) {
+              accept.mutate(selectedAppointment.id, {
+                onSuccess: () => {
+                  window.dispatchEvent(new CustomEvent('app:toast', {
+                    detail: { message: 'Agendamento aceito. Envie a confirmação pelo WhatsApp.' },
+                  }));
+                },
+              });
+            }
+          }}
+          onConfirm={() => {
+            const label = selectedAppointment.procedure
+              ? `Confirmar atendimento e registrar pagamento de ${money(selectedAppointment.procedure.price)}?`
+              : 'Confirmar atendimento?';
+            if (window.confirm(label)) {
+              confirm.mutate(
+                { id: selectedAppointment.id, report: reportDraft },
+                { onSuccess: () => setSelectedAppointmentId(null) },
+              );
+            }
+          }}
+          onSaveReport={() => {
+            updateReport.mutate(
+              { id: selectedAppointment.id, report: reportDraft },
+              { onSuccess: () => setSelectedAppointmentId(null) },
+            );
+          }}
+          onCancel={() => {
+            if (window.confirm(selectedAppointment.status === 'PENDING'
+              ? 'Recusar esta solicitação de agendamento?'
+              : 'Cancelar este agendamento?')) {
+              cancel.mutate(selectedAppointment.id, { onSuccess: () => setSelectedAppointmentId(null) });
+            }
+          }}
+        />
       )}
 
       {isAdmin && open && (

@@ -44,8 +44,6 @@ class PatientControllerTest {
     @Mock
     private TreatmentRecordRepository treatments;
     @Mock
-    private OdontogramEntryRepository odontograms;
-    @Mock
     private TreatmentPlanRepository plans;
     @Mock
     private PatientPaymentRepository payments;

@@ -81,6 +81,13 @@
   padding: 20px;
 }
 
+.patient-panel:has(.odg-workspace) {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .patient-form {
   max-width: 920px;
 }
@@ -305,6 +312,24 @@
 .lgpd-panel {
   display: grid;
   gap: 18px;
+}
+
+.finance-forms {
+  gap: 28px;
+  align-items: start;
+}
+
+.finance-card {
+  max-width: none;
+  padding: 20px;
+  border: 1px solid rgba(196, 199, 199, 0.55);
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.finance-card .section-title {
+  margin-top: 0;
+  margin-bottom: 4px;
 }
 
 @media (max-width: 900px) {

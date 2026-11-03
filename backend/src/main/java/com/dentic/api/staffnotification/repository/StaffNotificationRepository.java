@@ -16,26 +16,78 @@ public interface StaffNotificationRepository extends JpaRepository<StaffNotifica
         SELECT n FROM StaffNotification n
         LEFT JOIN FETCH n.appointment
         WHERE n.clinic.id = :clinicId
+          AND n.recipientProfessional IS NULL
         ORDER BY n.createdAt DESC
         """)
-    List<StaffNotification> findRecentByClinicId(@Param("clinicId") UUID clinicId);
+    List<StaffNotification> findClinicInbox(@Param("clinicId") UUID clinicId);
 
     @Query("""
         SELECT n FROM StaffNotification n
         LEFT JOIN FETCH n.appointment
         WHERE n.clinic.id = :clinicId
+          AND n.recipientProfessional IS NULL
           AND n.readAt IS NULL
         ORDER BY n.createdAt DESC
         """)
-    List<StaffNotification> findUnreadByClinicId(@Param("clinicId") UUID clinicId);
+    List<StaffNotification> findUnreadClinicInbox(@Param("clinicId") UUID clinicId);
 
-    long countByClinicIdAndReadAtIsNull(UUID clinicId);
+    @Query("""
+        SELECT COUNT(n) FROM StaffNotification n
+        WHERE n.clinic.id = :clinicId
+          AND n.recipientProfessional IS NULL
+          AND n.readAt IS NULL
+        """)
+    long countUnreadClinicInbox(@Param("clinicId") UUID clinicId);
+
+    @Query("""
+        SELECT n FROM StaffNotification n
+        LEFT JOIN FETCH n.appointment
+        WHERE n.clinic.id = :clinicId
+          AND n.recipientProfessional.id = :professionalId
+        ORDER BY n.createdAt DESC
+        """)
+    List<StaffNotification> findForProfessional(
+            @Param("clinicId") UUID clinicId,
+            @Param("professionalId") UUID professionalId
+    );
+
+    @Query("""
+        SELECT n FROM StaffNotification n
+        LEFT JOIN FETCH n.appointment
+        WHERE n.clinic.id = :clinicId
+          AND n.recipientProfessional.id = :professionalId
+          AND n.readAt IS NULL
+        ORDER BY n.createdAt DESC
+        """)
+    List<StaffNotification> findUnreadForProfessional(
+            @Param("clinicId") UUID clinicId,
+            @Param("professionalId") UUID professionalId
+    );
+
+    @Query("""
+        SELECT COUNT(n) FROM StaffNotification n
+        WHERE n.clinic.id = :clinicId
+          AND n.recipientProfessional.id = :professionalId
+          AND n.readAt IS NULL
+        """)
+    long countUnreadForProfessional(
+            @Param("clinicId") UUID clinicId,
+            @Param("professionalId") UUID professionalId
+    );
 
     Optional<StaffNotification> findByIdAndClinic_Id(UUID id, UUID clinicId);
 
     List<StaffNotification> findByAppointment_IdAndClinic_Id(UUID appointmentId, UUID clinicId);
 
     @Modifying(clearAutomatically = true)
-    @Query("DELETE FROM StaffNotification n WHERE n.clinic.id = :clinicId")
-    int deleteByClinicId(@Param("clinicId") UUID clinicId);
+    @Query("DELETE FROM StaffNotification n WHERE n.clinic.id = :clinicId AND n.recipientProfessional IS NULL")
+    int deleteClinicInbox(@Param("clinicId") UUID clinicId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("""
+        DELETE FROM StaffNotification n
+        WHERE n.clinic.id = :clinicId
+          AND n.recipientProfessional.id = :professionalId
+        """)
+    int deleteForProfessional(@Param("clinicId") UUID clinicId, @Param("professionalId") UUID professionalId);
 }

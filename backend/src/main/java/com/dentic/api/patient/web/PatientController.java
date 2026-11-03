@@ -35,7 +35,6 @@ public class PatientController {
     private final ProfessionalRepository professionals;
     private final PatientAnamnesisRepository anamneses;
     private final TreatmentRecordRepository treatments;
-    private final OdontogramEntryRepository odontograms;
     private final TreatmentPlanRepository plans;
     private final PatientPaymentRepository payments;
     private final PatientInsuranceRepository insurances;
@@ -48,7 +47,6 @@ public class PatientController {
             ProfessionalRepository professionals,
             PatientAnamnesisRepository anamneses,
             TreatmentRecordRepository treatments,
-            OdontogramEntryRepository odontograms,
             TreatmentPlanRepository plans,
             PatientPaymentRepository payments,
             PatientInsuranceRepository insurances,
@@ -60,7 +58,6 @@ public class PatientController {
         this.professionals = professionals;
         this.anamneses = anamneses;
         this.treatments = treatments;
-        this.odontograms = odontograms;
         this.plans = plans;
         this.payments = payments;
         this.insurances = insurances;
@@ -70,7 +67,9 @@ public class PatientController {
 
     @ModelAttribute
     void requireStaffAccess() {
-        SecurityUtils.requireAdminOrSecretary();
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isSecretary() && !SecurityUtils.isDentist()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
+        }
     }
 
     @GetMapping
@@ -144,6 +143,7 @@ public class PatientController {
     @DeleteMapping("/{id}/personal-data")
     @Transactional
     public ResponseEntity<Void> anonymizePersonalData(@PathVariable UUID id) {
+        SecurityUtils.requireAdmin();
         Patient patient = requirePatient(id);
         patient.setName("Paciente anonimizado");
         patient.setPhone("anon-" + id);
@@ -243,46 +243,6 @@ public class PatientController {
         }
         logAccess(id, "UPDATE", "treatments");
         return TreatmentResponse.from(treatments.save(record));
-    }
-
-    // --- Odontogram ---
-    @GetMapping("/{id}/odontogram")
-    @Transactional(readOnly = true)
-    public List<OdontogramResponse> getOdontogram(@PathVariable UUID id) {
-        requirePatient(id);
-        logAccess(id, "VIEW", "odontogram");
-        Map<String, OdontogramEntry> latest = new LinkedHashMap<>();
-        for (OdontogramEntry entry : odontograms.findByPatientIdOrderByRecordedAtDesc(id)) {
-            latest.putIfAbsent(entry.getToothNumber(), entry);
-        }
-        return latest.values().stream().map(OdontogramResponse::from).toList();
-    }
-
-    @PutMapping("/{id}/odontogram")
-    @Transactional
-    public List<OdontogramResponse> putOdontogram(@PathVariable UUID id, @RequestBody List<OdontogramRequest> requests) {
-        Patient patient = requirePatient(id);
-        for (OdontogramRequest request : requests) {
-            OdontogramEntry entry = new OdontogramEntry();
-            entry.setPatient(patient);
-            entry.setToothNumber(request.toothNumber());
-            entry.setSurface(request.surface());
-            entry.setStatus(request.status() == null ? "HEALTHY" : request.status());
-            entry.setProcedureType(request.procedureType());
-            entry.setNotes(request.notes());
-            if (request.professionalId() != null) {
-                entry.setProfessional(professionals.findById(request.professionalId())
-                        .filter(p -> p.getClinic().getId().equals(clinicId()))
-                        .orElse(null));
-            }
-            odontograms.save(entry);
-        }
-        logAccess(id, "UPDATE", "odontogram");
-        Map<String, OdontogramEntry> latest = new LinkedHashMap<>();
-        for (OdontogramEntry entry : odontograms.findByPatientIdOrderByRecordedAtDesc(id)) {
-            latest.putIfAbsent(entry.getToothNumber(), entry);
-        }
-        return latest.values().stream().map(OdontogramResponse::from).toList();
     }
 
     // --- Billing ---
@@ -565,13 +525,6 @@ public class PatientController {
                     r.getProfessional() == null ? null : r.getProfessional().getId(),
                     r.getProfessional() == null ? null : r.getProfessional().getName()
             );
-        }
-    }
-
-    public record OdontogramRequest(String toothNumber, String surface, String status, String procedureType, String notes, UUID professionalId) {}
-    public record OdontogramResponse(UUID id, String toothNumber, String surface, String status, String procedureType, String notes, OffsetDateTime recordedAt) {
-        static OdontogramResponse from(OdontogramEntry e) {
-            return new OdontogramResponse(e.getId(), e.getToothNumber(), e.getSurface(), e.getStatus(), e.getProcedureType(), e.getNotes(), e.getRecordedAt());
         }
     }
 

@@ -2,6 +2,7 @@ package com.dentic.api.professional.web;
 
 import com.dentic.api.multitenant.TenantContext;
 import com.dentic.api.appointment.repository.AppointmentRepository;
+import com.dentic.api.odontogram.repository.ToothProcedureRepository;
 import com.dentic.api.onboarding.repository.ClinicRepository;
 import com.dentic.api.onboarding.repository.UserRepository;
 import com.dentic.api.patient.repository.OdontogramEntryRepository;
@@ -36,6 +37,7 @@ public class ProfessionalController {
     private final PatientPaymentRepository patientPayments;
     private final TreatmentRecordRepository treatmentRecords;
     private final OdontogramEntryRepository odontogramEntries;
+    private final ToothProcedureRepository toothProcedures;
     private final RefreshTokenRepository refreshTokens;
     private final String frontendUrl;
 
@@ -49,6 +51,7 @@ public class ProfessionalController {
             PatientPaymentRepository patientPayments,
             TreatmentRecordRepository treatmentRecords,
             OdontogramEntryRepository odontogramEntries,
+            ToothProcedureRepository toothProcedures,
             RefreshTokenRepository refreshTokens,
             @Value("${dentic.frontend.url:http://localhost:5173}") String frontendUrl
     ) {
@@ -61,20 +64,15 @@ public class ProfessionalController {
         this.patientPayments = patientPayments;
         this.treatmentRecords = treatmentRecords;
         this.odontogramEntries = odontogramEntries;
+        this.toothProcedures = toothProcedures;
         this.refreshTokens = refreshTokens;
         this.frontendUrl = frontendUrl.replaceAll("/$", "");
-    }
-
-    @ModelAttribute
-    void denyDentistAccess() {
-        if (SecurityUtils.isDentist()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
-        }
     }
 
     @GetMapping
     @Transactional(readOnly = true)
     public PageResponse<ProfessionalResponse> list() {
+        requireClinicStaff();
         List<ProfessionalResponse> data = professionals.findByClinicId(tenant()).stream()
                 .map(professional -> ProfessionalResponse.from(
                         professional,
@@ -142,6 +140,8 @@ public class ProfessionalController {
         patients.clearPreferredProfessional(id);
         treatmentRecords.clearProfessional(id);
         odontogramEntries.clearProfessional(id);
+        toothProcedures.clearProfessional(id);
+        toothProcedures.clearAppointmentByProfessionalId(id);
         patientPayments.clearAppointmentByProfessionalId(id);
         appointments.deleteByProfessionalId(id);
 
@@ -160,6 +160,12 @@ public class ProfessionalController {
 
     private String buildInviteUrl(String rawToken) {
         return frontendUrl + "/convite/" + rawToken;
+    }
+
+    private static void requireClinicStaff() {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isSecretary() && !SecurityUtils.isDentist()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
+        }
     }
 
     private UUID tenant() {

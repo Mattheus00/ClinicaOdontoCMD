@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AppFeedback } from './components/AppFeedback';
 import MobileTopbar from './components/MobileTopbar';
 import Sidebar from './components/Sidebar';
+import WelcomeTour from './components/WelcomeTour';
 import './components/Sidebar.css';
 import './components/MobileTopbar.css';
 
@@ -19,6 +20,7 @@ const DentistsPage = lazy(() => import('./pages/dashboard/DentistsPage'));
 const FinancialDashboardPage = lazy(() => import('./pages/dashboard/FinancialDashboardPage'));
 const ProceduresPage = lazy(() => import('./pages/dashboard/ProceduresPage'));
 const StockPage = lazy(() => import('./pages/dashboard/StockPage'));
+const OdontogramPage = lazy(() => import('./pages/dashboard/OdontogramPage'));
 const OnboardingPage = lazy(() => import('./pages/dashboard/OnboardingPage'));
 const BookingLinkPage = lazy(() => import('./pages/dashboard/BookingLinkPage'));
 const PublicBookingPage = lazy(() => import('./pages/public/PublicBookingPage'));
@@ -35,6 +37,7 @@ function DashboardLayout() {
           <Outlet />
         </Suspense>
       </main>
+      <WelcomeTour />
     </div>
   );
 }
@@ -77,7 +80,7 @@ function AppRoutes() {
             <Route
               path="/patients"
               element={
-                <RequireRole roles={['ADMIN', 'SECRETARY']}>
+                <RequireRole roles={['ADMIN', 'SECRETARY', 'DENTIST']}>
                   <PatientsPage />
                 </RequireRole>
               }
@@ -85,8 +88,16 @@ function AppRoutes() {
             <Route
               path="/patients/:id"
               element={
-                <RequireRole roles={['ADMIN', 'SECRETARY']}>
+                <RequireRole roles={['ADMIN', 'SECRETARY', 'DENTIST']}>
                   <PatientDetailPage />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/odontograma/:patientId"
+              element={
+                <RequireRole roles={['ADMIN', 'SECRETARY', 'DENTIST']}>
+                  <OdontogramPage />
                 </RequireRole>
               }
             />

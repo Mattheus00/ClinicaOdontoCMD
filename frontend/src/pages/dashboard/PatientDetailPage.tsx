@@ -4,16 +4,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ErrorState, LoadingState } from '../../components/AsyncState';
+import { DentalChartWorkspace } from '../../components/dental-chart/DentalChartWorkspace';
 import { useProfessionals } from '../../features/professionals/api';
 import {
   useAnamnesis,
   useBillingSummary,
-  useCreatePatientInsurance,
   useCreatePatientPayment,
   useCreateTreatmentPlan,
   usePatient,
   usePatientAppointments,
-  usePatientInsurances,
   usePatientPayments,
   usePatientSummary,
   useSaveAnamnesis,
@@ -118,11 +117,12 @@ function buildPatientPayload(values: PatientCadastroForm): PatientInput {
   };
 }
 
-type Tab = 'cadastro' | 'anamnese' | 'consultas' | 'financeiro';
+type Tab = 'cadastro' | 'anamnese' | 'odontograma' | 'consultas' | 'financeiro';
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'cadastro', label: 'Cadastro' },
   { id: 'anamnese', label: 'Anamnese' },
+  { id: 'odontograma', label: 'Odontograma' },
   { id: 'consultas', label: 'Consultas' },
   { id: 'financeiro', label: 'Financeiro' },
 ];
@@ -154,8 +154,6 @@ export default function PatientDetailPage() {
   const createPlan = useCreateTreatmentPlan(id);
   const payments = usePatientPayments(id, tab === 'financeiro');
   const createPayment = useCreatePatientPayment(id);
-  const insurances = usePatientInsurances(id, tab === 'financeiro');
-  const createInsurance = useCreatePatientInsurance(id);
   const history = usePatientAppointments(id, tab === 'consultas');
 
   const cadastroForm = useForm<PatientCadastroForm>({
@@ -174,7 +172,6 @@ export default function PatientDetailPage() {
   const anamnesisForm = useForm<Anamnesis>();
   const planForm = useForm<{ title: string; dueDate?: string; description: string; unitPrice: number; status: string }>();
   const paymentForm = useForm<{ amount: number; method: string; notes?: string }>();
-  const insuranceForm = useForm<{ providerName: string; planName?: string; cardNumber?: string }>();
 
   useEffect(() => {
     if (patient.data) {
@@ -265,6 +262,8 @@ export default function PatientDetailPage() {
       </div>
 
       <div className="patient-panel">
+        {tab === 'odontograma' && <DentalChartWorkspace key={id} patientId={id} />}
+
         {tab === 'cadastro' && (
           <form className="form-grid patient-form" noValidate onSubmit={handleSaveCadastro}>
             <h3 className="full-width section-title">Contato</h3>
@@ -564,9 +563,9 @@ export default function PatientDetailPage() {
               </article>
             </div>
 
-            <div className="split-panel">
+            <div className="split-panel finance-forms">
               <form
-                className="form-grid patient-form"
+                className="form-grid patient-form finance-card"
                 onSubmit={planForm.handleSubmit(async (values) => {
                   await createPlan.mutateAsync({
                     title: values.title,
@@ -606,7 +605,7 @@ export default function PatientDetailPage() {
               </form>
 
               <form
-                className="form-grid patient-form"
+                className="form-grid patient-form finance-card"
                 onSubmit={paymentForm.handleSubmit(async (values) => {
                   await createPayment.mutateAsync({ ...values, amount: Number(values.amount) });
                   paymentForm.reset({ method: 'PIX', amount: 0 });
@@ -660,39 +659,6 @@ export default function PatientDetailPage() {
                   </article>
                 ))}
               </div>
-            </div>
-
-            <form
-              className="form-grid patient-form"
-              onSubmit={insuranceForm.handleSubmit(async (values) => {
-                await createInsurance.mutateAsync(values);
-                insuranceForm.reset();
-              })}
-            >
-              <h3 className="full-width section-title">Convênio</h3>
-              <label>
-                Operadora
-                <input {...insuranceForm.register('providerName', { required: true })} />
-              </label>
-              <label>
-                Plano
-                <input {...insuranceForm.register('planName')} />
-              </label>
-              <label>
-                Carteirinha
-                <input {...insuranceForm.register('cardNumber')} />
-              </label>
-              <button className="btn btn-secondary">Salvar convênio</button>
-            </form>
-            <div className="history-list">
-              {insurances.data?.map((item) => (
-                <article key={item.id}>
-                  <strong>{item.providerName}</strong>
-                  <span>
-                    {item.planName ?? '—'} · {item.status}
-                  </span>
-                </article>
-              ))}
             </div>
           </div>
         )}

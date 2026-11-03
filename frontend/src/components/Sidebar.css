@@ -5,11 +5,11 @@
   margin-bottom: 12px;
   padding: 8px 10px;
   border: 1px solid rgba(196, 199, 199, 0.4);
-  border-radius: var(--radius-md);
-  background: #fff;
+  border-radius: 12px;
+  background: #fcfbf8;
 }
 
-.sidebar-notifications span {
+.sidebar-notifications > span {
   font-size: 12px;
   font-weight: 600;
   color: var(--color-text-secondary);
@@ -60,6 +60,14 @@
 .sidebar-logout-btn:hover {
   background: var(--color-bg-card);
   color: var(--color-danger);
+}
+
+.sidebar-tour-btn {
+  margin-bottom: 4px;
+}
+
+.sidebar-tour-btn:hover {
+  color: var(--color-secondary);
 }
 
 /* Sidebar.css loads after the theme — keep mobile bottom bar horizontal. */

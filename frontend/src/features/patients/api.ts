@@ -6,7 +6,6 @@ import {
   type Anamnesis,
   type AppointmentHistory,
   type BillingSummary,
-  type OdontogramEntry,
   type Patient,
   type PatientInput,
   type PatientInsurance,
@@ -107,23 +106,6 @@ export function useCreateTreatment(id: string) {
     mutationFn: async (input: { procedureName: string; notes?: string; performedAt?: string; professionalId?: string; status?: string }) =>
       (await api.post<TreatmentRecord>(`/patients/${id}/treatments`, input)).data,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['treatments', id] }),
-  });
-}
-
-export function useOdontogram(id?: string) {
-  return useQuery({
-    queryKey: ['odontogram', id],
-    enabled: Boolean(id),
-    queryFn: async () => (await api.get<OdontogramEntry[]>(`/patients/${id}/odontogram`)).data,
-  });
-}
-
-export function useSaveOdontogram(id: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (entries: Array<{ toothNumber: string; status: string; procedureType?: string; notes?: string; surface?: string }>) =>
-      (await api.put<OdontogramEntry[]>(`/patients/${id}/odontogram`, entries)).data,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['odontogram', id] }),
   });
 }
 

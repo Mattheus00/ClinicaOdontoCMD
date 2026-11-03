@@ -4,9 +4,11 @@ import com.dentic.api.multitenant.TenantContext;
 import com.dentic.api.security.SecurityUtils;
 import com.dentic.api.staffnotification.domain.StaffNotification;
 import com.dentic.api.staffnotification.repository.StaffNotificationRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -25,15 +27,25 @@ public class StaffNotificationController {
     @GetMapping
     @Transactional(readOnly = true)
     public NotificationListResponse list(@RequestParam(defaultValue = "false") boolean unreadOnly) {
-        SecurityUtils.requireAdminOrSecretary();
+        requireStaff();
         UUID clinicId = tenant();
-        List<StaffNotification> items = unreadOnly
-                ? notifications.findUnreadByClinicId(clinicId)
-                : notifications.findRecentByClinicId(clinicId);
+        List<StaffNotification> items;
+        long unreadCount;
+        if (SecurityUtils.isDentist()) {
+            UUID professionalId = SecurityUtils.requireProfessionalId();
+            items = unreadOnly
+                    ? notifications.findUnreadForProfessional(clinicId, professionalId)
+                    : notifications.findForProfessional(clinicId, professionalId);
+            unreadCount = notifications.countUnreadForProfessional(clinicId, professionalId);
+        } else {
+            items = unreadOnly
+                    ? notifications.findUnreadClinicInbox(clinicId)
+                    : notifications.findClinicInbox(clinicId);
+            unreadCount = notifications.countUnreadClinicInbox(clinicId);
+        }
         if (items.size() > 30) {
             items = items.subList(0, 30);
         }
-        long unreadCount = notifications.countByClinicIdAndReadAtIsNull(clinicId);
         return new NotificationListResponse(
                 unreadCount,
                 items.stream().map(NotificationResponse::from).toList()
@@ -43,9 +55,8 @@ public class StaffNotificationController {
     @PostMapping("/{id}/read")
     @Transactional
     public ResponseEntity<NotificationResponse> markRead(@PathVariable UUID id) {
-        SecurityUtils.requireAdminOrSecretary();
-        StaffNotification notification = notifications.findByIdAndClinic_Id(id, tenant())
-                .orElseThrow(() -> new IllegalArgumentException("Notificação não encontrada."));
+        requireStaff();
+        StaffNotification notification = requireAccessible(id);
         if (notification.getReadAt() == null) {
             notification.setReadAt(OffsetDateTime.now());
             notifications.save(notification);
@@ -56,10 +67,13 @@ public class StaffNotificationController {
     @PostMapping("/read-all")
     @Transactional
     public ResponseEntity<Void> markAllRead() {
-        SecurityUtils.requireAdminOrSecretary();
+        requireStaff();
         UUID clinicId = tenant();
         OffsetDateTime now = OffsetDateTime.now();
-        for (StaffNotification notification : notifications.findUnreadByClinicId(clinicId)) {
+        List<StaffNotification> unread = SecurityUtils.isDentist()
+                ? notifications.findUnreadForProfessional(clinicId, SecurityUtils.requireProfessionalId())
+                : notifications.findUnreadClinicInbox(clinicId);
+        for (StaffNotification notification : unread) {
             notification.setReadAt(now);
         }
         return ResponseEntity.noContent().build();
@@ -68,9 +82,34 @@ public class StaffNotificationController {
     @DeleteMapping
     @Transactional
     public ResponseEntity<Void> clearAll() {
-        SecurityUtils.requireAdminOrSecretary();
-        notifications.deleteByClinicId(tenant());
+        requireStaff();
+        if (SecurityUtils.isDentist()) {
+            notifications.deleteForProfessional(tenant(), SecurityUtils.requireProfessionalId());
+        } else {
+            notifications.deleteClinicInbox(tenant());
+        }
         return ResponseEntity.noContent().build();
+    }
+
+    private StaffNotification requireAccessible(UUID id) {
+        StaffNotification notification = notifications.findByIdAndClinic_Id(id, tenant())
+                .orElseThrow(() -> new IllegalArgumentException("Notificação não encontrada."));
+        if (SecurityUtils.isDentist()) {
+            UUID professionalId = SecurityUtils.requireProfessionalId();
+            if (notification.getRecipientProfessional() == null
+                    || !professionalId.equals(notification.getRecipientProfessional().getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
+            }
+        } else if (notification.getRecipientProfessional() != null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
+        }
+        return notification;
+    }
+
+    private static void requireStaff() {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isSecretary() && !SecurityUtils.isDentist()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
+        }
     }
 
     private UUID tenant() {

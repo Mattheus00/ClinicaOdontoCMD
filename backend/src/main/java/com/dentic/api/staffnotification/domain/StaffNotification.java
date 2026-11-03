@@ -2,6 +2,7 @@ package com.dentic.api.staffnotification.domain;
 
 import com.dentic.api.appointment.domain.Appointment;
 import com.dentic.api.onboarding.domain.Clinic;
+import com.dentic.api.professional.domain.Professional;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,11 @@ public class StaffNotification {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
+
+    /** Null = clinic inbox (admin/secretary). Set = only that dentist sees it. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipient_professional_id")
+    private Professional recipientProfessional;
 
     @Column(nullable = false, length = 40)
     private String type;

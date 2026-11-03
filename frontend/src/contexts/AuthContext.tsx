@@ -7,6 +7,7 @@ type Role = 'ADMIN' | 'SECRETARY' | 'DENTIST';
 interface AuthContextType {
   accessToken: string | null;
   role: Role | null;
+  userId: string | null;
   professionalId: string | null;
   isAuthenticated: boolean;
   isInitializing: boolean;
@@ -14,9 +15,10 @@ interface AuthContextType {
   logout: () => void;
 }
 
-function readTokenClaims(token: string): { role: Role | null; professionalId: string | null } {
+function readTokenClaims(token: string): { role: Role | null; userId: string | null; professionalId: string | null } {
   try {
     const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))) as {
+      sub?: unknown;
       role?: unknown;
       professional_id?: unknown;
     };
@@ -24,10 +26,11 @@ function readTokenClaims(token: string): { role: Role | null; professionalId: st
       payload.role === 'ADMIN' || payload.role === 'SECRETARY' || payload.role === 'DENTIST'
         ? payload.role
         : null;
+    const userId = typeof payload.sub === 'string' ? payload.sub : null;
     const professionalId = typeof payload.professional_id === 'string' ? payload.professional_id : null;
-    return { role, professionalId };
+    return { role, userId, professionalId };
   } catch {
-    return { role: null, professionalId: null };
+    return { role: null, userId: null, professionalId: null };
   }
 }
 
@@ -62,6 +65,7 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [role, setRole] = useState<Role | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [professionalId, setProfessionalId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const accessTokenRef = useRef<string | null>(null);
@@ -71,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     accessTokenRef.current = token;
     setAccessToken(token);
     setRole(claims.role);
+    setUserId(claims.userId);
     setProfessionalId(claims.professionalId);
   }, []);
 
@@ -82,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     accessTokenRef.current = null;
     setAccessToken(null);
     setRole(null);
+    setUserId(null);
     setProfessionalId(null);
   }, []);
 
@@ -124,6 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         accessToken,
         role,
+        userId,
         professionalId,
         isAuthenticated: Boolean(accessToken),
         isInitializing,

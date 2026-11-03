@@ -1,8 +1,19 @@
-import { CalendarDays, CircleDollarSign, ClipboardList, Link2, LogOut, Package, Stethoscope, UsersRound } from 'lucide-react';
+import {
+  CalendarDays,
+  CircleDollarSign,
+  CircleHelp,
+  ClipboardList,
+  Link2,
+  LogOut,
+  Package,
+  Stethoscope,
+  UsersRound,
+} from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useMediaQuery } from '../lib/useMediaQuery';
 import StaffNotificationBell from './StaffNotificationBell';
+import { openWelcomeTour } from '../lib/welcomeTour';
 import './Sidebar.css';
 import './StaffNotificationBell.css';
 
@@ -18,7 +29,7 @@ const allNavItems: Array<{
   roles: AppRole[];
 }> = [
   { to: '/agenda', label: 'Agenda', shortLabel: 'Agenda', icon: CalendarDays, roles: ['ADMIN', 'SECRETARY', 'DENTIST'] },
-  { to: '/patients', label: 'Pacientes', shortLabel: 'Pacientes', icon: UsersRound, roles: ['ADMIN', 'SECRETARY'] },
+  { to: '/patients', label: 'Pacientes', shortLabel: 'Pacientes', icon: UsersRound, roles: ['ADMIN', 'SECRETARY', 'DENTIST'] },
   { to: '/dentists', label: 'Dentistas', shortLabel: 'Dentistas', icon: Stethoscope, roles: ['ADMIN', 'SECRETARY'] },
   { to: '/financial', label: 'Financeiro', shortLabel: 'Finanças', icon: CircleDollarSign, roles: ['ADMIN', 'SECRETARY', 'DENTIST'] },
   { to: '/procedures', label: 'Procedimentos', shortLabel: 'Proced.', icon: ClipboardList, roles: ['ADMIN', 'SECRETARY'] },
@@ -30,7 +41,7 @@ export default function Sidebar() {
   const { logout, role } = useAuth();
   const isMobile = useMediaQuery('(max-width: 800px)');
   const navItems = allNavItems.filter((item) => (role ? item.roles.includes(role) : true));
-  const canManageBookings = role === 'ADMIN' || role === 'SECRETARY';
+  const showNotifications = role === 'ADMIN' || role === 'SECRETARY' || role === 'DENTIST';
 
   return (
     <aside className="sidebar">
@@ -39,10 +50,10 @@ export default function Sidebar() {
         <small>{role === 'DENTIST' ? 'Portal do dentista' : 'Portal de gestão'}</small>
       </div>
 
-      {canManageBookings ? (
+      {showNotifications ? (
         <div className="sidebar-notifications">
           <StaffNotificationBell enabled={!isMobile} />
-          <span>Solicitações online</span>
+          <span>{role === 'DENTIST' ? 'Suas notificações' : 'Solicitações online'}</span>
         </div>
       ) : null}
 
@@ -57,6 +68,10 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
+        <button type="button" className="sidebar-logout-btn sidebar-tour-btn" onClick={openWelcomeTour}>
+          <CircleHelp size={17} />
+          Tutorial
+        </button>
         <button type="button" className="sidebar-logout-btn" onClick={logout}>
           <LogOut size={17} />
           Sair

@@ -95,16 +95,6 @@ export type TreatmentRecord = {
   professionalName?: string | null;
 };
 
-export type OdontogramEntry = {
-  id: string;
-  toothNumber: string;
-  surface?: string | null;
-  status: string;
-  procedureType?: string | null;
-  notes?: string | null;
-  recordedAt: string;
-};
-
 export type TreatmentPlanItem = { id?: string; description: string; quantity: number; unitPrice: number };
 export type TreatmentPlan = {
   id: string;

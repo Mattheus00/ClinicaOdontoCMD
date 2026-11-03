@@ -1,0 +1,86 @@
+.welcome-tour {
+  display: grid;
+  gap: 12px;
+}
+
+.welcome-tour-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: var(--color-secondary-container);
+  color: var(--color-secondary);
+}
+
+.welcome-tour h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.welcome-tour p {
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.welcome-tour ul {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding-left: 20px;
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.welcome-tour-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.welcome-tour-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-border);
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.welcome-tour-dots span.is-active {
+  width: 22px;
+  background: var(--color-secondary);
+}
+
+.welcome-tour-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.welcome-tour-actions > div {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 800px) {
+  .welcome-tour-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .welcome-tour-actions > div {
+    flex-direction: column-reverse;
+  }
+
+  .welcome-tour-actions .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+}

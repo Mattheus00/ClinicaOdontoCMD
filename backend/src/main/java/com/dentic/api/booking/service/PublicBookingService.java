@@ -211,17 +211,28 @@ public class PublicBookingService {
         }
 
         String whenLabel = startsAt.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm"));
-        StaffNotification notification = new StaffNotification();
-        notification.setClinic(clinic);
-        notification.setAppointment(appointment);
-        notification.setType("BOOKING_REQUEST");
-        notification.setTitle("Nova solicitação de agendamento");
-        notification.setMessage(
-                patient.getName() + " pediu " + procedure.getName()
-                        + " com " + professional.getName()
-                        + " em " + whenLabel + "."
+        String clinicMessage = patient.getName() + " pediu " + procedure.getName()
+                + " com " + professional.getName()
+                + " em " + whenLabel + ".";
+
+        StaffNotification clinicInbox = new StaffNotification();
+        clinicInbox.setClinic(clinic);
+        clinicInbox.setAppointment(appointment);
+        clinicInbox.setType("BOOKING_REQUEST");
+        clinicInbox.setTitle("Nova solicitação de agendamento");
+        clinicInbox.setMessage(clinicMessage);
+        staffNotifications.save(clinicInbox);
+
+        StaffNotification dentistInbox = new StaffNotification();
+        dentistInbox.setClinic(clinic);
+        dentistInbox.setAppointment(appointment);
+        dentistInbox.setRecipientProfessional(professional);
+        dentistInbox.setType("BOOKING_REQUEST");
+        dentistInbox.setTitle("Nova solicitação na sua agenda");
+        dentistInbox.setMessage(
+                patient.getName() + " pediu " + procedure.getName() + " com você em " + whenLabel + "."
         );
-        staffNotifications.save(notification);
+        staffNotifications.save(dentistInbox);
 
         return new PublicBookingConfirmation(
                 appointment.getId(),

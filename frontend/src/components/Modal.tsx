@@ -1,11 +1,13 @@
-import { type ReactNode, useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useEffectEvent, useId, useRef } from 'react';
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function Modal({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
+export function Modal({ title, children, onClose, className = '' }: { title: string; children: ReactNode; onClose: () => void; className?: string }) {
   const dialogRef = useRef<HTMLElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
+  const titleId = useId();
+  const closeOnEscape = useEffectEvent(onClose);
 
   useEffect(() => {
     previousFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -19,7 +21,7 @@ export function Modal({ title, children, onClose }: { title: string; children: R
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        onClose();
+        closeOnEscape();
         return;
       }
       if (event.key !== 'Tab' || !dialog) return;
@@ -49,21 +51,21 @@ export function Modal({ title, children, onClose }: { title: string; children: R
       document.body.style.overflow = previousOverflow;
       previousFocus.current?.focus();
     };
-  }, [onClose]);
+  }, []);
 
   return (
     <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
       <section
         ref={dialogRef}
-        className="modal"
+        className={`modal ${className}`.trim()}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="modal-title"
+        aria-labelledby={titleId}
         tabIndex={-1}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="modal-header">
-          <h2 id="modal-title">{title}</h2>
+          <h2 id={titleId}>{title}</h2>
           <button type="button" className="icon-button" aria-label="Fechar" onClick={onClose}>
             ×
           </button>

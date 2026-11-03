@@ -103,7 +103,14 @@ public class AppointmentController {
         value.setDurationMinutes(resolveDurationMinutes(request.durationMinutes()));
         value.setStatus("SCHEDULED");
         try {
-            return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+            Appointment saved = appointments.save(value);
+            notifyDentist(
+                    saved,
+                    "APPOINTMENT_SCHEDULED",
+                    "Nova consulta na sua agenda",
+                    dentistAppointmentMessage(saved, "foi marcada")
+            );
+            return ResponseEntity.ok(AppointmentResponse.from(saved));
         } catch (org.springframework.dao.DataIntegrityViolationException ex) {
             throw new IllegalArgumentException("Este horário não está mais disponível. Escolha outro.");
         }
@@ -125,6 +132,8 @@ public class AppointmentController {
         if ("COMPLETED".equals(value.getStatus()) || "NO_SHOW".equals(value.getStatus())) {
             throw new IllegalArgumentException("Não é possível remarcar um agendamento finalizado.");
         }
+        UUID previousProfessionalId = value.getProfessional() == null ? null : value.getProfessional().getId();
+        OffsetDateTime previousStart = value.getScheduledAt();
         OffsetDateTime start = localAppointmentTime(request.startsAt());
         value.setScheduledAt(start);
         if (request.durationMinutes() != null) {
@@ -137,7 +146,27 @@ public class AppointmentController {
             value.setProfessional(professional);
         }
         try {
-            return ResponseEntity.ok(AppointmentResponse.from(appointments.save(value)));
+            Appointment saved = appointments.save(value);
+            boolean dentistChanged = previousProfessionalId == null
+                    || saved.getProfessional() == null
+                    || !previousProfessionalId.equals(saved.getProfessional().getId());
+            boolean timeChanged = previousStart == null || !previousStart.equals(saved.getScheduledAt());
+            if (dentistChanged) {
+                notifyDentist(
+                        saved,
+                        "APPOINTMENT_SCHEDULED",
+                        "Nova consulta na sua agenda",
+                        dentistAppointmentMessage(saved, "foi marcada")
+                );
+            } else if (timeChanged) {
+                notifyDentist(
+                        saved,
+                        "APPOINTMENT_RESCHEDULED",
+                        "Consulta remarcada",
+                        dentistAppointmentMessage(saved, "foi remarcada")
+                );
+            }
+            return ResponseEntity.ok(AppointmentResponse.from(saved));
         } catch (org.springframework.dao.DataIntegrityViolationException ex) {
             throw new IllegalArgumentException("Este horário não está mais disponível. Escolha outro.");
         }
@@ -169,6 +198,12 @@ public class AppointmentController {
         value.setStatus("SCHEDULED");
         appointments.save(value);
         markBookingNotificationsRead(value.getId());
+        notifyDentist(
+                value,
+                "APPOINTMENT_SCHEDULED",
+                "Consulta confirmada na sua agenda",
+                dentistAppointmentMessage(value, "foi confirmada")
+        );
         return ResponseEntity.ok(AppointmentResponse.from(value));
     }
 
@@ -259,6 +294,27 @@ public class AppointmentController {
                 notification.setReadAt(now);
             }
         }
+    }
+
+    private void notifyDentist(Appointment appointment, String type, String title, String message) {
+        if (appointment.getProfessional() == null) return;
+        StaffNotification notification = new StaffNotification();
+        notification.setClinic(appointment.getClinic());
+        notification.setAppointment(appointment);
+        notification.setRecipientProfessional(appointment.getProfessional());
+        notification.setType(type);
+        notification.setTitle(title);
+        notification.setMessage(message);
+        staffNotifications.save(notification);
+    }
+
+    private String dentistAppointmentMessage(Appointment appointment, String verb) {
+        String patientName = appointment.getPatient() == null ? "Paciente" : appointment.getPatient().getName();
+        String procedureName = appointment.getProcedure() == null ? "consulta" : appointment.getProcedure().getName();
+        String whenLabel = appointment.getScheduledAt()
+                .atZoneSameInstant(clinicTimeZone)
+                .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm"));
+        return patientName + " — " + procedureName + " " + verb + " para " + whenLabel + ".";
     }
 
     private UUID tenant() {
