@@ -1,5 +1,5 @@
-import { ArrowDownToLine, ArrowUpFromLine, Pencil, Trash2 } from 'lucide-react';
-import { useMemo, useState, type FormEvent } from 'react';
+import { ArrowDownToLine, ArrowUpFromLine, CheckCircle2, Pencil, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
 import { useAuth } from '../../contexts/AuthContext';
@@ -72,7 +72,14 @@ export default function StockPage() {
   const [movementType, setMovementType] = useState<StockMovementType>('OUT');
   const [movementQty, setMovementQty] = useState('');
   const [movementNote, setMovementNote] = useState('');
+  const [entrySuccess, setEntrySuccess] = useState<string | null>(null);
   const history = useStockMovements(moving?.id);
+
+  useEffect(() => {
+    if (!entrySuccess) return;
+    const timer = window.setTimeout(() => setEntrySuccess(null), 3500);
+    return () => window.clearTimeout(timer);
+  }, [entrySuccess]);
 
   const list = items.data?.content ?? [];
   const lowCount = list.filter((item) => item.lowStock).length;
@@ -148,6 +155,7 @@ export default function StockPage() {
     setMovementType(type);
     setMovementQty('');
     setMovementNote('');
+    setEntrySuccess(null);
   };
 
   const submitMove = (event: FormEvent) => {
@@ -155,18 +163,29 @@ export default function StockPage() {
     if (!moving) return;
     const parsed = Number(movementQty);
     if (Number.isNaN(parsed) || parsed <= 0) return;
+    const note = movementNote.trim() || undefined;
+    const type = movementType;
     move.mutate(
       {
         id: moving.id,
-        type: movementType,
+        type,
         quantity: parsed,
-        note: movementNote.trim() || undefined,
+        note,
       },
       {
         onSuccess: (updated) => {
           setMoving(updated);
           setMovementQty('');
           setMovementNote('');
+          if (type === 'IN') {
+            const message = `Entrada de ${formatQty(parsed)} ${updated.unit} adicionada.`;
+            setEntrySuccess(message);
+            window.dispatchEvent(
+              new CustomEvent('app:toast', {
+                detail: { message, tone: 'success' },
+              }),
+            );
+          }
         },
       },
     );
@@ -434,6 +453,12 @@ export default function StockPage() {
 
       {moving ? (
         <Modal title={moving.name} onClose={() => setMoving(null)}>
+          {entrySuccess ? (
+            <div className="stock-entry-success" role="status">
+              <CheckCircle2 size={20} aria-hidden="true" />
+              <span>{entrySuccess}</span>
+            </div>
+          ) : null}
           <p className="stock-balance">
             Saldo atual: <strong>{formatQty(moving.quantity)} {moving.unit}</strong>
           </p>
