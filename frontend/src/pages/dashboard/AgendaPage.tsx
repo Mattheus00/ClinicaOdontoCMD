@@ -26,7 +26,11 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useMediaQuery } from '../../lib/useMediaQuery';
 import { APPOINTMENT_DURATION_OPTIONS, DEFAULT_APPOINTMENT_DURATION } from '../../lib/appointment-duration';
 import { money } from '../../lib/money';
-import { buildAppointmentConfirmationMessage, buildWhatsAppUrl } from '../../lib/whatsapp';
+import {
+  buildAppointmentConfirmationMessage,
+  buildAppointmentRescheduleMessage,
+  buildWhatsAppUrl,
+} from '../../lib/whatsapp';
 import './AgendaPage.css';
 
 const schema = z.object({
@@ -94,6 +98,10 @@ export default function AgendaPage() {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(deepLinkAppointmentId);
   const [selectedProfessionalId, setSelectedProfessionalId] = useState('');
   const [reportDraft, setReportDraft] = useState('');
+  const [rescheduleWhatsAppPrompt, setRescheduleWhatsAppPrompt] = useState<{
+    patientName: string;
+    url: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!deepLinkAppointmentId && !deepLinkDate) return;
@@ -307,11 +315,47 @@ export default function AgendaPage() {
               onReschedule={
                 isAdmin
                   ? (payload) => {
+                      const current = appointments.data?.content.find((item) => item.id === payload.id);
                       const professional =
                         dentistsList.find((item) => item.id === payload.professionalId) ??
-                        appointments.data?.content.find((item) => item.id === payload.id)?.professional;
-                      if (!professional) return;
-                      reschedule.mutate({ ...payload, professional });
+                        current?.professional;
+                      if (!professional || !current) return;
+                      const previousStartsAt = current.startsAt;
+                      reschedule.mutate(
+                        { ...payload, professional },
+                        {
+                          onSuccess: (updated) => {
+                            window.dispatchEvent(
+                              new CustomEvent('app:toast', {
+                                detail: { message: 'Consulta remarcada.' },
+                              }),
+                            );
+                            const message = buildAppointmentRescheduleMessage({
+                              patientName: updated.patient.name,
+                              previousStartsAt,
+                              startsAt: updated.startsAt,
+                              professionalName: updated.professional.name,
+                              procedureName: updated.procedure?.name,
+                            });
+                            const url = buildWhatsAppUrl(updated.patient.phone, message);
+                            if (url) {
+                              setRescheduleWhatsAppPrompt({
+                                patientName: updated.patient.name,
+                                url,
+                              });
+                            } else {
+                              window.dispatchEvent(
+                                new CustomEvent('app:toast', {
+                                  detail: {
+                                    message:
+                                      'Cadastre o WhatsApp do paciente para avisar sobre a remarcação.',
+                                  },
+                                }),
+                              );
+                            }
+                          },
+                        },
+                      );
                     }
                   : undefined
               }
@@ -368,6 +412,34 @@ export default function AgendaPage() {
             }
           }}
         />
+      )}
+
+      {rescheduleWhatsAppPrompt && (
+        <Modal title="Avisar pelo WhatsApp?" onClose={() => setRescheduleWhatsAppPrompt(null)}>
+          <p>
+            A consulta de{' '}
+            <strong>{rescheduleWhatsAppPrompt.patientName.trim().split(/\s+/)[0]}</strong> foi
+            remarcada. Deseja enviar a mensagem pronta pelo WhatsApp?
+          </p>
+          <div className="modal-actions">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setRescheduleWhatsAppPrompt(null)}
+            >
+              Agora não
+            </button>
+            <a
+              className="btn btn-primary"
+              href={rescheduleWhatsAppPrompt.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setRescheduleWhatsAppPrompt(null)}
+            >
+              Enviar WhatsApp
+            </a>
+          </div>
+        </Modal>
       )}
 
       {isAdmin && open && (

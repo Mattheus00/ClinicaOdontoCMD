@@ -22,7 +22,11 @@ export function useStaffNotifications(enabled = true) {
     queryKey: ['staff-notifications'],
     enabled,
     queryFn: async () => (await api.get<StaffNotificationList>('/staff-notifications')).data,
-    refetchInterval: 15_000,
+    // Public bookings arrive from another tab/session — poll often while the dashboard is open.
+    refetchInterval: 3_000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 }
 

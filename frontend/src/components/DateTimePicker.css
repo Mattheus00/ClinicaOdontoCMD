@@ -56,6 +56,14 @@
   overscroll-behavior: contain;
 }
 
+.dtp-popover.is-date-only {
+  grid-template-columns: 1fr;
+}
+
+.dtp-popover.is-date-only .dtp-calendar {
+  border-right: 0;
+}
+
 .dtp-calendar {
   padding: 16px;
   border-right: 1px solid #e7eef5;
@@ -141,6 +149,25 @@
   background: var(--color-secondary);
   color: #fff;
   box-shadow: none;
+}
+
+.dtp-day.is-disabled,
+.dtp-day:disabled {
+  color: #c9d5df;
+  cursor: not-allowed;
+  background: transparent;
+  opacity: 0.55;
+}
+
+.dtp-day.is-disabled:hover,
+.dtp-day:disabled:hover {
+  background: transparent;
+  color: #c9d5df;
+}
+
+.dtp-link:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .dtp-calendar-actions {

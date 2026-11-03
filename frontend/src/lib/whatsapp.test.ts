@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { buildAppointmentConfirmationMessage, buildWhatsAppUrl, toWhatsAppPhone } from './whatsapp';
+import {
+  buildAppointmentConfirmationMessage,
+  buildAppointmentRescheduleMessage,
+  buildWhatsAppUrl,
+  toWhatsAppPhone,
+} from './whatsapp';
 
 describe('whatsapp helpers', () => {
   it('adds Brazil country code when missing', () => {
@@ -22,5 +27,20 @@ describe('whatsapp helpers', () => {
     expect(message).toContain('Olá, Matheus!');
     expect(message).toContain('Limpeza com Dra. Maria');
     expect(message).toContain('Confirmamos seu agendamento');
+  });
+
+  it('builds reschedule copy with previous and new slot', () => {
+    const message = buildAppointmentRescheduleMessage({
+      patientName: 'Matheus Pereira',
+      previousStartsAt: '2026-08-03T15:00:00.000Z',
+      startsAt: '2026-08-04T10:30:00.000Z',
+      professionalName: 'Dra. Maria',
+      procedureName: 'Limpeza',
+    });
+    expect(message).toContain('Olá, Matheus!');
+    expect(message).toContain('Remarcamos sua consulta');
+    expect(message).toContain('De:');
+    expect(message).toContain('Para:');
+    expect(message).toContain('Limpeza com Dra. Maria');
   });
 });

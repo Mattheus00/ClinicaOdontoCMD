@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
+import DateTimePicker from '../../components/DateTimePicker';
 import { useAuth } from '../../contexts/AuthContext';
 import { useFinancialDashboard } from '../../features/financial/api';
 import type { ProfessionalFinancialBreakdown } from '../../api/types';
@@ -121,23 +122,27 @@ export default function FinancialDashboardPage() {
         <div className="financial-period-filters">
           <label>
             De
-            <input
-              className="input-field"
-              type="date"
+            <DateTimePicker
+              mode="date"
               value={from}
               max={to}
-              onChange={(event) => setFrom(event.target.value)}
+              clearable={false}
+              onChange={(value) => {
+                if (value) setFrom(value);
+              }}
             />
           </label>
           <label>
             Até
-            <input
-              className="input-field"
-              type="date"
+            <DateTimePicker
+              mode="date"
               value={to}
               min={from}
               max={today()}
-              onChange={(event) => setTo(event.target.value)}
+              clearable={false}
+              onChange={(value) => {
+                if (value) setTo(value);
+              }}
             />
           </label>
         </div>

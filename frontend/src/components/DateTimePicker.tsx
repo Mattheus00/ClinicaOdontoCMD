@@ -22,6 +22,11 @@ type Props = {
   value: string;
   onChange: (value: string) => void;
   error?: string;
+  /** `datetime` = data + horário (padrão). `date` = só o dia (YYYY-MM-DD). */
+  mode?: 'datetime' | 'date';
+  min?: string;
+  max?: string;
+  clearable?: boolean;
 };
 
 function pad(value: number) {
@@ -32,8 +37,9 @@ function toDateKey(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
-function parseValue(value: string) {
+function parseValue(value: string, dateOnly: boolean) {
   if (!value) return { date: '', time: '' };
+  if (dateOnly) return { date: value.slice(0, 10), time: '' };
   const [date = '', timePart = ''] = value.split('T');
   return { date, time: timePart.slice(0, 5) };
 }
@@ -59,21 +65,42 @@ function buildCalendarDays(month: Date) {
   });
 }
 
-function formatDisplay(date: string, time: string) {
-  if (!date || !time) return 'Escolha data e horário';
+function formatDateLabel(date: string) {
   const [year, month, day] = date.split('-').map(Number);
-  const label = new Intl.DateTimeFormat('pt-BR', {
+  return new Intl.DateTimeFormat('pt-BR', {
     weekday: 'short',
     day: '2-digit',
     month: 'short',
+    year: 'numeric',
   }).format(new Date(year, month - 1, day));
-  return `${label} · ${time}`;
 }
 
-export default function DateTimePicker({ value, onChange, error }: Props) {
+function formatDisplay(date: string, time: string, dateOnly: boolean) {
+  if (!date) return dateOnly ? 'Escolha a data' : 'Escolha data e horário';
+  if (dateOnly) return formatDateLabel(date);
+  if (!time) return 'Escolha data e horário';
+  return `${formatDateLabel(date)} · ${time}`;
+}
+
+function isOutOfRange(dateKey: string, min?: string, max?: string) {
+  if (min && dateKey < min) return true;
+  if (max && dateKey > max) return true;
+  return false;
+}
+
+export default function DateTimePicker({
+  value,
+  onChange,
+  error,
+  mode = 'datetime',
+  min,
+  max,
+  clearable = true,
+}: Props) {
+  const dateOnly = mode === 'date';
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const parsed = parseValue(value);
+  const parsed = parseValue(value, dateOnly);
   const [open, setOpen] = useState(false);
   const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
   const [selectedDate, setSelectedDate] = useState(parsed.date);
@@ -92,14 +119,14 @@ export default function DateTimePicker({ value, onChange, error }: Props) {
   const todayKey = toDateKey(new Date());
 
   useEffect(() => {
-    const next = parseValue(value);
+    const next = parseValue(value, dateOnly);
     setSelectedDate(next.date);
     setSelectedTime(next.time);
     if (next.date) {
       const [year, month] = next.date.split('-').map(Number);
       setVisibleMonth(new Date(year, month - 1, 1));
     }
-  }, [value]);
+  }, [value, dateOnly]);
 
   useEffect(() => {
     if (!open || !triggerRef.current) return;
@@ -107,9 +134,9 @@ export default function DateTimePicker({ value, onChange, error }: Props) {
     const updatePosition = () => {
       const rect = triggerRef.current?.getBoundingClientRect();
       if (!rect) return;
-      const width = Math.min(420, window.innerWidth - 24);
+      const width = Math.min(dateOnly ? 320 : 420, window.innerWidth - 24);
       const left = Math.min(rect.left, window.innerWidth - width - 12);
-      const maxHeight = Math.min(360, window.innerHeight - 24);
+      const maxHeight = Math.min(dateOnly ? 340 : 360, window.innerHeight - 24);
       const spaceBelow = window.innerHeight - rect.bottom - 12;
       const spaceAbove = rect.top - 12;
       const openUp = spaceBelow < 280 && spaceAbove > spaceBelow;
@@ -119,7 +146,8 @@ export default function DateTimePicker({ value, onChange, error }: Props) {
         position: 'fixed',
         left: Math.max(12, left),
         width,
-        height: Math.min(maxHeight, Math.max(260, available)),
+        height: dateOnly ? undefined : Math.min(maxHeight, Math.max(260, available)),
+        maxHeight: Math.min(maxHeight, Math.max(260, available)),
         top: openUp ? undefined : rect.bottom + 8,
         bottom: openUp ? window.innerHeight - rect.top + 8 : undefined,
         zIndex: 80,
@@ -129,7 +157,7 @@ export default function DateTimePicker({ value, onChange, error }: Props) {
     updatePosition();
     window.addEventListener('resize', updatePosition);
     return () => window.removeEventListener('resize', updatePosition);
-  }, [open]);
+  }, [open, dateOnly]);
 
   useEffect(() => {
     if (!open) return;
@@ -152,13 +180,20 @@ export default function DateTimePicker({ value, onChange, error }: Props) {
     };
   }, [open]);
 
-  const commit = (date: string, time: string) => {
+  const commitDateTime = (date: string, time: string) => {
     setSelectedDate(date);
     setSelectedTime(time);
     if (date && time) {
       onChange(`${date}T${time}`);
       setOpen(false);
     }
+  };
+
+  const commitDate = (date: string) => {
+    if (isOutOfRange(date, min, max)) return;
+    setSelectedDate(date);
+    onChange(date);
+    setOpen(false);
   };
 
   return (
@@ -171,17 +206,17 @@ export default function DateTimePicker({ value, onChange, error }: Props) {
       >
         <span className="dtp-trigger-main">
           <CalendarDays size={18} />
-          <span>{formatDisplay(selectedDate, selectedTime)}</span>
+          <span>{formatDisplay(selectedDate, selectedTime, dateOnly)}</span>
         </span>
-        <Clock3 size={18} />
+        {!dateOnly ? <Clock3 size={18} /> : null}
       </button>
 
       {open && (
         <div
-          className="dtp-popover"
+          className={`dtp-popover${dateOnly ? ' is-date-only' : ''}`}
           style={popoverStyle}
           role="dialog"
-          aria-label="Selecionar data e horário"
+          aria-label={dateOnly ? 'Selecionar data' : 'Selecionar data e horário'}
           onWheel={(event) => event.stopPropagation()}
         >
           <div className="dtp-calendar">
@@ -223,21 +258,29 @@ export default function DateTimePicker({ value, onChange, error }: Props) {
                 const inMonth = day.getMonth() === visibleMonth.getMonth();
                 const isSelected = key === selectedDate;
                 const isToday = key === todayKey;
+                const disabled = isOutOfRange(key, min, max);
 
                 return (
                   <button
                     key={`${key}-${day.getMonth()}`}
                     type="button"
+                    disabled={disabled}
                     className={[
                       'dtp-day',
                       inMonth ? '' : 'is-muted',
                       isSelected ? 'is-selected' : '',
                       isToday ? 'is-today' : '',
+                      disabled ? 'is-disabled' : '',
                     ]
                       .filter(Boolean)
                       .join(' ')}
                     onClick={() => {
-                      if (selectedTime) commit(key, selectedTime);
+                      if (disabled) return;
+                      if (dateOnly) {
+                        commitDate(key);
+                        return;
+                      }
+                      if (selectedTime) commitDateTime(key, selectedTime);
                       else setSelectedDate(key);
                     }}
                   >
@@ -248,25 +291,35 @@ export default function DateTimePicker({ value, onChange, error }: Props) {
             </div>
 
             <div className="dtp-calendar-actions">
+              {clearable ? (
+                <button
+                  type="button"
+                  className="dtp-link"
+                  onClick={() => {
+                    setSelectedDate('');
+                    setSelectedTime('');
+                    onChange('');
+                  }}
+                >
+                  Limpar
+                </button>
+              ) : (
+                <span />
+              )}
               <button
                 type="button"
                 className="dtp-link"
+                disabled={isOutOfRange(todayKey, min, max)}
                 onClick={() => {
-                  setSelectedDate('');
-                  setSelectedTime('');
-                  onChange('');
-                }}
-              >
-                Limpar
-              </button>
-              <button
-                type="button"
-                className="dtp-link"
-                onClick={() => {
+                  if (isOutOfRange(todayKey, min, max)) return;
+                  if (dateOnly) {
+                    commitDate(todayKey);
+                    return;
+                  }
                   const now = new Date();
                   const roundedMinutes = now.getMinutes() < 30 ? 0 : 30;
                   const time = `${pad(Math.max(7, Math.min(19, now.getHours())))}:${pad(roundedMinutes)}`;
-                  commit(todayKey, time);
+                  commitDateTime(todayKey, time);
                 }}
               >
                 Hoje
@@ -274,27 +327,29 @@ export default function DateTimePicker({ value, onChange, error }: Props) {
             </div>
           </div>
 
-          <div className="dtp-times">
-            <div className="dtp-times-title">
-              <Clock3 size={16} />
-              Horários
+          {!dateOnly && (
+            <div className="dtp-times">
+              <div className="dtp-times-title">
+                <Clock3 size={16} />
+                Horários
+              </div>
+              <div className="dtp-times-list">
+                {timeSlots.map((slot) => (
+                  <button
+                    key={slot}
+                    type="button"
+                    className={`dtp-time ${selectedTime === slot ? 'is-selected' : ''}`}
+                    onClick={() => {
+                      if (selectedDate) commitDateTime(selectedDate, slot);
+                      else setSelectedTime(slot);
+                    }}
+                  >
+                    {slot}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="dtp-times-list">
-              {timeSlots.map((slot) => (
-                <button
-                  key={slot}
-                  type="button"
-                  className={`dtp-time ${selectedTime === slot ? 'is-selected' : ''}`}
-                  onClick={() => {
-                    if (selectedDate) commit(selectedDate, slot);
-                    else setSelectedTime(slot);
-                  }}
-                >
-                  {slot}
-                </button>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
       )}
 

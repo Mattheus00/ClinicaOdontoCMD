@@ -33,8 +33,13 @@
   color: var(--color-text-secondary);
 }
 
-.financial-period-filters .input-field {
-  min-width: 148px;
+.financial-period-filters .dtp {
+  min-width: 188px;
+}
+
+.financial-period-filters .dtp-trigger {
+  min-height: 40px;
+  font-size: 13px;
 }
 
 .financial-hero {
