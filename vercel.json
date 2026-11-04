@@ -2,9 +2,14 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "services": {
     "frontend": {
-      "runtime": "container",
       "root": "frontend/",
-      "entrypoint": "Dockerfile.vercel"
+      "framework": "vite",
+      "rewrites": [
+        {
+          "source": "/(.*)",
+          "destination": "/index.html"
+        }
+      ]
     },
     "backend": {
       "runtime": "container",
