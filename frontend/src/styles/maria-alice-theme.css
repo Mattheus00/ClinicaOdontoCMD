@@ -476,13 +476,13 @@ a.btn-whatsapp:hover {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 2px;
+    gap: 3px;
     margin: 0;
-    padding: 6px 2px;
+    padding: 6px 1px;
     min-width: 0;
     min-height: 52px;
     max-height: 56px;
-    font-size: 10px;
+    font-size: 9px;
     text-align: center;
   }
 
@@ -505,20 +505,34 @@ a.btn-whatsapp:hover {
 
   .sidebar-link svg {
     flex-shrink: 0;
+    width: 18px;
+    height: 18px;
   }
 
   .main-content {
     margin-left: 0;
-    padding: calc(76px + env(safe-area-inset-top)) 14px calc(72px + env(safe-area-inset-bottom));
+    padding: calc(72px + env(safe-area-inset-top)) 14px calc(78px + env(safe-area-inset-bottom));
     overflow-x: hidden;
+    background:
+      radial-gradient(circle at top right, rgba(253, 216, 151, 0.22), transparent 42%),
+      linear-gradient(180deg, #fbf9f8 0%, #f3efe8 100%);
   }
 
   .dashboard-form {
     grid-template-columns: 1fr;
   }
 
+  .dashboard-form-actions {
+    grid-column: 1 / -1;
+  }
+
+  .dashboard-form-actions .btn {
+    width: 100%;
+    min-height: 48px;
+  }
+
   .page-title {
-    font-size: 1.65rem;
+    font-size: 1.55rem;
     line-height: 1.15;
   }
 }

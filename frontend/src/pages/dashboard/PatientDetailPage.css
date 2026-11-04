@@ -337,3 +337,51 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 800px) {
+  .patient-detail {
+    gap: 14px;
+  }
+
+  .patient-summary-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .patient-summary-cards article {
+    padding: 14px;
+  }
+
+  .patient-summary-cards strong {
+    font-size: 17px;
+  }
+
+  .patient-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .patient-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .patient-tab {
+    flex: 0 0 auto;
+    min-height: 40px;
+    white-space: nowrap;
+  }
+
+  .patient-panel {
+    padding: 14px;
+  }
+
+  .patient-panel .form-grid,
+  .patient-panel .dashboard-form {
+    grid-template-columns: 1fr;
+  }
+
+  .table-wrap {
+    margin: 0 -2px;
+  }
+}

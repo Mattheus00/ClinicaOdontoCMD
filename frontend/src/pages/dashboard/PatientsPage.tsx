@@ -80,7 +80,7 @@ export default function PatientsPage() {
         <ErrorState onRetry={() => patients.refetch()} />
       ) : patients.data?.content.length ? (
         <>
-          <div className="table-wrap">
+          <div className="table-wrap desktop-only">
             <table className="data-table">
               <thead>
                 <tr>
@@ -108,6 +108,27 @@ export default function PatientsPage() {
               </tbody>
             </table>
           </div>
+
+          <div className="mobile-card-list mobile-only" aria-label="Lista de pacientes">
+            {patients.data.content.map((patient) => (
+              <article key={patient.id} className="mobile-card">
+                <div className="mobile-card-head">
+                  <strong>{patient.name}</strong>
+                </div>
+                <div className="mobile-card-meta">
+                  <p>{maskPhone(patient.phone)}</p>
+                  <p>{patient.cpf ? maskCpf(patient.cpf) : 'CPF não informado'}</p>
+                  {patient.email ? <p>{patient.email}</p> : null}
+                </div>
+                <div className="mobile-card-actions">
+                  <Link className="btn btn-primary btn-sm" to={`/patients/${patient.id}`}>
+                    Abrir ficha
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+
           <div className="pagination">
             <button className="btn btn-secondary btn-sm" disabled={page === 0} onClick={() => setPage(page - 1)}>
               Anterior

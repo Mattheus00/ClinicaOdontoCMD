@@ -249,73 +249,125 @@ export default function StockPage() {
       ) : items.isError ? (
         <ErrorState onRetry={() => items.refetch()} />
       ) : visible.length ? (
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Material</th>
-                <th>Tipo</th>
-                <th>Saldo</th>
-                <th>Mínimo</th>
-                <th>Status</th>
-                <th className="col-actions">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visible.map((item) => (
-                <tr key={item.id} className={item.lowStock ? 'is-low' : undefined}>
-                  <td>
-                    <strong>{item.name}</strong>
-                    {item.notes ? <small>{item.notes}</small> : null}
-                  </td>
-                  <td>{CATEGORY_LABEL[item.category]}</td>
-                  <td>
-                    {formatQty(item.quantity)} {item.unit}
-                  </td>
-                  <td>
-                    {formatQty(item.minimumQuantity)} {item.unit}
-                  </td>
-                  <td>
-                    <span className={`badge ${item.lowStock ? 'badge-warning' : 'badge-success'}`}>
-                      {item.lowStock ? 'Repor' : 'Ok'}
-                    </span>
-                  </td>
-                  <td className="col-actions">
-                    <div className="stock-actions">
-                      <button type="button" className="stock-action" onClick={() => openMove(item, 'IN')}>
-                        <ArrowDownToLine size={15} aria-hidden />
-                        Entrada
-                      </button>
-                      <button type="button" className="stock-action" onClick={() => openMove(item, 'OUT')}>
-                        <ArrowUpFromLine size={15} aria-hidden />
-                        Saída
-                      </button>
-                      {canManage ? (
-                        <button type="button" className="stock-action stock-action-icon" aria-label="Editar" title="Editar" onClick={() => openEdit(item)}>
-                          <Pencil size={15} aria-hidden />
-                        </button>
-                      ) : null}
-                      {canDelete ? (
-                        <button
-                          type="button"
-                          className="stock-action stock-action-icon stock-delete"
-                          aria-label="Excluir"
-                          title="Excluir"
-                          disabled={remove.isPending}
-                          onClick={() => {
-                            if (window.confirm(`Excluir "${item.name}" do estoque?`)) remove.mutate(item.id);
-                          }}
-                        >
-                          <Trash2 size={15} aria-hidden />
-                        </button>
-                      ) : null}
-                    </div>
-                  </td>
+        <>
+          <div className="table-wrap desktop-only">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Material</th>
+                  <th>Tipo</th>
+                  <th>Saldo</th>
+                  <th>Mínimo</th>
+                  <th>Status</th>
+                  <th className="col-actions">Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {visible.map((item) => (
+                  <tr key={item.id} className={item.lowStock ? 'is-low' : undefined}>
+                    <td>
+                      <strong>{item.name}</strong>
+                      {item.notes ? <small>{item.notes}</small> : null}
+                    </td>
+                    <td>{CATEGORY_LABEL[item.category]}</td>
+                    <td>
+                      {formatQty(item.quantity)} {item.unit}
+                    </td>
+                    <td>
+                      {formatQty(item.minimumQuantity)} {item.unit}
+                    </td>
+                    <td>
+                      <span className={`badge ${item.lowStock ? 'badge-warning' : 'badge-success'}`}>
+                        {item.lowStock ? 'Repor' : 'Ok'}
+                      </span>
+                    </td>
+                    <td className="col-actions">
+                      <div className="stock-actions">
+                        <button type="button" className="stock-action" onClick={() => openMove(item, 'IN')}>
+                          <ArrowDownToLine size={15} aria-hidden />
+                          Entrada
+                        </button>
+                        <button type="button" className="stock-action" onClick={() => openMove(item, 'OUT')}>
+                          <ArrowUpFromLine size={15} aria-hidden />
+                          Saída
+                        </button>
+                        {canManage ? (
+                          <button type="button" className="stock-action stock-action-icon" aria-label="Editar" title="Editar" onClick={() => openEdit(item)}>
+                            <Pencil size={15} aria-hidden />
+                          </button>
+                        ) : null}
+                        {canDelete ? (
+                          <button
+                            type="button"
+                            className="stock-action stock-action-icon stock-delete"
+                            aria-label="Excluir"
+                            title="Excluir"
+                            disabled={remove.isPending}
+                            onClick={() => {
+                              if (window.confirm(`Excluir "${item.name}" do estoque?`)) remove.mutate(item.id);
+                            }}
+                          >
+                            <Trash2 size={15} aria-hidden />
+                          </button>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mobile-card-list mobile-only" aria-label="Lista de estoque">
+            {visible.map((item) => (
+              <article key={item.id} className={`mobile-card${item.lowStock ? ' is-low' : ''}`}>
+                <div className="mobile-card-head">
+                  <strong>{item.name}</strong>
+                  <span className={`badge ${item.lowStock ? 'badge-warning' : 'badge-success'}`}>
+                    {item.lowStock ? 'Repor' : 'Ok'}
+                  </span>
+                </div>
+                <div className="mobile-card-meta">
+                  <p>
+                    {CATEGORY_LABEL[item.category]} · {formatQty(item.quantity)} {item.unit}
+                  </p>
+                  <p>
+                    Mínimo: {formatQty(item.minimumQuantity)} {item.unit}
+                  </p>
+                  {item.notes ? <p>{item.notes}</p> : null}
+                </div>
+                <div className="mobile-card-actions stock-mobile-actions">
+                  <button type="button" className="stock-action" onClick={() => openMove(item, 'IN')}>
+                    <ArrowDownToLine size={15} aria-hidden />
+                    Entrada
+                  </button>
+                  <button type="button" className="stock-action" onClick={() => openMove(item, 'OUT')}>
+                    <ArrowUpFromLine size={15} aria-hidden />
+                    Saída
+                  </button>
+                  {canManage ? (
+                    <button type="button" className="stock-action stock-action-icon" aria-label="Editar" onClick={() => openEdit(item)}>
+                      <Pencil size={15} aria-hidden />
+                    </button>
+                  ) : null}
+                  {canDelete ? (
+                    <button
+                      type="button"
+                      className="stock-action stock-action-icon stock-delete"
+                      aria-label="Excluir"
+                      disabled={remove.isPending}
+                      onClick={() => {
+                        if (window.confirm(`Excluir "${item.name}" do estoque?`)) remove.mutate(item.id);
+                      }}
+                    >
+                      <Trash2 size={15} aria-hidden />
+                    </button>
+                  ) : null}
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
       ) : (
         <EmptyState
           title={list.length ? 'Nenhum material nesse filtro' : 'Nenhum material cadastrado'}

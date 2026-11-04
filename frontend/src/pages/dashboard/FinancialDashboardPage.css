@@ -291,7 +291,7 @@
 
 @media (max-width: 800px) {
   .financial-dashboard {
-    gap: 16px;
+    gap: 14px;
   }
 
   .financial-hero {
@@ -304,12 +304,25 @@
     font-size: 1.75rem;
   }
 
+  .financial-summary-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .financial-summary-cards article {
     padding: 14px;
   }
 
   .financial-summary-cards strong {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
+  }
+
+  .financial-period-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .financial-period-filters .dtp {
+    min-width: 0;
+    width: 100%;
   }
 
   .financial-period-filters label {
@@ -319,10 +332,8 @@
   .financial-period-filters .input-field {
     min-height: 44px;
   }
-}
 
-@media (max-width: 380px) {
-  .financial-period-filters {
-    grid-template-columns: 1fr;
+  .financial-by-dentist {
+    padding: 14px;
   }
 }

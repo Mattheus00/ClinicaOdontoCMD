@@ -89,7 +89,7 @@
   width: min(240px, 32vw);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 800px) {
   .agenda-toolbar {
     flex-direction: column;
     align-items: stretch;

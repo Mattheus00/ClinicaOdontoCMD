@@ -113,42 +113,70 @@ export default function ProceduresPage() {
       ) : procedures.isError ? (
         <ErrorState onRetry={() => procedures.refetch()} />
       ) : procedures.data?.content.length ? (
-        <div className="table-wrap procedures-table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Procedimento</th>
-                <th>Valor</th>
-                <th className="col-actions">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {procedures.data.content.map((procedure) => (
-                <tr key={procedure.id}>
-                  <td className="procedure-name">{procedure.name}</td>
-                  <td>{money(procedure.price)}</td>
-                  <td className="col-actions">
-                    <div className="procedure-actions">
-                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => openEdit(procedure)}>
-                        Editar
-                      </button>
-                      {canDelete ? (
-                        <button
-                          type="button"
-                          className="btn btn-ghost btn-sm procedure-delete"
-                          disabled={remove.isPending}
-                          onClick={() => handleDelete(procedure)}
-                        >
-                          Excluir
-                        </button>
-                      ) : null}
-                    </div>
-                  </td>
+        <>
+          <div className="table-wrap procedures-table-wrap desktop-only">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Procedimento</th>
+                  <th>Valor</th>
+                  <th className="col-actions">Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {procedures.data.content.map((procedure) => (
+                  <tr key={procedure.id}>
+                    <td className="procedure-name">{procedure.name}</td>
+                    <td>{money(procedure.price)}</td>
+                    <td className="col-actions">
+                      <div className="procedure-actions">
+                        <button type="button" className="btn btn-ghost btn-sm" onClick={() => openEdit(procedure)}>
+                          Editar
+                        </button>
+                        {canDelete ? (
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm procedure-delete"
+                            disabled={remove.isPending}
+                            onClick={() => handleDelete(procedure)}
+                          >
+                            Excluir
+                          </button>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mobile-card-list mobile-only" aria-label="Lista de procedimentos">
+            {procedures.data.content.map((procedure) => (
+              <article key={procedure.id} className="mobile-card">
+                <div className="mobile-card-head">
+                  <strong>{procedure.name}</strong>
+                  <span className="procedure-mobile-price">{money(procedure.price)}</span>
+                </div>
+                <div className="mobile-card-actions">
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => openEdit(procedure)}>
+                    Editar
+                  </button>
+                  {canDelete ? (
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm procedure-delete"
+                      disabled={remove.isPending}
+                      onClick={() => handleDelete(procedure)}
+                    >
+                      Excluir
+                    </button>
+                  ) : null}
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
       ) : (
         <EmptyState
           title="Nenhum procedimento cadastrado"

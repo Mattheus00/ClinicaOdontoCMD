@@ -88,7 +88,7 @@ export default function AgendaPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const isAdmin = role === 'ADMIN' || role === 'SECRETARY';
   const isDentist = role === 'DENTIST';
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery('(max-width: 800px)');
 
   const deepLinkAppointmentId = searchParams.get('appointmentId');
   const deepLinkDate = searchParams.get('date');
