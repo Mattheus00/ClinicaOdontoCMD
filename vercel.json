@@ -11,7 +11,7 @@
         }
       ]
     },
-    "backend": {
+    "api": {
       "runtime": "container",
       "root": "backend/",
       "entrypoint": "Dockerfile.vercel"
@@ -21,7 +21,7 @@
     {
       "source": "/api/(.*)",
       "destination": {
-        "service": "backend"
+        "service": "api"
       }
     },
     {
