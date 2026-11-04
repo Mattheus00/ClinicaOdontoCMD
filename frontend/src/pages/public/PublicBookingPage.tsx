@@ -2,6 +2,7 @@ import { useMemo, useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { CalendarDays, CheckCircle2, Share2 } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
+import DatePicker from '../../components/DatePicker';
 import { usePublicAvailability, usePublicBook, usePublicBookingPage } from '../../features/booking/api';
 import { maskPhone } from '../../lib/masks';
 import { money } from '../../lib/money';
@@ -245,21 +246,19 @@ export default function PublicBookingPage() {
               <h2>
                 <CalendarDays size={18} /> Horário
               </h2>
-              <label className="public-booking-date-field">
-                Data
-                <input
-                  className="input-field"
-                  type="date"
+              <div className="public-booking-date-field">
+                <span className="public-booking-date-label">Data</span>
+                <DatePicker
+                  value={date}
                   min={todayIso()}
                   max={maxDateIso()}
-                  value={date}
-                  onChange={(e) => {
-                    setDate(e.target.value);
+                  today={todayIso()}
+                  onChange={(next) => {
+                    setDate(next);
                     setStartsAt('');
                   }}
-                  required
                 />
-              </label>
+              </div>
 
               {!professionalId ? (
                 <p className="public-booking-slots-empty">Selecione um dentista para ver os horários.</p>
