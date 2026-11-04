@@ -180,63 +180,110 @@ export default function DentistsPage() {
       ) : dentists.isError ? (
         <ErrorState onRetry={() => dentists.refetch()} />
       ) : dentists.data?.content.length ? (
-        <div className="table-wrap dentists-table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Dentista</th>
-                <th>E-mail</th>
-                <th>Especialidade</th>
-                <th>Status</th>
-                {canManage ? <th className="col-actions">Ações</th> : null}
-              </tr>
-            </thead>
-            <tbody>
-              {dentists.data.content.map((dentist) => (
-                <tr key={dentist.id}>
-                  <td className="dentist-name">{dentist.name}</td>
-                  <td>{dentist.email || '—'}</td>
-                  <td>{dentist.specialty || 'Clínico geral'}</td>
-                  <td className="col-left">
-                    <span className={`badge ${dentist.accessStatus === 'ACTIVE' ? 'badge-success' : 'badge-warning'}`}>
-                      {dentist.accessStatus === 'ACTIVE' ? 'Acesso ativo' : 'Convite pendente'}
-                    </span>
-                  </td>
-                  {canManage ? (
-                    <td className="col-actions">
-                      <div className="dentist-actions">
-                        {dentist.accessStatus === 'PENDING' && (
+        <>
+          <div className="table-wrap dentists-table-wrap desktop-only">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Dentista</th>
+                  <th>E-mail</th>
+                  <th>Especialidade</th>
+                  <th>Status</th>
+                  {canManage ? <th className="col-actions">Ações</th> : null}
+                </tr>
+              </thead>
+              <tbody>
+                {dentists.data.content.map((dentist) => (
+                  <tr key={dentist.id}>
+                    <td className="dentist-name">{dentist.name}</td>
+                    <td>{dentist.email || '—'}</td>
+                    <td>{dentist.specialty || 'Clínico geral'}</td>
+                    <td className="col-left">
+                      <span className={`badge ${dentist.accessStatus === 'ACTIVE' ? 'badge-success' : 'badge-warning'}`}>
+                        {dentist.accessStatus === 'ACTIVE' ? 'Acesso ativo' : 'Convite pendente'}
+                      </span>
+                    </td>
+                    {canManage ? (
+                      <td className="col-actions">
+                        <div className="dentist-actions">
+                          {dentist.accessStatus === 'PENDING' && (
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-sm"
+                              disabled={regenerate.isPending}
+                              onClick={() => handleRegenerateInvite(dentist)}
+                            >
+                              {dentist.email ? 'Novo link' : 'Definir e-mail'}
+                            </button>
+                          )}
                           <button
                             type="button"
-                            className="btn btn-ghost btn-sm"
-                            disabled={regenerate.isPending}
-                            onClick={() => handleRegenerateInvite(dentist)}
+                            className="btn btn-ghost btn-sm dentist-delete"
+                            disabled={remove.isPending}
+                            onClick={() =>
+                              setDeleteTarget({
+                                id: dentist.id,
+                                name: dentist.name,
+                                appointmentCount: dentist.appointmentCount ?? 0,
+                              })
+                            }
                           >
-                            {dentist.email ? 'Novo link' : 'Definir e-mail'}
+                            Excluir
                           </button>
-                        )}
-                        <button
-                          type="button"
-                          className="btn btn-ghost btn-sm dentist-delete"
-                          disabled={remove.isPending}
-                          onClick={() =>
-                            setDeleteTarget({
-                              id: dentist.id,
-                              name: dentist.name,
-                              appointmentCount: dentist.appointmentCount ?? 0,
-                            })
-                          }
-                        >
-                          Excluir
-                        </button>
-                      </div>
-                    </td>
-                  ) : null}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                        </div>
+                      </td>
+                    ) : null}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mobile-card-list mobile-only" aria-label="Lista de dentistas">
+            {dentists.data.content.map((dentist) => (
+              <article key={dentist.id} className="mobile-card">
+                <div className="mobile-card-head">
+                  <strong>{dentist.name}</strong>
+                  <span className={`badge ${dentist.accessStatus === 'ACTIVE' ? 'badge-success' : 'badge-warning'}`}>
+                    {dentist.accessStatus === 'ACTIVE' ? 'Acesso ativo' : 'Convite pendente'}
+                  </span>
+                </div>
+                <div className="mobile-card-meta">
+                  <p>{dentist.specialty || 'Clínico geral'}</p>
+                  <p>{dentist.email || 'E-mail não informado'}</p>
+                </div>
+                {canManage ? (
+                  <div className="mobile-card-actions">
+                    {dentist.accessStatus === 'PENDING' ? (
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        disabled={regenerate.isPending}
+                        onClick={() => handleRegenerateInvite(dentist)}
+                      >
+                        {dentist.email ? 'Novo link' : 'Definir e-mail'}
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm dentist-delete"
+                      disabled={remove.isPending}
+                      onClick={() =>
+                        setDeleteTarget({
+                          id: dentist.id,
+                          name: dentist.name,
+                          appointmentCount: dentist.appointmentCount ?? 0,
+                        })
+                      }
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        </>
       ) : (
         <EmptyState
           title="Nenhum dentista cadastrado"

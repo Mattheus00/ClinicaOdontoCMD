@@ -113,9 +113,23 @@
 }
 
 @media (max-width: 800px) {
+  .booking-link-page {
+    gap: 14px;
+  }
+
+  .booking-link-hero {
+    flex-direction: column;
+    padding: 16px;
+  }
+
   .booking-link-url-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .booking-link-url-row .btn {
+    width: 100%;
+    min-height: 44px;
   }
 
   .booking-link-actions {
@@ -124,6 +138,11 @@
 
   .booking-link-actions .btn {
     width: 100%;
+    min-height: 48px;
     justify-content: center;
+  }
+
+  .booking-link-tips {
+    padding: 14px;
   }
 }

@@ -29,3 +29,16 @@
   width: 180px;
   text-align: right;
 }
+
+.procedure-mobile-price {
+  flex-shrink: 0;
+  color: var(--color-secondary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@media (max-width: 800px) {
+  .procedures-page {
+    gap: 14px;
+  }
+}
