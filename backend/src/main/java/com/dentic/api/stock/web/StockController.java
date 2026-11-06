@@ -1,6 +1,8 @@
 package com.dentic.api.stock.web;
 
 import com.dentic.api.multitenant.TenantContext;
+import com.dentic.api.web.PageResult;
+import org.springframework.data.domain.Sort;
 import com.dentic.api.onboarding.repository.ClinicRepository;
 import com.dentic.api.security.SecurityUtils;
 import com.dentic.api.stock.domain.StockItem;
@@ -40,11 +42,23 @@ public class StockController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public PageResponse<StockItemResponse> list() {
-        List<StockItemResponse> data = items.findByClinicIdOrderByNameAsc(tenant()).stream()
-                .map(StockItemResponse::from)
-                .toList();
-        return new PageResponse<>(data, data.isEmpty() ? 0 : 1, data.size(), 0, 500);
+    public Object list(@RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size,
+                       @RequestParam(defaultValue="") String search, @RequestParam(defaultValue="ALL") String filter) {
+        if (!Set.of("ALL", "LOW", "DENTAL", "CLINIC").contains(filter)) throw new IllegalArgumentException("Filtro inválido.");
+        // Preserve old consumers until they opt in to pagination.
+        if (page == null && size == null && search.isBlank() && filter.equals("ALL")) {
+            var data = items.findByClinicIdOrderByNameAsc(tenant()).stream().map(StockItemResponse::from).toList();
+            return new PageResponse<>(data, data.isEmpty() ? 0 : 1, data.size(), 0, 500);
+        }
+        return PageResult.from(items.search(tenant(), search.trim(), filter,
+                PageResult.request(page, size, Sort.by("name", "id"))), StockItemResponse::from);
+    }
+
+    @GetMapping("/summary")
+    @Transactional(readOnly=true)
+    public java.util.Map<String, Long> summary() {
+        var summary = items.summarize(tenant());
+        return java.util.Map.of("total", summary.getTotal(), "low", summary.getLow());
     }
 
     @PostMapping
@@ -75,8 +89,10 @@ public class StockController {
 
     @GetMapping("/{id}/movements")
     @Transactional(readOnly = true)
-    public List<StockMovementResponse> listMovements(@PathVariable UUID id) {
+    public Object listMovements(@PathVariable UUID id, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) {
         StockItem item = requireItem(id);
+        if (page != null || size != null) return PageResult.from(movements.findByItemIdAndClinicId(item.getId(), tenant(),
+                PageResult.request(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"))), StockMovementResponse::from);
         return movements.findTop20ByItemIdAndClinicIdOrderByCreatedAtDesc(item.getId(), tenant()).stream()
                 .map(StockMovementResponse::from)
                 .toList();

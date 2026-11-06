@@ -1,5 +1,6 @@
+import { useDataReadyMetric } from '../../lib/performance';
 import { useState, type FormEvent } from 'react';
-import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
+import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -22,6 +23,7 @@ export default function ProceduresPage() {
   const [editPrice, setEditPrice] = useState('');
 
   const procedures = useProcedures();
+  useDataReadyMetric("ProceduresPage", Boolean(procedures.data));
   const create = useCreateProcedure();
   const update = useUpdateProcedure();
   const remove = useDeleteProcedure();
@@ -67,6 +69,7 @@ export default function ProceduresPage() {
 
   return (
     <div className="procedures-page">
+      <RefreshState fetching={procedures.isRefetching} error={procedures.isError && Boolean(procedures.data)} onRetry={() => procedures.refetch()} />
       <div className="page-header">
         <div>
           <h1 className="page-title">Procedimentos</h1>
@@ -110,7 +113,7 @@ export default function ProceduresPage() {
 
       {procedures.isLoading ? (
         <LoadingState />
-      ) : procedures.isError ? (
+      ) : procedures.isError && !procedures.data ? (
         <ErrorState onRetry={() => procedures.refetch()} />
       ) : procedures.data?.content.length ? (
         <>

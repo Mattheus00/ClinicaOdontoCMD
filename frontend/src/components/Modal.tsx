@@ -1,9 +1,10 @@
 import { type ReactNode, useEffect, useEffectEvent, useId, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function Modal({ title, children, onClose, className = '' }: { title: string; children: ReactNode; onClose: () => void; className?: string }) {
+export function Modal({ title, children, footer, onClose, className = '' }: { title: string; children: ReactNode; footer?: ReactNode; onClose: () => void; className?: string }) {
   const dialogRef = useRef<HTMLElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
   const titleId = useId();
@@ -19,6 +20,8 @@ export function Modal({ title, children, onClose, className = '' }: { title: str
     (focusables[0] ?? dialog)?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
+      const dialogs = document.querySelectorAll('[data-app-modal]');
+      if (dialogs[dialogs.length - 1] !== dialog) return;
       if (event.key === 'Escape') {
         event.preventDefault();
         closeOnEscape();
@@ -27,7 +30,7 @@ export function Modal({ title, children, onClose, className = '' }: { title: str
       if (event.key !== 'Tab' || !dialog) return;
 
       const items = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-        (el) => !el.hasAttribute('disabled') && el.tabIndex !== -1,
+        (el) => !el.hasAttribute('disabled') && el.tabIndex !== -1 && el.getClientRects().length > 0,
       );
       if (items.length === 0) {
         event.preventDefault();
@@ -36,6 +39,11 @@ export function Modal({ title, children, onClose, className = '' }: { title: str
       }
       const first = items[0];
       const last = items[items.length - 1];
+      if (!dialog.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
@@ -53,10 +61,11 @@ export function Modal({ title, children, onClose, className = '' }: { title: str
     };
   }, []);
 
-  return (
+  return createPortal(
     <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
       <section
         ref={dialogRef}
+        data-app-modal
         className={`modal ${className}`.trim()}
         role="dialog"
         aria-modal="true"
@@ -71,7 +80,8 @@ export function Modal({ title, children, onClose, className = '' }: { title: str
           </button>
         </header>
         <div className="modal-body">{children}</div>
+        {footer}
       </section>
-    </div>
+    </div>, document.body
   );
 }

@@ -1,5 +1,6 @@
+import { useDataReadyMetric } from '../../lib/performance';
 import { useState, type FormEvent } from 'react';
-import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
+import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -24,6 +25,7 @@ export default function DentistsPage() {
   const [latestInviteName, setLatestInviteName] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const dentists = useProfessionals();
+  useDataReadyMetric("DentistsPage", Boolean(dentists.data));
   const create = useCreateProfessional();
   const regenerate = useRegenerateProfessionalInvite();
   const remove = useDeleteProfessional();
@@ -103,6 +105,7 @@ export default function DentistsPage() {
 
   return (
     <div className="dentists-page">
+      <RefreshState fetching={dentists.isRefetching} error={dentists.isError && Boolean(dentists.data)} onRetry={() => dentists.refetch()} />
       <div className="page-header">
         <div>
           <h1 className="page-title">Dentistas</h1>
@@ -177,7 +180,7 @@ export default function DentistsPage() {
 
       {dentists.isLoading ? (
         <LoadingState />
-      ) : dentists.isError ? (
+      ) : dentists.isError && !dentists.data ? (
         <ErrorState onRetry={() => dentists.refetch()} />
       ) : dentists.data?.content.length ? (
         <>

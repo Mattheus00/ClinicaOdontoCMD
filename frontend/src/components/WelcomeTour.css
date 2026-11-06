@@ -3,6 +3,16 @@
   gap: 12px;
 }
 
+.welcome-tour-popover { position: fixed; z-index: 80; width: min(360px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto; padding: 18px; border: 1px solid #b7a787; border-radius: 14px; background: white; box-shadow: 0 12px 45px #26251f30; }
+.welcome-tour-highlight { position: fixed; z-index: 75; pointer-events: none; border-radius: 8px; outline: 3px solid #755a25; outline-offset: 3px; box-shadow: 0 0 0 6px #f5ecd7; }
+.welcome-tour-step { display: flex; align-items: center; justify-content: space-between; color: #5b6057; font-size: 12px; }
+.welcome-tour-popover h3 { font-size: 19px; }
+.welcome-tour-popover .welcome-tour h3 { font-size: 19px; }
+.welcome-tour-popover p, .welcome-tour-popover li { font-size: 13px; }
+.welcome-tour-popover .welcome-tour-actions { flex-direction: row; align-items: center; }
+.welcome-tour-popover .welcome-tour-actions > div { flex-direction: row; }
+.welcome-tour-popover .btn { padding-inline: 10px; min-height: 44px; width: auto; font-size: 12px; }
+
 .welcome-tour-icon {
   display: grid;
   place-items: center;

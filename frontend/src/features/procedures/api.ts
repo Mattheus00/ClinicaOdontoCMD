@@ -8,7 +8,7 @@ export function useProcedures(enabled = true) {
   return useQuery({
     queryKey: ['procedures'],
     enabled,
-    queryFn: async () => asPage<Procedure>((await api.get('/procedures')).data),
+    queryFn: async ({ signal }) => asPage<Procedure>((await api.get('/procedures', { signal })).data),
   });
 }
 

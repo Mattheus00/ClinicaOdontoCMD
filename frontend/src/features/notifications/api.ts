@@ -21,9 +21,9 @@ export function useStaffNotifications(enabled = true) {
   return useQuery({
     queryKey: ['staff-notifications'],
     enabled,
-    queryFn: async () => (await api.get<StaffNotificationList>('/staff-notifications')).data,
+    queryFn: async ({ signal }) => (await api.get<StaffNotificationList>('/staff-notifications', { signal })).data,
     // Public bookings arrive from another tab/session — poll often while the dashboard is open.
-    refetchInterval: 3_000,
+    refetchInterval: 15_000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
     staleTime: 0,
@@ -34,7 +34,14 @@ export function useMarkNotificationRead() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.post(`/staff-notifications/${id}/read`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['staff-notifications'] }),
+    onSuccess: (_result, id) => {
+      queryClient.setQueryData<StaffNotificationList>(['staff-notifications'], old => {
+        if (!old) return old;
+        const unread = old.items.some(item => item.id === id && !item.readAt);
+        return { unreadCount: Math.max(0, old.unreadCount - (unread ? 1 : 0)), items: old.items.map(item => item.id === id ? { ...item, readAt: item.readAt ?? new Date().toISOString() } : item) };
+      });
+      return queryClient.invalidateQueries({ queryKey: ['staff-notifications'] });
+    },
   });
 }
 
@@ -42,7 +49,10 @@ export function useMarkAllNotificationsRead() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => api.post('/staff-notifications/read-all'),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['staff-notifications'] }),
+    onSuccess: () => {
+      queryClient.setQueryData<StaffNotificationList>(['staff-notifications'], old => old ? { unreadCount: 0, items: old.items.map(item => ({ ...item, readAt: item.readAt ?? new Date().toISOString() })) } : old);
+      return queryClient.invalidateQueries({ queryKey: ['staff-notifications'] });
+    },
   });
 }
 

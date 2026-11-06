@@ -3,11 +3,11 @@ import { api } from '../../services/api';
 import type { Invoice, Subscription } from '../../api/types';
 
 export function useSubscription() {
-  return useQuery({ queryKey: ['subscription'], queryFn: async () => (await api.get<Subscription>('/billing/subscription')).data });
+  return useQuery({ queryKey: ['subscription'], queryFn: async ({ signal }) => (await api.get<Subscription>('/billing/subscription', { signal })).data });
 }
 
 export function useInvoices() {
-  return useQuery({ queryKey: ['invoices'], queryFn: async () => (await api.get<Invoice[]>('/billing/invoices')).data });
+  return useQuery({ queryKey: ['invoices'], queryFn: async ({ signal }) => (await api.get<Invoice[]>('/billing/invoices', { signal })).data });
 }
 
 export function useSubscribe() {

@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { Box3, BoxGeometry, Group, Mesh, MeshStandardMaterial, Vector3 } from 'three';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { LOWER_PERMANENT, UPPER_PERMANENT } from '../../features/tooth-procedures/constants';
 import { fdiFromMeshName, prepareArchModel } from './archModel';
@@ -47,9 +48,9 @@ describe('Contrato do GLB e isolamento dos materiais', () => {
     model.dispose();
   });
   it('carrega o GLB distribuído, com gengivas e geometria distinta por grupo anatômico', async () => {
-    const bytes = await readFile(new URL('../../../public/models/arcada.glb', import.meta.url));
+    const bytes = await readFile(new URL('../../../public/models/arcada-v2.glb', import.meta.url));
     const data = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-    const gltf = await new GLTFLoader().parseAsync(data, '');
+    const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(data, '');
     const model = prepareArchModel(gltf.scene);
     expect(model.teeth).toHaveLength(32);
     expect(model.root.getObjectByName('gingiva_upper')).toBeDefined();

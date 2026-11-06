@@ -11,6 +11,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PatientPaymentRepository extends JpaRepository<PatientPayment, UUID> {
+    @Query("SELECT COALESCE(SUM(p.amount),0) FROM PatientPayment p WHERE p.patient.id=:patientId AND p.status='PAID'")
+    java.math.BigDecimal sumPaid(@Param("patientId") UUID patientId);
+
+    org.springframework.data.domain.Page<PatientPayment> findByPatientId(UUID patientId, org.springframework.data.domain.Pageable pageable);
     List<PatientPayment> findByPatientIdOrderByCreatedAtDesc(UUID patientId);
 
     Optional<PatientPayment> findByAppointmentId(UUID appointmentId);

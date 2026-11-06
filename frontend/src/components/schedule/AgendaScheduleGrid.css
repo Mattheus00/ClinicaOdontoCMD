@@ -134,6 +134,8 @@
 }
 
 .schedule-event {
+  font-family: inherit;
+  text-align: left;
   position: absolute;
   z-index: 2;
   display: grid;
@@ -147,6 +149,9 @@
   user-select: none;
   box-sizing: border-box;
 }
+
+.schedule-event:focus-visible { outline: 3px solid var(--color-secondary); outline-offset: 1px; z-index: 4; }
+.schedule-slot:disabled { cursor: default; }
 
 .schedule-event:active {
   cursor: grabbing;

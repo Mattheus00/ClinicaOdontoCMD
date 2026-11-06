@@ -5,7 +5,7 @@ import { asPage, type Conversation } from '../../api/types';
 export function useConversations(status?: string) {
   return useQuery({
     queryKey: ['conversations', status],
-    queryFn: async () => asPage<Conversation>((await api.get('/conversations', { params: status ? { status } : undefined })).data),
+    queryFn: async ({ signal }) => asPage<Conversation>((await api.get('/conversations', { signal, params: status ? { status } : undefined })).data),
     refetchInterval: 15_000,
   });
 }

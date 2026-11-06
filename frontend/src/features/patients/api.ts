@@ -21,7 +21,7 @@ export function usePatients(search = '', page = 0, enabled = true) {
   return useQuery({
     queryKey: ['patients', search, page],
     enabled,
-    queryFn: async () => asPage<Patient>((await api.get('/patients', { params: { search, page, size: 20 } })).data),
+    queryFn: async ({ signal }) => asPage<Patient>((await api.get('/patients', { signal, params: { search, page, size: 20 } })).data),
   });
 }
 
@@ -29,15 +29,20 @@ export function usePatient(id?: string) {
   return useQuery({
     queryKey: ['patient', id],
     enabled: Boolean(id),
-    queryFn: async () => (await api.get<Patient>(`/patients/${id}`)).data,
+    queryFn: async ({ signal }) => (await api.get<Patient>(`/patients/${id}`, { signal })).data,
   });
 }
 
 export function usePatientSummary(id?: string, enabled = true) {
+  const queryClient = useQueryClient();
   return useQuery({
     queryKey: ['patient-summary', id],
     enabled: Boolean(id) && enabled,
-    queryFn: async () => (await api.get<PatientSummary>(`/patients/${id}/summary`)).data,
+    queryFn: async ({ signal }) => {
+      const result = (await api.get<PatientSummary>(`/patients/${id}/summary`, { signal })).data;
+      if (!signal.aborted) queryClient.setQueryData(['patient', id], result.patient);
+      return result;
+    },
   });
 }
 
@@ -53,7 +58,9 @@ export function useUpdatePatient(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: PatientInput) => (await api.put<Patient>(`/patients/${id}`, input)).data,
-    onSuccess: () => {
+    onSuccess: (patient) => {
+      queryClient.setQueryData(['patient', id], patient);
+      queryClient.setQueryData<PatientSummary>(['patient-summary', id], old => old ? { ...old, patient } : old);
       queryClient.invalidateQueries({ queryKey: ['patients'] });
       queryClient.invalidateQueries({ queryKey: ['patient', id] });
       queryClient.invalidateQueries({ queryKey: ['patient-summary', id] });
@@ -77,7 +84,7 @@ export function useAnamnesis(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['anamnesis', id],
     enabled: Boolean(id) && enabled,
-    queryFn: async () => (await api.get<Anamnesis>(`/patients/${id}/anamnesis`)).data,
+    queryFn: async ({ signal }) => (await api.get<Anamnesis>(`/patients/${id}/anamnesis`, { signal })).data,
   });
 }
 
@@ -96,7 +103,7 @@ export function useTreatments(id?: string) {
   return useQuery({
     queryKey: ['treatments', id],
     enabled: Boolean(id),
-    queryFn: async () => (await api.get<TreatmentRecord[]>(`/patients/${id}/treatments`)).data,
+    queryFn: async ({ signal }) => (await api.get<TreatmentRecord[]>(`/patients/${id}/treatments`, { signal })).data,
   });
 }
 
@@ -113,7 +120,7 @@ export function useBillingSummary(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['billing-summary', id],
     enabled: Boolean(id) && enabled,
-    queryFn: async () => (await api.get<BillingSummary>(`/patients/${id}/billing/summary`)).data,
+    queryFn: async ({ signal }) => (await api.get<BillingSummary>(`/patients/${id}/billing/summary`, { signal })).data,
   });
 }
 
@@ -121,7 +128,7 @@ export function useTreatmentPlans(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['treatment-plans', id],
     enabled: Boolean(id) && enabled,
-    queryFn: async () => (await api.get<TreatmentPlan[]>(`/patients/${id}/billing/plans`)).data,
+    queryFn: async ({ signal }) => (await api.get<TreatmentPlan[]>(`/patients/${id}/billing/plans`, { signal })).data,
   });
 }
 
@@ -132,17 +139,18 @@ export function useCreateTreatmentPlan(id: string) {
       (await api.post<TreatmentPlan>(`/patients/${id}/billing/plans`, input)).data,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['treatment-plans', id] });
+      queryClient.invalidateQueries({ queryKey: ['financial-dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['billing-summary', id] });
       queryClient.invalidateQueries({ queryKey: ['patient-summary', id] });
     },
   });
 }
 
-export function usePatientPayments(id?: string, enabled = true) {
+export function usePatientPayments(id?: string, enabled = true, page = 0) {
   return useQuery({
-    queryKey: ['patient-payments', id],
+    queryKey: ['patient-payments', id, page],
     enabled: Boolean(id) && enabled,
-    queryFn: async () => (await api.get<PatientPayment[]>(`/patients/${id}/billing/payments`)).data,
+    queryFn: async ({ signal }) => asPage<PatientPayment>((await api.get(`/patients/${id}/billing/payments`, { signal, params: { page, size: 20 } })).data),
   });
 }
 
@@ -153,6 +161,7 @@ export function useCreatePatientPayment(id: string) {
       (await api.post<PatientPayment>(`/patients/${id}/billing/payments`, input)).data,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['patient-payments', id] });
+      queryClient.invalidateQueries({ queryKey: ['financial-dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['billing-summary', id] });
       queryClient.invalidateQueries({ queryKey: ['patient-summary', id] });
     },
@@ -163,7 +172,7 @@ export function usePatientInsurances(id?: string, enabled = true) {
   return useQuery({
     queryKey: ['patient-insurances', id],
     enabled: Boolean(id) && enabled,
-    queryFn: async () => (await api.get<PatientInsurance[]>(`/patients/${id}/billing/insurances`)).data,
+    queryFn: async ({ signal }) => (await api.get<PatientInsurance[]>(`/patients/${id}/billing/insurances`, { signal })).data,
   });
 }
 
@@ -176,11 +185,11 @@ export function useCreatePatientInsurance(id: string) {
   });
 }
 
-export function usePatientAppointments(id?: string, enabled = true) {
+export function usePatientAppointments(id?: string, enabled = true, page = 0) {
   return useQuery({
-    queryKey: ['patient-appointments', id],
+    queryKey: ['patient-appointments', id, page],
     enabled: Boolean(id) && enabled,
-    queryFn: async () => (await api.get<AppointmentHistory[]>(`/patients/${id}/appointments`)).data,
+    queryFn: async ({ signal }) => asPage<AppointmentHistory>((await api.get(`/patients/${id}/appointments`, { signal, params: { page, size: 20 } })).data),
   });
 }
 
@@ -188,6 +197,6 @@ export function usePatientAccessLogs(id?: string) {
   return useQuery({
     queryKey: ['patient-access-logs', id],
     enabled: Boolean(id),
-    queryFn: async () => (await api.get<AccessLog[]>(`/patients/${id}/access-logs`)).data,
+    queryFn: async ({ signal }) => (await api.get<AccessLog[]>(`/patients/${id}/access-logs`, { signal })).data,
   });
 }

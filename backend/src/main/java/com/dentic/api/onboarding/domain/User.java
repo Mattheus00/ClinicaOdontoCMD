@@ -41,6 +41,9 @@ public class User {
     @Column(name = "email_confirmed", nullable = false)
     private Boolean emailConfirmed = false;
 
+    @Column(name = "tutorial_version", nullable = false)
+    private int tutorialVersion = 0;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 

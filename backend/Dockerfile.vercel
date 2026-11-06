@@ -3,19 +3,45 @@ FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /workspace
 COPY gradlew build.gradle settings.gradle ./
 COPY gradle ./gradle
-RUN chmod +x gradlew
+RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 COPY src ./src
 RUN ./gradlew bootJar --no-daemon
+RUN java -Djarmode=tools -jar build/libs/*.jar extract --layers --destination extracted
 
 FROM eclipse-temurin:21-jre-jammy
 
-WORKDIR /app
+# Official Node linux-x64 builds run on jammy; apt nodejs is too old for the proxy.
+ARG NODE_VERSION=22.14.0
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends nodejs \
-    && rm -rf /var/lib/apt/lists/*
-COPY --from=build /workspace/build/libs/*.jar app.jar
+    && apt-get install -y --no-install-recommends ca-certificates curl xz-utils \
+    && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" \
+      | tar -xJ -C /usr/local --strip-components=1 \
+    && apt-get purge -y curl xz-utils \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && node -v && npm -v
+
+WORKDIR /app
+COPY --from=build /workspace/extracted/dependencies/ ./
+COPY --from=build /workspace/extracted/spring-boot-loader/ ./
+COPY --from=build /workspace/extracted/snapshot-dependencies/ ./
+COPY --from=build /workspace/extracted/application/ ./
+RUN set -eux; \
+    jar="$(ls -1 *.jar | head -n 1)"; \
+    test -n "$jar"; \
+    mv "$jar" app.jar; \
+    java -XX:ArchiveClassesAtExit=/app/application.jsa \
+      -Dspring.context.exit=onRefresh \
+      -Dspring.profiles.active=cds-training \
+      -jar app.jar; \
+    test -f /app/application.jsa
 COPY start-vercel.sh /app/start-vercel.sh
 COPY startup-proxy.js /app/startup-proxy.js
-RUN chmod 500 /app/start-vercel.sh
+RUN sed -i 's/\r$//' /app/start-vercel.sh /app/startup-proxy.js \
+    && chmod 500 /app/start-vercel.sh \
+    && test -f /app/app.jar \
+    && test -f /app/startup-proxy.js \
+    && head -c 12 /app/start-vercel.sh | grep -q '#!/bin/sh'
 EXPOSE 8080
-ENTRYPOINT ["/app/start-vercel.sh"]
+# Prefer node directly so a broken shebang cannot take down the container.
+ENTRYPOINT ["node", "/app/startup-proxy.js"]

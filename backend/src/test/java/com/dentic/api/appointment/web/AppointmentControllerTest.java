@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,7 +77,7 @@ class AppointmentControllerTest {
     }
 
     @Test
-    void confirm_byDentist_shouldCreatePaymentAndCompleteAppointment() {
+    void confirm_byDentist_shouldCompleteWithoutRecordingPayment() {
         Clinic clinic = new Clinic();
         clinic.setId(clinicId);
         Patient patient = new Patient();
@@ -98,8 +99,6 @@ class AppointmentControllerTest {
         appointment.setStatus("CONFIRMED");
 
         when(appointments.findById(appointmentId)).thenReturn(Optional.of(appointment));
-        when(payments.findByAppointmentId(appointmentId)).thenReturn(Optional.empty());
-        when(payments.save(any(PatientPayment.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(appointments.save(appointment)).thenReturn(appointment);
 
         var response = controller.confirm(
@@ -110,12 +109,7 @@ class AppointmentControllerTest {
         assertNotNull(response.getBody());
         assertEquals("COMPLETED", response.getBody().status());
         assertEquals("Realizada limpeza e orientação de higiene.", response.getBody().report());
-        ArgumentCaptor<PatientPayment> payment = ArgumentCaptor.forClass(PatientPayment.class);
-        verify(payments).save(payment.capture());
-        assertEquals(new BigDecimal("150.00"), payment.getValue().getAmount());
-        assertEquals("PAID", payment.getValue().getStatus());
-        assertEquals(LocalDate.now(ZoneId.of("America/Sao_Paulo")), payment.getValue().getPaidAt());
-        assertEquals(appointment, payment.getValue().getAppointment());
+        verifyNoInteractions(payments);
         verify(appointments).save(appointment);
     }
 }

@@ -1,9 +1,10 @@
+import { useDataReadyMetric } from '../../lib/performance';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
+import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
 import { maskCpf, maskPhone, withMask } from '../../lib/masks';
 import { useDebouncedValue } from '../../lib/useDebouncedValue';
@@ -31,6 +32,7 @@ export default function PatientsPage() {
   const [page, setPage] = useState(0);
   const [open, setOpen] = useState(false);
   const patients = usePatients(useDebouncedValue(search), page);
+  useDataReadyMetric("PatientsPage", Boolean(patients.data));
   const create = useCreatePatient();
   const form = useForm<PatientForm>({ resolver: zodResolver(schema) });
   const phoneField = form.register('phone');
@@ -52,6 +54,7 @@ export default function PatientsPage() {
 
   return (
     <div>
+      <RefreshState fetching={patients.isRefetching} error={patients.isError && Boolean(patients.data)} onRetry={() => patients.refetch()} />
       <div className="page-header">
         <div>
           <h1 className="page-title">Pacientes</h1>
@@ -76,7 +79,7 @@ export default function PatientsPage() {
 
       {patients.isLoading ? (
         <LoadingState />
-      ) : patients.isError ? (
+      ) : patients.isError && !patients.data ? (
         <ErrorState onRetry={() => patients.refetch()} />
       ) : patients.data?.content.length ? (
         <>

@@ -5,6 +5,7 @@ import com.dentic.api.security.SecurityUtils;
 import com.dentic.api.staffnotification.domain.StaffNotification;
 import com.dentic.api.staffnotification.repository.StaffNotificationRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -34,17 +35,14 @@ public class StaffNotificationController {
         if (SecurityUtils.isDentist()) {
             UUID professionalId = SecurityUtils.requireProfessionalId();
             items = unreadOnly
-                    ? notifications.findUnreadForProfessional(clinicId, professionalId)
-                    : notifications.findForProfessional(clinicId, professionalId);
+                    ? notifications.findUnreadForProfessional(clinicId, professionalId, PageRequest.of(0, 30))
+                    : notifications.findForProfessional(clinicId, professionalId, PageRequest.of(0, 30));
             unreadCount = notifications.countUnreadForProfessional(clinicId, professionalId);
         } else {
             items = unreadOnly
-                    ? notifications.findUnreadClinicInbox(clinicId)
-                    : notifications.findClinicInbox(clinicId);
+                    ? notifications.findUnreadClinicInbox(clinicId, PageRequest.of(0, 30))
+                    : notifications.findClinicInbox(clinicId, PageRequest.of(0, 30));
             unreadCount = notifications.countUnreadClinicInbox(clinicId);
-        }
-        if (items.size() > 30) {
-            items = items.subList(0, 30);
         }
         return new NotificationListResponse(
                 unreadCount,

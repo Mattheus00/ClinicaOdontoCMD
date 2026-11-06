@@ -49,7 +49,7 @@ export type PublicBookingConfirmation = {
 export function useBookingLink() {
   return useQuery({
     queryKey: ['booking-link'],
-    queryFn: async () => (await api.get<BookingLink>('/clinics/me/booking-link')).data,
+    queryFn: async ({ signal }) => (await api.get<BookingLink>('/clinics/me/booking-link', { signal })).data,
   });
 }
 
@@ -65,8 +65,8 @@ export function usePublicBookingPage(slug: string | undefined) {
   return useQuery({
     queryKey: ['public-booking', slug],
     enabled: Boolean(slug),
-    queryFn: async () =>
-      (await api.get<BookingPage>(`/public/booking/${slug}`, { skipGlobalError: true })).data,
+    queryFn: async ({ signal }) =>
+      (await api.get<BookingPage>(`/public/booking/${slug}`, { signal, skipGlobalError: true })).data,
     retry: false,
   });
 }
@@ -75,9 +75,9 @@ export function usePublicAvailability(slug: string | undefined, professionalId: 
   return useQuery({
     queryKey: ['public-availability', slug, professionalId, date],
     enabled: Boolean(slug && professionalId && date),
-    queryFn: async () =>
+    queryFn: async ({ signal }) =>
       (
-        await api.get<{ date: string; slots: string[] }>(`/public/booking/${slug}/availability`, {
+        await api.get<{ date: string; slots: string[] }>(`/public/booking/${slug}/availability`, { signal,
           params: { professionalId, date },
           skipGlobalError: true,
         })

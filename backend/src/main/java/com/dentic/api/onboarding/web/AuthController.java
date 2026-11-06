@@ -93,7 +93,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @Transactional(readOnly = true)
+    @Transactional
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
         String email = request.email() == null ? "" : request.email().trim().toLowerCase();
         String password = request.password() == null ? "" : request.password();

@@ -125,4 +125,4 @@ export function defaultStatusFor(procedure: ProcedureType): RecordedStatus {
   }
 }
 
-export const GLB_MODEL_URL = '/models/arcada.glb';
+export const GLB_MODEL_URL = '/models/arcada-v2.glb';

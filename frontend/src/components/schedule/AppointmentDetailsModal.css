@@ -19,30 +19,30 @@
   background: #f6f0e5; color: #755a25; font-size: 16px; font-weight: 600;
 }
 .appointment-patient-name { min-width: 0; flex: 1; }
-.appointment-patient-name > span { display: block; margin-bottom: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #797a77; }
+.appointment-patient-name > span { display: block; margin-bottom: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #646561; }
 .appointment-patient-name h3 { font-family: var(--font-family); font-size: 20px; font-weight: 650; line-height: 1.3; color: #262824; overflow-wrap: anywhere; }
 .appointment-status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
 .appointment-status i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-.appointment-status-scheduled, .appointment-status-pending { background: #fbf2df; color: #8a631f; }
+.appointment-status-pending { background: #fbf2df; color: #8a631f; }
 .appointment-status-confirmed { background: #e8f5ec; color: #247249; }
 .appointment-status-cancelled { background: #fdecee; color: #ad3846; }
 .appointment-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 19px 28px; margin: 0 0 20px; }
 .appointment-meta > div { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
 .appointment-meta svg { color: #94918a; flex-shrink: 0; margin-top: 2px; }
-.appointment-meta dt { margin-bottom: 4px; color: #787a76; font-size: 11px; }
+.appointment-meta dt { margin-bottom: 4px; color: #60635b; font-size: 11px; }
 .appointment-meta dd { margin: 0; color: #333630; font-size: 13px; font-weight: 500; overflow-wrap: anywhere; }
-.appointment-meta dd small { display: block; color: #8a8d86; font-size: 11px; font-weight: 400; margin-top: 3px; }
+.appointment-meta dd small { display: block; color: #62665e; font-size: 11px; font-weight: 400; margin-top: 3px; }
 .appointment-procedure-summary { display: flex; justify-content: space-between; gap: 20px; padding: 13px 16px; border: 1px solid #eae7e0; border-radius: 10px; background: #faf9f6; }
-.appointment-procedure-summary span { display: block; font-size: 11px; color: #7e7b73; margin-bottom: 4px; }
+.appointment-procedure-summary span { display: block; font-size: 11px; color: #625f57; margin-bottom: 4px; }
 .appointment-procedure-summary strong { font-size: 13px; color: #38382f; font-weight: 600; overflow-wrap: anywhere; }
 .appointment-procedure-price { text-align: right; flex-shrink: 0; }
-.appointment-origin { display: flex; gap: 6px; align-items: center; margin: 9px 0 0; color: #86837d; font-size: 11px; }
+.appointment-origin { display: flex; gap: 6px; align-items: center; margin: 9px 0 0; color: #656159; font-size: 11px; }
 .appointment-origin svg { flex-shrink: 0; }
 .appointment-chart-link { display: flex; align-items: center; gap: 12px; padding: 13px 0; margin: 15px 0 19px; border-top: 1px solid #eeece7; border-bottom: 1px solid #eeece7; text-decoration: none; color: #6e572c; }
 .appointment-chart-icon { display: grid; place-items: center; width: 38px; height: 40px; background: #f7f3eb; border-radius: 10px; flex-shrink: 0; }
 .appointment-chart-link > span:nth-child(2) { flex: 1; min-width: 0; }
 .appointment-chart-link strong { display: block; font-size: 13px; font-weight: 600; }
-.appointment-chart-link small { display: block; margin-top: 4px; font-size: 11px; color: #85817a; line-height: 1.4; }
+.appointment-chart-link small { display: block; margin-top: 4px; font-size: 11px; color: #646056; line-height: 1.4; }
 .appointment-chart-link > svg { flex-shrink: 0; }
 .appointment-chart-link:hover { color: #382b13; }
 .appointment-chart-link:hover .appointment-chart-icon { background: #eee4d0; }
@@ -51,18 +51,18 @@
 .appointment-report label svg { color: #8e8b83; }
 .appointment-report label span { margin-left: auto; font-size: 10px; color: #81867d; font-weight: 400; }
 .appointment-report textarea { display: block; width: 100%; min-height: 96px; padding: 12px 14px; border: 1px solid #deded7; border-radius: 10px; resize: vertical; color: #343832; font: 400 13px/1.6 var(--font-family); background: #fff; }
-.appointment-report textarea::placeholder { color: #979a93; }
+.appointment-report textarea::placeholder { color: #656b60; }
 .appointment-report textarea:focus-visible { outline: 2px solid #ad8c4c; outline-offset: 2px; }
 .appointment-report textarea:disabled { background: #f7f7f4; color: #75786f; }
-.appointment-report > p { margin-top: 7px; color: #92968c; font-size: 11px; line-height: 1.5; }
+.appointment-report > p { margin-top: 7px; color: #596153; font-size: 11px; line-height: 1.5; }
 .appointment-whatsapp { display: flex; gap: 10px; align-items: center; padding: 13px 14px; margin-top: 20px; background: #f0f8f2; border: 1px solid #daebde; border-radius: 11px; color: #37714d; }
 .appointment-whatsapp > svg { flex-shrink: 0; }
 .appointment-whatsapp > div { flex: 1; min-width: 0; }
 .appointment-whatsapp strong { display: block; font-size: 12px; font-weight: 600; line-height: 1.4; }
-.appointment-whatsapp p { margin: 3px 0 0; font-size: 11px; color: #6e8a77; line-height: 1.4; }
+.appointment-whatsapp p { margin: 3px 0 0; font-size: 11px; color: #476851; line-height: 1.4; }
 .appointment-whatsapp .appointment-whatsapp-button { padding: 0 11px; min-height: 34px; background: #fff; border: 1px solid #c8dece; border-radius: 7px; color: #287144; font-size: 11px; }
 .appointment-whatsapp .appointment-whatsapp-button:hover { background: #e2f1e6; border-color: #9fc7ac; color: #1e6238; }
-.appointment-completion-note { margin: 14px 0 0; color: #7d8177; font-size: 11px; line-height: 1.5; }
+.appointment-completion-note { margin: 14px 0 0; color: #5d6258; font-size: 11px; line-height: 1.5; }
 .appointment-completion-note strong { font-weight: 600; color: #60665a; }
 .appointment-modal-footer { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 18px 28px; border-top: 1px solid #ecebe6; background: #fcfcfa; }
 .appointment-main-actions { display: flex; justify-content: flex-end; gap: 10px; margin-left: auto; }
@@ -91,3 +91,17 @@
   .appointment-main-actions .btn-primary { flex: 1; white-space: normal; line-height: 1.3; }
   .appointment-cancel { text-align: center; min-height: 40px; }
 }
+
+.appointment-modal { display: flex; flex-direction: column; overflow: hidden; max-height: calc(100dvh - 32px); }
+.modal.appointment-modal { width: min(720px, 100%); }
+.appointment-cancel { flex-shrink: 0; max-width: 125px; }
+.appointment-modal .modal-header, .appointment-modal-footer { flex-shrink: 0; }
+.appointment-modal .modal-body { overflow-y: auto; min-height: 0; overscroll-behavior: contain; }
+.appointment-status-scheduled { background: #edf2fc; color: #304e87; }
+.appointment-main-actions { flex-wrap: wrap; }
+.appointment-report > p, .appointment-chart-link small, .appointment-meta dt, .appointment-meta dd small, .appointment-origin { font-size: 12px; }
+.appointment-unsaved { padding: 14px; margin-block: 14px; background: #fff4db; border: 1px solid #c6a45d; border-radius: 10px; color: #54401c; }
+.appointment-unsaved p { margin-block: 6px 12px; }
+.appointment-unsaved > div { display: flex; gap: 8px; flex-wrap: wrap; }
+.appointment-unsaved button { white-space: normal; line-height: 1.3; }
+@media (max-width: 600px) { .appointment-modal { max-height: 94dvh; } .appointment-main-actions .btn { flex: 1 1 42%; } }

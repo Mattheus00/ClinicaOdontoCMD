@@ -1,17 +1,17 @@
+import { useDataReadyMetric } from '../../lib/performance';
+import { Pagination } from '../../components/Pagination';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { ErrorState, LoadingState } from '../../components/AsyncState';
+import { ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
 import { DentalChartWorkspace } from '../../components/dental-chart/DentalChartWorkspace';
 import { useProfessionals } from '../../features/professionals/api';
 import {
   useAnamnesis,
-  useBillingSummary,
   useCreatePatientPayment,
   useCreateTreatmentPlan,
-  usePatient,
   usePatientAppointments,
   usePatientPayments,
   usePatientSummary,
@@ -141,20 +141,24 @@ const money = (value?: number) =>
 
 export default function PatientDetailPage() {
   const { id = '' } = useParams();
-  const [tab, setTab] = useState<Tab>('cadastro');
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState<Tab>(() => TABS.some(item => item.id === searchParams.get('tab')) ? searchParams.get('tab') as Tab : 'cadastro');
 
-  const patient = usePatient(id);
+  const [paymentPage, setPaymentPage] = useState(0);
+  const [historyPage, setHistoryPage] = useState(0);
   const summary = usePatientSummary(id);
+  useDataReadyMetric("PatientDetailPage", Boolean(summary.data));
+  const patient = { ...summary, data: summary.data?.patient };
   const dentists = useProfessionals(tab === 'cadastro');
   const update = useUpdatePatient(id);
   const anamnesis = useAnamnesis(id, tab === 'anamnese');
   const saveAnamnesis = useSaveAnamnesis(id);
-  const billing = useBillingSummary(id, tab === 'financeiro');
+  const billing = { ...summary, data: summary.data?.billing };
   const plans = useTreatmentPlans(id, tab === 'financeiro');
   const createPlan = useCreateTreatmentPlan(id);
-  const payments = usePatientPayments(id, tab === 'financeiro');
+  const payments = usePatientPayments(id, tab === 'financeiro', paymentPage);
   const createPayment = useCreatePatientPayment(id);
-  const history = usePatientAppointments(id, tab === 'consultas');
+  const history = usePatientAppointments(id, tab === 'consultas', historyPage);
 
   const cadastroForm = useForm<PatientCadastroForm>({
     resolver: zodResolver(patientCadastroSchema),
@@ -175,24 +179,25 @@ export default function PatientDetailPage() {
 
   useEffect(() => {
     if (patient.data) {
-      cadastroForm.reset(mapPatientToForm(patient.data));
+      if (!cadastroForm.formState.isDirty) cadastroForm.reset(mapPatientToForm(patient.data));
     }
   }, [patient.data, cadastroForm]);
 
   useEffect(() => {
-    if (anamnesis.data) anamnesisForm.reset(anamnesis.data);
+    if (anamnesis.data && !anamnesisForm.formState.isDirty) anamnesisForm.reset(anamnesis.data);
   }, [anamnesis.data, anamnesisForm]);
 
   if (patient.isLoading) return <LoadingState />;
-  if (patient.isError || !patient.data) return <ErrorState onRetry={() => patient.refetch()} />;
+  if (!patient.data) return <ErrorState onRetry={() => patient.refetch()} />;
 
   const data = patient.data;
 
   const handleSaveCadastro = cadastroForm.handleSubmit(
     async (values) => {
-      await update.mutateAsync(buildPatientPayload(values));
-      window.dispatchEvent(new CustomEvent('app:api-error', {
-        detail: { message: 'Cadastro salvo com sucesso.' },
+      const saved = await update.mutateAsync(buildPatientPayload(values));
+      cadastroForm.reset(mapPatientToForm(saved));
+      window.dispatchEvent(new CustomEvent('app:toast', {
+        detail: { message: 'Cadastro salvo com sucesso.', tone: 'success' },
       }));
     },
     () => {
@@ -204,6 +209,7 @@ export default function PatientDetailPage() {
 
   return (
     <div className="patient-detail">
+      <RefreshState fetching={summary.isFetching} error={summary.isError} onRetry={() => summary.refetch()} />
       <div className="page-header">
         <div>
           <Link to="/patients" className="patient-back">
@@ -247,12 +253,27 @@ export default function PatientDetailPage() {
         </div>
       )}
 
-      <div className="patient-tabs" role="tablist">
+      <div className="patient-tabs" role="tablist" aria-label="Seções do prontuário">
         {TABS.map((item) => (
           <button
             key={item.id}
             type="button"
             role="tab"
+            id={`patient-tab-${item.id}`}
+            aria-selected={tab === item.id}
+            aria-controls="patient-details-panel"
+            tabIndex={tab === item.id ? 0 : -1}
+            onKeyDown={event => {
+              const index = TABS.findIndex(candidate => candidate.id === item.id);
+              let next = index;
+              if (event.key === 'ArrowRight') next = (index + 1) % TABS.length;
+              else if (event.key === 'ArrowLeft') next = (index - 1 + TABS.length) % TABS.length;
+              else if (event.key === 'Home') next = 0;
+              else if (event.key === 'End') next = TABS.length - 1;
+              else return;
+              event.preventDefault(); setTab(TABS[next].id);
+              document.getElementById(`patient-tab-${TABS[next].id}`)?.focus();
+            }}
             className={`patient-tab ${tab === item.id ? 'is-active' : ''}`}
             onClick={() => setTab(item.id)}
           >
@@ -261,7 +282,7 @@ export default function PatientDetailPage() {
         ))}
       </div>
 
-      <div className="patient-panel">
+      <div className="patient-panel" role="tabpanel" id="patient-details-panel" aria-labelledby={`patient-tab-${tab}`} tabIndex={0}>
         {tab === 'odontograma' && <DentalChartWorkspace key={id} patientId={id} />}
 
         {tab === 'cadastro' && (
@@ -422,6 +443,7 @@ export default function PatientDetailPage() {
             className="form-grid patient-form"
             onSubmit={anamnesisForm.handleSubmit(async (values) => {
               await saveAnamnesis.mutateAsync(values);
+              anamnesisForm.reset(values);
             })}
           >
             <label className="full-width">
@@ -482,9 +504,11 @@ export default function PatientDetailPage() {
               </Link>
             </div>
 
+            <RefreshState fetching={history.isRefetching} error={history.isError && Boolean(history.data)} onRetry={() => history.refetch()} />
+            <Pagination data={history.data} page={historyPage} onChange={setHistoryPage} busy={history.isFetching} />
             {history.isLoading ? (
               <LoadingState />
-            ) : history.data?.length ? (
+            ) : history.isError && !history.data ? <ErrorState onRetry={() => history.refetch()} /> : history.data?.content.length ? (
               <div className="table-wrap">
                 <table className="data-table consultas-table">
                   <thead>
@@ -497,7 +521,7 @@ export default function PatientDetailPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {history.data.map((item) => {
+                    {history.data.content.map((item) => {
                       const when = new Date(item.startsAt);
                       const status = APPOINTMENT_STATUS[item.status] ?? {
                         label: item.status,
@@ -650,7 +674,10 @@ export default function PatientDetailPage() {
               </div>
               <div className="history-list">
                 <h3 className="section-title">Pagamentos</h3>
-                {payments.data?.map((payment) => (
+                <RefreshState fetching={payments.isFetching} error={payments.isError && Boolean(payments.data)} onRetry={() => payments.refetch()} />
+                {payments.isError && !payments.data && <ErrorState onRetry={() => payments.refetch()} />}
+                <Pagination data={payments.data} page={paymentPage} onChange={setPaymentPage} busy={payments.isFetching} />
+                {payments.data?.content.map((payment) => (
                   <article key={payment.id}>
                     <strong>{money(payment.amount)}</strong>
                     <span>

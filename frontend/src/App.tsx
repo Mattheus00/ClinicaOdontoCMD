@@ -5,6 +5,7 @@ import { AppFeedback } from './components/AppFeedback';
 import MobileTopbar from './components/MobileTopbar';
 import Sidebar from './components/Sidebar';
 import WelcomeTour from './components/WelcomeTour';
+import { SessionConnectionBanner } from './components/SessionConnectionBanner';
 import './components/Sidebar.css';
 import './components/MobileTopbar.css';
 
@@ -33,6 +34,7 @@ function DashboardLayout() {
       <MobileTopbar />
       <Sidebar />
       <main className="main-content">
+        <SessionConnectionBanner />
         <Suspense fallback={<div className="app-loading">Carregando tela...</div>}>
           <Outlet />
         </Suspense>
@@ -43,9 +45,10 @@ function DashboardLayout() {
 }
 
 function ProtectedRoute() {
-  const { isAuthenticated, isInitializing } = useAuth();
+  const { isAuthenticated, isInitializing, sessionError, retrySession } = useAuth();
   const location = useLocation();
   if (isInitializing) return <div className="app-loading" role="status">Carregando sessão...</div>;
+  if (sessionError && !isAuthenticated) return <div className="app-loading" role="alert"><div><p>Não foi possível verificar sua sessão. Confira a conexão e tente novamente.</p><button className="btn btn-primary" onClick={retrySession}>Tentar novamente</button></div></div>;
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace state={{ from: location }} />;
 }
 

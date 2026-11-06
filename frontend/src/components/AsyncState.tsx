@@ -1,5 +1,10 @@
 import type { ReactNode } from 'react';
 
+export function RefreshState({ fetching, error, onRetry }: { fetching: boolean; error: boolean; onRetry: () => void }) {
+  if (error) return <div className="refresh-state" role="status">Não foi possível atualizar. Exibindo os últimos dados. <button type="button" className="btn btn-secondary" onClick={onRetry}>Tentar novamente</button></div>;
+  return fetching ? <div className="refresh-state" role="status">Atualizando…</div> : null;
+}
+
 export function LoadingState({ label = 'Carregando dados...' }: { label?: string }) {
   return <div className="async-state" role="status">{label}</div>;
 }

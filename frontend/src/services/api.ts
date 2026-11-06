@@ -10,7 +10,12 @@ const apiBaseUrl = configuredApiBaseUrl;
 export const api = axios.create({
   baseURL: apiBaseUrl,
   withCredentials: true,
+  timeout: 70_000,
 });
+
+export function isInvalidSession(error: unknown) {
+  return axios.isAxiosError(error) && (error.response?.status === 401 || error.response?.status === 403);
+}
 
 type AuthHandlers = {
   getAccessToken: () => string | null;
@@ -20,6 +25,7 @@ type AuthHandlers = {
 
 type RetriableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
+  _sessionGeneration?: number;
   skipGlobalError?: boolean;
 };
 
@@ -38,6 +44,11 @@ function isPublicApiPath(path: string) {
 
 let authHandlers: AuthHandlers | null = null;
 let refreshPromise: Promise<string> | null = null;
+let sessionGeneration = 0;
+export function invalidateSessionRequests() {
+  sessionGeneration += 1;
+  refreshPromise = null;
+}
 
 /** Connects the HTTP client to the in-memory auth store. */
 export function setAuthHandlers(handlers: AuthHandlers | null) {
@@ -59,23 +70,28 @@ function readAccessToken(payload: unknown): string | null {
  */
 export async function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
-    refreshPromise = axios
-      .post(`${apiBaseUrl}/auth/refresh`, {}, { withCredentials: true })
+    const previousAccessToken = authHandlers?.getAccessToken();
+    const generation = sessionGeneration;
+    const pending: Promise<string> = axios
+      .post(`${apiBaseUrl}/auth/refresh`, {}, { withCredentials: true, timeout: 70_000 })
       .then((response) => {
+        if (generation !== sessionGeneration) throw new axios.CanceledError('Session changed');
         const token = readAccessToken(response.data);
         if (!token) throw new Error('A API nao retornou um access token ao renovar a sessao.');
-        authHandlers?.setAccessToken(token);
+        if (authHandlers?.getAccessToken() === previousAccessToken) authHandlers?.setAccessToken(token);
         return token;
       })
       .finally(() => {
-        refreshPromise = null;
+        if (refreshPromise === pending) refreshPromise = null;
       });
+    refreshPromise = pending;
   }
 
   return refreshPromise;
 }
 
 api.interceptors.request.use((config) => {
+  (config as RetriableRequestConfig)._sessionGeneration = sessionGeneration;
   if (!isPublicApiPath(config.url ?? '')) {
     const token = authHandlers?.getAccessToken();
     if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -84,10 +100,18 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if ((response.config as RetriableRequestConfig)._sessionGeneration !== sessionGeneration)
+      return Promise.reject(new axios.CanceledError('Session changed'));
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as RetriableRequestConfig | undefined;
     const requestPath = originalRequest?.url ?? '';
+    if (originalRequest && originalRequest._sessionGeneration !== sessionGeneration)
+      return Promise.reject(new axios.CanceledError('Session changed'));
+
+    if (axios.isCancel(error)) return Promise.reject(error);
 
     if (
       error.response?.status === 401 &&
@@ -102,7 +126,9 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${token}`;
         return api(originalRequest);
       } catch (refreshError) {
-        authHandlers?.logout();
+        if (axios.isCancel(refreshError)) return Promise.reject(refreshError);
+        if (isInvalidSession(refreshError)) authHandlers?.logout();
+        else window.dispatchEvent(new CustomEvent('app:session-unavailable'));
         return Promise.reject(refreshError);
       }
     }

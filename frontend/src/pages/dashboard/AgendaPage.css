@@ -3,6 +3,18 @@
   overflow-x: hidden;
 }
 
+.patient-picker { border: 0; min-width: 0; display: grid; gap: 12px; }
+.patient-picker legend { font-weight: 600; margin-bottom: 8px; }
+.patient-picker label { display: grid; gap: 6px; }
+.patient-picker-results { list-style: none; max-height: 230px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 8px; }
+.patient-picker-results button { display: flex; justify-content: space-between; gap: 12px; width: 100%; padding: 12px; min-height: 48px; border: 0; background: white; color: var(--color-text); text-align: left; cursor: pointer; font: inherit; }
+.patient-picker-results button:hover { background: var(--color-surface); }
+.patient-picker-results span { color: var(--color-text-secondary); font-size: 12px; }
+.patient-picker-actions, .patient-picker-selected { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.patient-picker-create { display: grid; gap: 12px; }
+.patient-picker p { font-size: 13px; line-height: 1.5; }
+@media (max-width: 600px) { .patient-picker > .btn { white-space: normal; line-height: 1.4; } }
+
 .appointment-whatsapp-hint {
   margin: 10px 0 0;
   padding: 10px 12px;

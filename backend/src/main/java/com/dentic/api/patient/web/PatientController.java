@@ -2,6 +2,7 @@ package com.dentic.api.patient.web;
 
 import com.dentic.api.appointment.domain.Appointment;
 import com.dentic.api.appointment.repository.AppointmentRepository;
+import com.dentic.api.web.PageResult;
 import com.dentic.api.common.PhoneNormalizer;
 import com.dentic.api.multitenant.TenantContext;
 import com.dentic.api.onboarding.repository.ClinicRepository;
@@ -105,12 +106,8 @@ public class PatientController {
         logAccess(patient.getId(), "VIEW", "summary");
         BillingSummary billing = billingSummary(patient.getId());
         Optional<PatientAnamnesis> anamnesis = anamneses.findByPatientId(patient.getId());
-        List<Appointment> history = appointments.findByPatientIdOrderByScheduledAtDesc(patient.getId());
-        OffsetDateTime lastVisit = history.stream()
-                .filter(a -> !"CANCELLED".equals(a.getStatus()))
-                .map(Appointment::getScheduledAt)
-                .findFirst()
-                .orElse(null);
+        OffsetDateTime lastVisit = appointments.findLatestRelevantVisit(patient.getId(), PageRequest.of(0, 1))
+                .stream().findFirst().orElse(null);
         return new PatientSummaryResponse(
                 PatientResponse.from(patient),
                 lastVisit,
@@ -292,8 +289,10 @@ public class PatientController {
 
     @GetMapping("/{id}/billing/payments")
     @Transactional(readOnly = true)
-    public List<PaymentResponse> listPayments(@PathVariable UUID id) {
+    public Object listPayments(@PathVariable UUID id, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) {
         requirePatient(id);
+        if (page != null || size != null) return PageResult.from(payments.findByPatientId(id,
+                PageResult.request(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"))), PaymentResponse::from);
         return payments.findByPatientIdOrderByCreatedAtDesc(id).stream().map(PaymentResponse::from).toList();
     }
 
@@ -343,9 +342,11 @@ public class PatientController {
     // --- Appointments history & access logs ---
     @GetMapping("/{id}/appointments")
     @Transactional(readOnly = true)
-    public List<AppointmentHistoryResponse> listAppointments(@PathVariable UUID id) {
+    public Object listAppointments(@PathVariable UUID id, @RequestParam(required=false) Integer page, @RequestParam(required=false) Integer size) {
         requirePatient(id);
         logAccess(id, "VIEW", "appointments");
+        if (page != null || size != null) return PageResult.from(appointments.findByPatientId(id,
+                PageResult.request(page, size, Sort.by(Sort.Direction.DESC, "scheduledAt", "id"))), AppointmentHistoryResponse::from);
         return appointments.findByPatientIdOrderByScheduledAtDesc(id).stream()
                 .map(AppointmentHistoryResponse::from)
                 .toList();
@@ -362,29 +363,10 @@ public class PatientController {
     }
 
     private BillingSummary billingSummary(UUID patientId) {
-        List<TreatmentPlan> patientPlans = plans.findByPatientIdOrderByCreatedAtDesc(patientId);
-        List<PatientPayment> patientPayments = payments.findByPatientIdOrderByCreatedAtDesc(patientId);
-        BigDecimal approved = patientPlans.stream()
-                .filter(p -> "APPROVED".equals(p.getStatus()))
-                .map(TreatmentPlan::getTotalAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal pending = patientPlans.stream()
-                .filter(p -> "PENDING".equals(p.getStatus()) || "DRAFT".equals(p.getStatus()))
-                .map(TreatmentPlan::getTotalAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal paid = patientPayments.stream()
-                .filter(p -> "PAID".equals(p.getStatus()))
-                .map(PatientPayment::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal overdue = patientPlans.stream()
-                .filter(p -> ("PENDING".equals(p.getStatus()) || "APPROVED".equals(p.getStatus()))
-                        && p.getDueDate() != null
-                        && p.getDueDate().isBefore(LocalDate.now()))
-                .map(TreatmentPlan::getTotalAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal open = approved.add(pending).subtract(paid);
-        if (open.compareTo(BigDecimal.ZERO) < 0) open = BigDecimal.ZERO;
-        return new BillingSummary(approved, pending, paid, overdue, open);
+        var totals = plans.summarize(patientId, LocalDate.now());
+        BigDecimal paid = payments.sumPaid(patientId);
+        BigDecimal open = totals.getApproved().add(totals.getPending()).subtract(paid).max(BigDecimal.ZERO);
+        return new BillingSummary(totals.getApproved(), totals.getPending(), paid, totals.getOverdue(), open);
     }
 
     private void apply(Patient patient, PatientRequest request) {

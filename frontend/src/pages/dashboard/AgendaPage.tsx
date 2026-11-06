@@ -1,10 +1,11 @@
+import { useDataReadyMetric } from '../../lib/performance';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
+import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
 import DateTimePicker from '../../components/DateTimePicker';
 import { Modal } from '../../components/Modal';
 import AgendaScheduleGrid, { getWeekDays } from '../../components/schedule/AgendaScheduleGrid';
@@ -19,7 +20,8 @@ import {
   useRescheduleAppointment,
   useUpdateAppointmentReport,
 } from '../../features/appointments/api';
-import { usePatients } from '../../features/patients/api';
+import { PatientPicker } from '../../components/schedule/PatientPicker';
+import { useReportDraft } from '../../components/schedule/useReportDraft';
 import { useProcedures } from '../../features/procedures/api';
 import { useProfessionals } from '../../features/professionals/api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -84,7 +86,7 @@ function toDateTimeLocalValue(value: string) {
 }
 
 export default function AgendaPage() {
-  const { role, professionalId } = useAuth();
+  const { role, professionalId, userId } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const isAdmin = role === 'ADMIN' || role === 'SECRETARY';
   const isDentist = role === 'DENTIST';
@@ -97,7 +99,9 @@ export default function AgendaPage() {
   const [open, setOpen] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(deepLinkAppointmentId);
   const [selectedProfessionalId, setSelectedProfessionalId] = useState('');
-  const [reportDraft, setReportDraft] = useState('');
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const [rescheduleStart, setRescheduleStart] = useState('');
+  const [rescheduleProfessional, setRescheduleProfessional] = useState('');
   const [rescheduleWhatsAppPrompt, setRescheduleWhatsAppPrompt] = useState<{
     patientName: string;
     url: string;
@@ -132,10 +136,9 @@ export default function AgendaPage() {
   );
 
   const appointments = useAppointments(filters);
+  useDataReadyMetric("AgendaPage", Boolean(appointments.data));
   const dentists = useProfessionals(isAdmin);
-  const procedureList = useProcedures(isAdmin);
-  // Load patients only when creating an appointment (modal open).
-  const patients = usePatients('', 0, isAdmin && open);
+  const procedureList = useProcedures(isAdmin && open);
   const create = useCreateAppointment(filters);
   const cancel = useCancelAppointment(filters);
   const accept = useAcceptAppointment(filters);
@@ -168,12 +171,9 @@ export default function AgendaPage() {
   });
 
   const selectedAppointment = appointments.data?.content.find((item) => item.id === selectedAppointmentId);
+  const [reportDraft, setReportDraft] = useReportDraft(selectedAppointment, userId);
   const dentistsList = dentists.data?.content ?? [];
   const proceduresList = procedureList.data?.content ?? [];
-
-  useEffect(() => {
-    setReportDraft(selectedAppointment?.report ?? '');
-  }, [selectedAppointment?.id, selectedAppointment?.report]);
 
   const canEditReport =
     Boolean(selectedAppointment) &&
@@ -200,6 +200,7 @@ export default function AgendaPage() {
 
   return (
     <div className="agenda-page">
+      <RefreshState fetching={appointments.isRefetching} error={appointments.isError && Boolean(appointments.data)} onRetry={() => appointments.refetch()} />
       <div className="page-header">
         <div className="page-header-intro">
           <h1 className="page-title">Agenda</h1>
@@ -222,7 +223,7 @@ export default function AgendaPage() {
 
       {appointments.isLoading ? (
         <LoadingState />
-      ) : appointments.isError ? (
+      ) : appointments.isError && !appointments.data ? (
         <ErrorState onRetry={() => appointments.refetch()} />
       ) : isAdmin && dentists.isSuccess && !dentistsList.length ? (
         <EmptyState
@@ -376,6 +377,11 @@ export default function AgendaPage() {
           whatsappUrl={whatsappConfirmUrl}
           busy={{ accept: accept.isPending, confirm: confirm.isPending, save: updateReport.isPending, cancel: cancel.isPending }}
           onClose={() => setSelectedAppointmentId(null)}
+          onReschedule={isAdmin && ['SCHEDULED', 'CONFIRMED'].includes(selectedAppointment.status) ? () => {
+            setRescheduleStart(toDateTimeLocalValue(selectedAppointment.startsAt));
+            setRescheduleProfessional(selectedAppointment.professional.id);
+            setRescheduleOpen(true);
+          } : undefined}
           onAccept={() => {
             if (window.confirm('Aceitar esta solicitação e confirmar o horário na agenda?')) {
               accept.mutate(selectedAppointment.id, {
@@ -388,9 +394,7 @@ export default function AgendaPage() {
             }
           }}
           onConfirm={() => {
-            const label = selectedAppointment.procedure
-              ? `Confirmar atendimento e registrar pagamento de ${money(selectedAppointment.procedure.price)}?`
-              : 'Confirmar atendimento?';
+            const label = 'Concluir o atendimento e salvar o relatório? Nenhum recebimento será registrado automaticamente.';
             if (window.confirm(label)) {
               confirm.mutate(
                 { id: selectedAppointment.id, report: reportDraft },
@@ -398,11 +402,10 @@ export default function AgendaPage() {
               );
             }
           }}
-          onSaveReport={() => {
-            updateReport.mutate(
-              { id: selectedAppointment.id, report: reportDraft },
-              { onSuccess: () => setSelectedAppointmentId(null) },
-            );
+          onSaveReport={async () => {
+            const updated = await updateReport.mutateAsync({ id: selectedAppointment.id, report: reportDraft });
+            setReportDraft(updated.report ?? '');
+            window.dispatchEvent(new CustomEvent('app:toast', { detail: { message: 'Relatório salvo.', tone: 'success' } }));
           }}
           onCancel={() => {
             if (window.confirm(selectedAppointment.status === 'PENDING'
@@ -413,6 +416,22 @@ export default function AgendaPage() {
           }}
         />
       )}
+
+      {rescheduleOpen && selectedAppointment && <Modal title="Reagendar consulta" onClose={() => setRescheduleOpen(false)}>
+        <form className="form-grid" onSubmit={event => {
+          event.preventDefault();
+          reschedule.mutate({ id: selectedAppointment.id, startsAt: rescheduleStart, professionalId: rescheduleProfessional }, { onSuccess: () => {
+            setRescheduleOpen(false); setSelectedAppointmentId(null);
+            window.dispatchEvent(new CustomEvent('app:toast', { detail: { message: 'Consulta remarcada.', tone: 'success' } }));
+          } });
+        }}>
+          <p className="full-width">{selectedAppointment.patient.name}</p>
+          <label className="full-width">Nova data e horário<DateTimePicker value={rescheduleStart} onChange={setRescheduleStart} /></label>
+          <label className="full-width">Dentista<select value={rescheduleProfessional} onChange={event => setRescheduleProfessional(event.target.value)}>{dentistsList.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select></label>
+          {reschedule.isError && <p role="alert" className="form-error full-width">Não foi possível reagendar. Verifique a disponibilidade e tente novamente.</p>}
+          <div className="modal-actions full-width"><button type="button" className="btn btn-secondary" onClick={() => setRescheduleOpen(false)}>Voltar</button><button className="btn btn-primary" disabled={reschedule.isPending || !rescheduleStart}>{reschedule.isPending ? 'Reagendando…' : 'Salvar novo horário'}</button></div>
+        </form>
+      </Modal>}
 
       {rescheduleWhatsAppPrompt && (
         <Modal title="Avisar pelo WhatsApp?" onClose={() => setRescheduleWhatsAppPrompt(null)}>
@@ -445,18 +464,7 @@ export default function AgendaPage() {
       {isAdmin && open && (
         <Modal title="Novo agendamento" onClose={() => setOpen(false)}>
           <form className="form-grid" onSubmit={submit}>
-            <label>
-              Paciente
-              <select {...form.register('patientId')} disabled={patients.isLoading}>
-                <option value="">{patients.isLoading ? 'Carregando pacientes...' : 'Selecione'}</option>
-                {patients.data?.content.map((patient) => (
-                  <option key={patient.id} value={patient.id}>
-                    {patient.name}
-                  </option>
-                ))}
-              </select>
-              <small>{form.formState.errors.patientId?.message}</small>
-            </label>
+            <div className="full-width"><Controller name="patientId" control={form.control} render={({ field, fieldState }) => <PatientPicker value={field.value ?? ''} onChange={field.onChange} error={fieldState.error?.message} />} /></div>
             <label>
               Dentista
               <select {...form.register('professionalId')}>

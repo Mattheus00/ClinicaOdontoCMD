@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
 import { ContactShadows, Environment, Html, Lightformer, OrbitControls, useGLTF } from '@react-three/drei';
 import { Box3, MathUtils, MeshPhysicalMaterial, PCFShadowMap, PerspectiveCamera, Vector3, WebGLRenderer } from 'three';
@@ -41,8 +41,9 @@ function LoadingModel({ onUnavailable }: Pick<Props, 'onUnavailable'>) {
   return <Html center><div className="odg-loading" role="status">Carregando a arcada 3D…</div></Html>;
 }
 function ArchScene({ states, selected, hovered, focusTooth, autoRotate, resetKey, onToggle, onHover }: Props) {
-  const { scene } = useGLTF(GLB_MODEL_URL, false, false);
+  const { scene } = useGLTF(GLB_MODEL_URL, false, true);
   const model = useMemo(() => prepareArchModel(scene), [scene]);
+  const invalidate = useThree((state) => state.invalidate);
   const camera = useThree((state) => state.camera);
   const size = useThree((state) => state.size);
   const controls = useRef<OrbitControlsImpl>(null);
@@ -68,7 +69,8 @@ function ArchScene({ states, selected, hovered, focusTooth, autoRotate, resetKey
         material.depthWrite = !extracted;
       });
     });
-  }, [model, states, selected, hovered]);
+    invalidate();
+  }, [model, states, selected, hovered, invalidate]);
   useEffect(() => {
     model.root.traverse((object) => {
       if ('isMesh' in object) object.visible = !focus || object === focus.mesh;
@@ -103,7 +105,8 @@ function ArchScene({ states, selected, hovered, focusTooth, autoRotate, resetKey
       controls.current.update();
       controls.current.saveState();
     }
-  }, [camera, model, focus, resetKey, size.width, size.height]);
+    invalidate();
+  }, [camera, model, focus, resetKey, size.width, size.height, invalidate]);
   return <>
     <ambientLight intensity={0.65} />
     <directionalLight position={[-3, 7, 7]} intensity={2} castShadow shadow-mapSize={[1024, 1024]} shadow-normalBias={0.025} />
@@ -132,14 +135,25 @@ function ArchScene({ states, selected, hovered, focusTooth, autoRotate, resetKey
 }
 
 export default function Glb3DViewer(props: Props) {
-  return <Canvas className="odg-canvas" shadows={{ type: PCFShadowMap }} camera={{ position: [0, 4, 12], fov: 35 }} dpr={[1, 1.75]}
+  const container = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(true);
+  const [foreground, setForeground] = useState(() => !document.hidden);
+  useEffect(() => {
+    const visibility = () => setForeground(!document.hidden);
+    document.addEventListener('visibilitychange', visibility);
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting));
+    if (container.current) observer.observe(container.current);
+    return () => { document.removeEventListener('visibilitychange', visibility); observer.disconnect(); };
+  }, []);
+  const active = foreground && inView;
+  return <div ref={container} style={{ width: '100%', height: '100%' }}><Canvas className="odg-canvas" frameloop={!active ? 'never' : props.autoRotate ? 'always' : 'demand'} shadows={{ type: PCFShadowMap }} camera={{ position: [0, 4, 12], fov: 35 }} dpr={[1, 1.75]}
     gl={(defaults) => {
       try { return new WebGLRenderer({ ...defaults, antialias: true, alpha: true }); }
       catch (error) { props.onUnavailable(); throw error; }
     }} style={{ cursor: props.hovered ? 'pointer' : 'grab' }}>
     <ContextGuard onUnavailable={props.onUnavailable} />
     <Suspense fallback={<LoadingModel onUnavailable={props.onUnavailable} />}>
-      <ArchScene {...props} />
+      <ArchScene {...props} autoRotate={active && props.autoRotate} />
     </Suspense>
-  </Canvas>;
+  </Canvas></div>;
 }

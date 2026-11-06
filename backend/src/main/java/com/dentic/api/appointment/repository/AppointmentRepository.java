@@ -12,6 +12,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
+    @Query("SELECT a.scheduledAt FROM Appointment a WHERE a.patient.id=:patientId AND a.status <> 'CANCELLED' ORDER BY a.scheduledAt DESC, a.id DESC")
+    List<OffsetDateTime> findLatestRelevantVisit(@Param("patientId") UUID patientId, org.springframework.data.domain.Pageable pageable);
+
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"professional", "procedure"})
+    org.springframework.data.domain.Page<Appointment> findByPatientId(UUID patientId, org.springframework.data.domain.Pageable pageable);
     List<Appointment> findByProfessionalIdAndScheduledAtBetween(UUID professionalId, OffsetDateTime start, OffsetDateTime end);
     List<Appointment> findByClinicIdAndScheduledAtBetween(UUID clinicId, OffsetDateTime start, OffsetDateTime end);
 

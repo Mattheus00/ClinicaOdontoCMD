@@ -12,7 +12,7 @@ export function useProfessionals(enabled = true) {
   return useQuery({
     queryKey: ['professionals'],
     enabled,
-    queryFn: async () => asPage<Professional>((await api.get('/professionals', { params: { size: 100 } })).data),
+    queryFn: async ({ signal }) => asPage<Professional>((await api.get('/professionals', { signal, params: { size: 100 } })).data),
   });
 }
 

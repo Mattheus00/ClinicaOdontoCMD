@@ -230,17 +230,7 @@ public class AppointmentController {
             value.setReport(normalizeReport(request.report()));
         }
 
-        payments.findByAppointmentId(id).orElseGet(() -> {
-            PatientPayment payment = new PatientPayment();
-            payment.setPatient(value.getPatient());
-            payment.setAppointment(value);
-            payment.setAmount(value.getProcedure().getPrice());
-            payment.setMethod("CASH");
-            payment.setStatus("PAID");
-            payment.setNotes("Pagamento do procedimento: " + value.getProcedure().getName());
-            payment.setPaidAt(LocalDate.now(clinicTimeZone));
-            return payments.save(payment);
-        });
+        // Completion is a clinical action. Receipts are recorded explicitly in patient billing.
 
         if (!"COMPLETED".equals(value.getStatus())) {
             value.setStatus("COMPLETED");

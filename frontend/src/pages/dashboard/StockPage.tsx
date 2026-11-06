@@ -1,6 +1,9 @@
+import { useDataReadyMetric } from '../../lib/performance';
+import { Pagination } from '../../components/Pagination';
+import { useDebouncedValue } from '../../lib/useDebouncedValue';
 import { ArrowDownToLine, ArrowUpFromLine, CheckCircle2, Pencil, Trash2 } from 'lucide-react';
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
+import { useEffect, useState, type FormEvent } from 'react';
+import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -8,6 +11,7 @@ import {
   useCreateStockMovement,
   useDeleteStockItem,
   useStockItems,
+  useStockSummary,
   useStockMovements,
   useUpdateStockItem,
 } from '../../features/stock/api';
@@ -45,7 +49,6 @@ export default function StockPage() {
   const canManage = role === 'ADMIN' || role === 'SECRETARY';
   const canDelete = role === 'ADMIN';
 
-  const items = useStockItems();
   const create = useCreateStockItem();
   const update = useUpdateStockItem();
   const remove = useDeleteStockItem();
@@ -53,6 +56,11 @@ export default function StockPage() {
 
   const [filter, setFilter] = useState<Filter>('ALL');
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(0);
+  const [historyPage, setHistoryPage] = useState(0);
+  const items = useStockItems(page, useDebouncedValue(search), filter);
+  useDataReadyMetric("StockPage", Boolean(items.data));
+  const summary = useStockSummary();
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState('');
   const [category, setCategory] = useState<StockCategory>('DENTAL');
@@ -73,7 +81,7 @@ export default function StockPage() {
   const [movementQty, setMovementQty] = useState('');
   const [movementNote, setMovementNote] = useState('');
   const [entrySuccess, setEntrySuccess] = useState<string | null>(null);
-  const history = useStockMovements(moving?.id);
+  const history = useStockMovements(moving?.id, historyPage);
 
   useEffect(() => {
     if (!entrySuccess) return;
@@ -82,18 +90,8 @@ export default function StockPage() {
   }, [entrySuccess]);
 
   const list = items.data?.content ?? [];
-  const lowCount = list.filter((item) => item.lowStock).length;
-  const visible = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    return list.filter((item) => {
-      if (filter === 'LOW' && !item.lowStock) return false;
-      if (filter === 'DENTAL' || filter === 'CLINIC') {
-        if (item.category !== filter) return false;
-      }
-      if (term && !item.name.toLowerCase().includes(term)) return false;
-      return true;
-    });
-  }, [filter, list, search]);
+  const lowCount = summary.data?.low ?? 0;
+  const visible = list;
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -151,6 +149,7 @@ export default function StockPage() {
   };
 
   const openMove = (item: StockItem, type: StockMovementType) => {
+    setHistoryPage(0);
     setMoving(item);
     setMovementType(type);
     setMovementQty('');
@@ -208,7 +207,7 @@ export default function StockPage() {
       <div className="stock-summary">
         <article>
           <span>Itens cadastrados</span>
-          <strong>{list.length}</strong>
+          <strong>{summary.data?.total ?? 0}</strong>
         </article>
         <article className={lowCount ? 'is-alert' : undefined}>
           <span>Abaixo do mínimo</span>
@@ -221,7 +220,7 @@ export default function StockPage() {
           className="input-field"
           placeholder="Buscar material"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => { setPage(0); setSearch(e.target.value); }}
         />
         <div className="stock-filters" role="tablist" aria-label="Filtrar estoque">
           {(
@@ -236,7 +235,7 @@ export default function StockPage() {
               key={value}
               type="button"
               className={filter === value ? 'is-active' : undefined}
-              onClick={() => setFilter(value)}
+              onClick={() => { setPage(0); setFilter(value); }}
             >
               {label}
             </button>
@@ -244,9 +243,11 @@ export default function StockPage() {
         </div>
       </div>
 
+      <RefreshState fetching={items.isRefetching} error={items.isError && Boolean(items.data)} onRetry={() => items.refetch()} />
+      <Pagination data={items.data} page={page} onChange={setPage} busy={items.isFetching} />
       {items.isLoading ? (
         <LoadingState />
-      ) : items.isError ? (
+      ) : items.isError && !items.data ? (
         <ErrorState onRetry={() => items.refetch()} />
       ) : visible.length ? (
         <>
@@ -558,12 +559,15 @@ export default function StockPage() {
             </div>
           </form>
           <div className="stock-history">
-            <h3>Últimas movimentações</h3>
+            <h3>Movimentações</h3>
+            <Pagination data={history.data} page={historyPage} onChange={setHistoryPage} busy={history.isFetching} />
+            <RefreshState fetching={history.isRefetching} error={history.isError && Boolean(history.data)} onRetry={() => history.refetch()} />
+            {history.isError && !history.data && <ErrorState onRetry={() => history.refetch()} />}
             {history.isLoading ? (
               <p>Carregando...</p>
-            ) : history.data?.length ? (
+            ) : history.data?.content.length ? (
               <ul>
-                {history.data.map((entry) => (
+                {history.data.content.map((entry) => (
                   <li key={entry.id}>
                     <span>
                       {MOVEMENT_LABEL[entry.type]} · {formatQty(entry.quantity)} {moving.unit}

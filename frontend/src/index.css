@@ -1,8 +1,20 @@
+@import './styles/maria-alice-theme.css';
+@font-face {
+  font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display'; font-style: normal; font-weight: 400 900; font-display: swap;
+  src: url('@fontsource-variable/playfair-display/files/playfair-display-latin-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display'; font-style: italic; font-weight: 400 900; font-display: swap;
+  src: url('@fontsource-variable/playfair-display/files/playfair-display-latin-wght-italic.woff2') format('woff2');
+}
 /* ============================================ */
 /* Design System — Maria Alice Odontologia      */
 /* ============================================ */
 
-@import './styles/maria-alice-theme.css';
 
 :root {
   --font-size-xs: 0.75rem;
@@ -110,6 +122,14 @@ select:focus-visible {
   outline: 3px solid var(--color-secondary);
   outline-offset: 2px;
 }
+
+.session-connection-banner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px; margin-bottom: 16px; border: 1px solid #b7934f; border-radius: 8px; color: #55411f; background: #fff4da; line-height: 1.5; }
+@media (max-width: 600px) { .session-connection-banner { flex-direction: column; align-items: stretch; } }
+@media (max-width: 800px) {
+  .modal .icon-button, .mobile-topbar .mobile-topbar-logout, .mobile-topbar .staff-bell-trigger { min-height: 44px; min-width: 44px; }
+  .appointment-modal .appointment-cancel { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
 
 button:disabled {
   cursor: not-allowed;
@@ -539,3 +559,6 @@ button:disabled {
     font-size: 1.1rem;
   }
 }
+
+.pagination { display:flex; align-items:center; justify-content:flex-end; gap:12px; flex-wrap:wrap; margin:12px 0; font-size:13px; }
+.refresh-state { display:flex; align-items:center; gap:8px; color:var(--text-secondary, #64748b); font-size:13px; min-height:24px; }

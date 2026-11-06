@@ -155,7 +155,7 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
             <header className="staff-bell-panel-head">
               <div className="staff-bell-panel-heading">
                 <strong>{isDentist ? 'Notificações' : 'Solicitações online'}</strong>
-                <small>{unreadCount > 0 ? `${unreadCount} ${unreadCount === 1 ? 'não lida' : 'não lidas'}` : 'Você está em dia'}</small>
+                <small>{notifications.isError ? 'Atualização indisponível' : notifications.isLoading ? 'Carregando…' : unreadCount > 0 ? `${unreadCount} ${unreadCount === 1 ? 'não lida' : 'não lidas'}` : 'Você está em dia'}</small>
               </div>
               <div className="staff-bell-panel-actions">
                 {unreadCount > 0 ? (
@@ -199,10 +199,11 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
               </div>
             </header>
 
+            {notifications.isError && <div className="staff-bell-empty" role="alert"><p>{items.length ? 'Não foi possível atualizar. A lista abaixo pode estar desatualizada.' : 'Não foi possível carregar as notificações.'}</p><button type="button" className="btn btn-secondary" disabled={notifications.isFetching} onClick={() => notifications.refetch()}>{notifications.isFetching ? 'Tentando…' : 'Tentar novamente'}</button></div>}
             {notifications.isLoading ? (
               <p className="staff-bell-empty">Carregando...</p>
             ) : items.length === 0 ? (
-              <p className="staff-bell-empty">Nenhuma notificação por enquanto.</p>
+              !notifications.isError && <p className="staff-bell-empty">Nenhuma notificação por enquanto.</p>
             ) : (
               <ul className="staff-bell-list">
                 {items.map((item) => (

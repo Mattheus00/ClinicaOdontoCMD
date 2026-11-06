@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
 import { readApiError } from '../../lib/api-error';
 import './Login.css';
+import { preloadDestination } from '../../lib/route-preload';
 
 const LOGO = '/brand/maria-alice-logo.png';
 const REMEMBER_ME_KEY = 'dentic.rememberMe';
@@ -34,6 +35,7 @@ export default function LoginPage() {
     event.preventDefault();
     setError('');
     setLoading(true);
+    preloadDestination((location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? '/agenda');
 
     try {
       const response = await api.post<{ accessToken?: string }>('/auth/login', {

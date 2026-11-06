@@ -10,7 +10,7 @@ export type FinancialFilters = {
 export function useFinancialDashboard(filters: FinancialFilters = {}) {
   return useQuery({
     queryKey: ['financial-dashboard', filters],
-    queryFn: async () =>
-      (await api.get<FinancialDashboard>('/financial/dashboard', { params: filters })).data,
+    queryFn: async ({ signal }) =>
+      (await api.get<FinancialDashboard>('/financial/dashboard', { signal, params: filters })).data,
   });
 }

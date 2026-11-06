@@ -20,12 +20,12 @@ export const odontogramKeys = {
 };
 
 export function useOdontogramState(patientId: string | undefined, appointmentId: string | null) {
-  return useQuery({
+  return useQuery<Odontogram>({
     queryKey: odontogramKeys.state(patientId ?? '', appointmentId),
     enabled: Boolean(patientId),
     placeholderData: (previous: Odontogram | undefined) => (previous?.patient.id === patientId ? previous : undefined),
-    queryFn: async () =>
-      (await api.get<Odontogram>(`/patients/${patientId}/odontogram`, {
+    queryFn: async ({ signal }) =>
+      (await api.get<Odontogram>(`/patients/${patientId}/odontogram`, { signal,
         params: appointmentId ? { appointmentId } : undefined,
       })).data,
   });
@@ -35,8 +35,8 @@ export function useOdontogramAppointments(patientId: string | undefined) {
   return useQuery({
     queryKey: odontogramKeys.appointments(patientId ?? ''),
     enabled: Boolean(patientId),
-    queryFn: async () =>
-      (await api.get<OdontogramAppointment[]>(`/patients/${patientId}/odontogram/appointments`)).data,
+    queryFn: async ({ signal }) =>
+      (await api.get<OdontogramAppointment[]>(`/patients/${patientId}/odontogram/appointments`, { signal })).data,
   });
 }
 
@@ -44,8 +44,8 @@ export function useToothProcedures(patientId: string | undefined) {
   return useQuery({
     queryKey: odontogramKeys.procedures(patientId ?? ''),
     enabled: Boolean(patientId),
-    queryFn: async () =>
-      (await api.get<ToothProcedureRecord[]>(`/patients/${patientId}/tooth-procedures`)).data,
+    queryFn: async ({ signal }) =>
+      (await api.get<ToothProcedureRecord[]>(`/patients/${patientId}/tooth-procedures`, { signal })).data,
   });
 }
 
@@ -92,7 +92,7 @@ export function useToothProcedureAudit(procedureId: string | null) {
   return useQuery({
     queryKey: odontogramKeys.audit(procedureId ?? ''),
     enabled: Boolean(procedureId),
-    queryFn: async () =>
-      (await api.get<ToothProcedureAuditEntry[]>(`/tooth-procedures/${procedureId}/audit`)).data,
+    queryFn: async ({ signal }) =>
+      (await api.get<ToothProcedureAuditEntry[]>(`/tooth-procedures/${procedureId}/audit`, { signal })).data,
   });
 }

@@ -2,6 +2,7 @@ package com.dentic.api.staffnotification.repository;
 
 import com.dentic.api.staffnotification.domain.StaffNotification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +20,9 @@ public interface StaffNotificationRepository extends JpaRepository<StaffNotifica
           AND n.recipientProfessional IS NULL
         ORDER BY n.createdAt DESC
         """)
-    List<StaffNotification> findClinicInbox(@Param("clinicId") UUID clinicId);
+    List<StaffNotification> findClinicInbox(@Param("clinicId") UUID clinicId, Pageable pageable);
+
+    default List<StaffNotification> findClinicInbox(UUID clinicId) { return findClinicInbox(clinicId, Pageable.unpaged()); }
 
     @Query("""
         SELECT n FROM StaffNotification n
@@ -29,7 +32,9 @@ public interface StaffNotificationRepository extends JpaRepository<StaffNotifica
           AND n.readAt IS NULL
         ORDER BY n.createdAt DESC
         """)
-    List<StaffNotification> findUnreadClinicInbox(@Param("clinicId") UUID clinicId);
+    List<StaffNotification> findUnreadClinicInbox(@Param("clinicId") UUID clinicId, Pageable pageable);
+
+    default List<StaffNotification> findUnreadClinicInbox(UUID clinicId) { return findUnreadClinicInbox(clinicId, Pageable.unpaged()); }
 
     @Query("""
         SELECT COUNT(n) FROM StaffNotification n
@@ -48,8 +53,10 @@ public interface StaffNotificationRepository extends JpaRepository<StaffNotifica
         """)
     List<StaffNotification> findForProfessional(
             @Param("clinicId") UUID clinicId,
-            @Param("professionalId") UUID professionalId
+            @Param("professionalId") UUID professionalId, Pageable pageable
     );
+
+    default List<StaffNotification> findForProfessional(UUID clinicId, UUID professionalId) { return findForProfessional(clinicId, professionalId, Pageable.unpaged()); }
 
     @Query("""
         SELECT n FROM StaffNotification n
@@ -61,8 +68,10 @@ public interface StaffNotificationRepository extends JpaRepository<StaffNotifica
         """)
     List<StaffNotification> findUnreadForProfessional(
             @Param("clinicId") UUID clinicId,
-            @Param("professionalId") UUID professionalId
+            @Param("professionalId") UUID professionalId, Pageable pageable
     );
+
+    default List<StaffNotification> findUnreadForProfessional(UUID clinicId, UUID professionalId) { return findUnreadForProfessional(clinicId, professionalId, Pageable.unpaged()); }
 
     @Query("""
         SELECT COUNT(n) FROM StaffNotification n

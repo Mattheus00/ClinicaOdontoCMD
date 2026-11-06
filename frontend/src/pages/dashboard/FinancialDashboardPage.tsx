@@ -1,5 +1,6 @@
+import { useDataReadyMetric } from '../../lib/performance';
 import { useMemo, useState } from 'react';
-import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
+import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
 import DateTimePicker from '../../components/DateTimePicker';
 import { useAuth } from '../../contexts/AuthContext';
 import { useFinancialDashboard } from '../../features/financial/api';
@@ -76,9 +77,10 @@ export default function FinancialDashboardPage() {
 
   const filters = useMemo(() => ({ from, to }), [from, to]);
   const dashboard = useFinancialDashboard(filters);
+  useDataReadyMetric("FinancialDashboardPage", Boolean(dashboard.data));
 
   if (dashboard.isLoading) return <LoadingState />;
-  if (dashboard.isError) return <ErrorState onRetry={() => dashboard.refetch()} />;
+  if (dashboard.isError && !dashboard.data) return <ErrorState onRetry={() => dashboard.refetch()} />;
 
   const data = dashboard.data;
   if (!data) {
@@ -109,6 +111,7 @@ export default function FinancialDashboardPage() {
 
   return (
     <div className="financial-dashboard">
+      <RefreshState fetching={dashboard.isRefetching} error={dashboard.isError && Boolean(dashboard.data)} onRetry={() => dashboard.refetch()} />
       <div className="page-header financial-header">
         <div className="financial-header-copy">
           <h1 className="page-title">Financeiro</h1>

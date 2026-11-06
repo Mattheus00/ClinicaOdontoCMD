@@ -184,6 +184,8 @@ export default function AgendaScheduleGrid({
                   <button
                     key={targetKey}
                     type="button"
+                    disabled={!onSlotClick}
+                    tabIndex={-1}
                     className={`schedule-slot ${dropTarget === targetKey ? 'is-drop-target' : ''}`}
                     style={{ height: ROW_HEIGHT }}
                     onClick={() =>
@@ -231,8 +233,10 @@ export default function AgendaScheduleGrid({
                 const leftExpression = `calc(${horizontalPadding}px + ${layout.columnIndex} * (${widthExpression} + ${gap}px))`;
 
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={appointment.id}
+                    aria-label={`${appointment.patient.name}, ${formatTimeRange(appointment.startsAt, appointment.endsAt)}, ${appointment.procedure?.name ?? 'Consulta'}. Abrir detalhes`}
                     className={`schedule-event ${statusClass[appointment.status] ?? 'schedule-event-scheduled'} ${draggingId === appointment.id ? 'is-dragging' : ''}`}
                     style={{
                       top: index * ROW_HEIGHT + 3,
@@ -264,7 +268,7 @@ export default function AgendaScheduleGrid({
                     {appointment.procedure ? <span className="schedule-procedure">{appointment.procedure.name}</span> : null}
                     {showProfessionalName ? <em>{appointment.professional.name}</em> : null}
                     <small>{appointment.status === 'CANCELLED' ? 'Cancelado' : canEdit ? 'Arraste para remarcar' : 'Clique para detalhes'}</small>
-                  </div>
+                  </button>
                 );
               })}
             </div>
