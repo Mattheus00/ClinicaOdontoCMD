@@ -1,0 +1,3754 @@
+{
+  "date": "2026-11-01T00:17:15.982Z",
+  "browser": "151.0.7922.34",
+  "buildIndexSha256": "7683f8af99596ab460984a5aca8ada979f5654690cdca34e2772a1f6c46a547b",
+  "conditions": {
+    "mobile": {
+      "viewport": "375x812",
+      "cpu": 4,
+      "latencyMs": 150,
+      "downloadBytesPerSecond": 200000
+    },
+    "desktop": {
+      "viewport": "1440x900",
+      "cpu": 1,
+      "latencyMs": 20,
+      "downloadBytesPerSecond": 1250000
+    },
+    "cache": "disabled, new context per run",
+    "server": "loopback HTTP, gzip, no-store",
+    "backend": "in-browser simulation, 250ms artificial delay; API not network-throttled",
+    "inp": "not measured",
+    "fieldMetrics": "no sample"
+  },
+  "summary": [
+    {
+      "mode": "mobile",
+      "route": "home",
+      "lcp": {
+        "median": 1916,
+        "min": 1908,
+        "max": 1996
+      },
+      "fcp": {
+        "median": 1544,
+        "min": 1492,
+        "max": 1576
+      },
+      "cls": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "bytes": {
+        "total": 257873,
+        "js": 117649,
+        "css": 6427,
+        "fonts": 86660,
+        "images": 39506
+      }
+    },
+    {
+      "mode": "mobile",
+      "route": "agendamento",
+      "lcp": {
+        "median": 1836,
+        "min": 1760,
+        "max": 1848
+      },
+      "fcp": {
+        "median": 1552,
+        "min": 1508,
+        "max": 1572
+      },
+      "cls": {
+        "median": 0.002959062340750807,
+        "min": 0.002959062340750807,
+        "max": 0.005725477393692316
+      },
+      "bytes": {
+        "total": 225469,
+        "js": 118364,
+        "css": 5860,
+        "fonts": 86660,
+        "images": 6654
+      }
+    },
+    {
+      "mode": "mobile",
+      "route": "agenda",
+      "lcp": {
+        "median": 2328,
+        "min": 2284,
+        "max": 2332
+      },
+      "fcp": {
+        "median": 1536,
+        "min": 1500,
+        "max": 1556
+      },
+      "cls": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "bytes": {
+        "total": 232362,
+        "js": 123207,
+        "css": 7310,
+        "fonts": 86660,
+        "images": 6654
+      }
+    },
+    {
+      "mode": "desktop",
+      "route": "home",
+      "lcp": {
+        "median": 612,
+        "min": 596,
+        "max": 640
+      },
+      "fcp": {
+        "median": 296,
+        "min": 288,
+        "max": 316
+      },
+      "cls": {
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "bytes": {
+        "total": 274749,
+        "js": 117649,
+        "css": 6427,
+        "fonts": 86660,
+        "images": 56382
+      }
+    },
+    {
+      "mode": "desktop",
+      "route": "agendamento",
+      "lcp": {
+        "median": 588,
+        "min": 580,
+        "max": 588
+      },
+      "fcp": {
+        "median": 300,
+        "min": 296,
+        "max": 304
+      },
+      "cls": {
+        "median": 0.0019267328960905351,
+        "min": 0.0019267328960905351,
+        "max": 0.0019267328960905351
+      },
+      "bytes": {
+        "total": 225469,
+        "js": 118364,
+        "css": 5860,
+        "fonts": 86660,
+        "images": 6654
+      }
+    },
+    {
+      "mode": "desktop",
+      "route": "agenda",
+      "lcp": {
+        "median": 892,
+        "min": 880,
+        "max": 892
+      },
+      "fcp": {
+        "median": 292,
+        "min": 292,
+        "max": 296
+      },
+      "cls": {
+        "median": 0.0077444658779149515,
+        "min": 0.0077444658779149515,
+        "max": 0.0077444658779149515
+      },
+      "bytes": {
+        "total": 193658,
+        "js": 123207,
+        "css": 7310,
+        "fonts": 48256,
+        "images": 6654
+      }
+    }
+  ],
+  "runs": [
+    {
+      "mode": "mobile",
+      "route": "home",
+      "run": 1,
+      "lcp": 1916,
+      "cls": 0,
+      "shifts": [],
+      "fcp": 1544,
+      "bytes": {
+        "total": 257873,
+        "js": 117649,
+        "css": 6427,
+        "fonts": 86660,
+        "images": 39506
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/LandingPage-BGFlbv6I.js",
+          "transferred": 3957,
+          "encoded": 3657,
+          "decoded": 11542
+        },
+        {
+          "url": "/assets/experience-YsvswHky.js",
+          "transferred": 365,
+          "encoded": 65,
+          "decoded": 45
+        },
+        {
+          "url": "/assets/LandingPage-CzECg9SP.css",
+          "transferred": 2033,
+          "encoded": 1733,
+          "decoded": 6615
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/images/clinic-room-480.webp",
+          "transferred": 16326,
+          "encoded": 16026,
+          "decoded": 16026
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        },
+        {
+          "url": "/images/clinic-detail-400.webp",
+          "transferred": 17126,
+          "encoded": 16826,
+          "decoded": 16826
+        }
+      ]
+    },
+    {
+      "mode": "mobile",
+      "route": "home",
+      "run": 2,
+      "lcp": 1908,
+      "cls": 0,
+      "shifts": [],
+      "fcp": 1492,
+      "bytes": {
+        "total": 257873,
+        "js": 117649,
+        "css": 6427,
+        "fonts": 86660,
+        "images": 39506
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/LandingPage-BGFlbv6I.js",
+          "transferred": 3957,
+          "encoded": 3657,
+          "decoded": 11542
+        },
+        {
+          "url": "/assets/experience-YsvswHky.js",
+          "transferred": 365,
+          "encoded": 65,
+          "decoded": 45
+        },
+        {
+          "url": "/assets/LandingPage-CzECg9SP.css",
+          "transferred": 2033,
+          "encoded": 1733,
+          "decoded": 6615
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/images/clinic-room-480.webp",
+          "transferred": 16326,
+          "encoded": 16026,
+          "decoded": 16026
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        },
+        {
+          "url": "/images/clinic-detail-400.webp",
+          "transferred": 17126,
+          "encoded": 16826,
+          "decoded": 16826
+        }
+      ]
+    },
+    {
+      "mode": "mobile",
+      "route": "home",
+      "run": 3,
+      "lcp": 1996,
+      "cls": 0,
+      "shifts": [],
+      "fcp": 1576,
+      "bytes": {
+        "total": 257873,
+        "js": 117649,
+        "css": 6427,
+        "fonts": 86660,
+        "images": 39506
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/LandingPage-BGFlbv6I.js",
+          "transferred": 3957,
+          "encoded": 3657,
+          "decoded": 11542
+        },
+        {
+          "url": "/assets/experience-YsvswHky.js",
+          "transferred": 365,
+          "encoded": 65,
+          "decoded": 45
+        },
+        {
+          "url": "/assets/LandingPage-CzECg9SP.css",
+          "transferred": 2033,
+          "encoded": 1733,
+          "decoded": 6615
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/images/clinic-room-480.webp",
+          "transferred": 16326,
+          "encoded": 16026,
+          "decoded": 16026
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        },
+        {
+          "url": "/images/clinic-detail-400.webp",
+          "transferred": 17126,
+          "encoded": 16826,
+          "decoded": 16826
+        }
+      ]
+    },
+    {
+      "mode": "mobile",
+      "route": "agendamento",
+      "run": 1,
+      "lcp": 1836,
+      "cls": 0.002959062340750807,
+      "shifts": [
+        {
+          "value": 0.002959062340750807,
+          "sources": [
+            {
+              "node": "<form class=\"public-booking-form\" aria-busy=\"false\"><div class=\"public-booking-fields\"><section><h2>Consulta e profissional</h2><label>Avaliação / procedimento<select name=\"procedu",
+              "previous": {
+                "x": 20,
+                "y": 663.328125,
+                "width": 335,
+                "height": 148.671875,
+                "top": 663.328125,
+                "right": 355,
+                "bottom": 812,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 669.328125,
+                "width": 335,
+                "height": 142.671875,
+                "top": 669.328125,
+                "right": 355,
+                "bottom": 812,
+                "left": 20
+              }
+            },
+            {
+              "node": "<p class=\"public-booking-notice\">Demonstração sem atendimento real. Use apenas dados fictícios. O pedido depende de aceite da equipe.</p>",
+              "previous": {
+                "x": 20,
+                "y": 499.15625,
+                "width": 335,
+                "height": 99.171875,
+                "top": 499.15625,
+                "right": 355,
+                "bottom": 598.328125,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 505.15625,
+                "width": 335,
+                "height": 99.171875,
+                "top": 505.15625,
+                "right": 355,
+                "bottom": 604.328125,
+                "left": 20
+              }
+            },
+            {
+              "node": "<ol class=\"public-booking-progress\" aria-label=\"Etapas do agendamento\"><li aria-current=\"step\">Escolher consulta</li><li>Revisar e enviar</li></ol>",
+              "previous": {
+                "x": 20,
+                "y": 598.328125,
+                "width": 335,
+                "height": 65,
+                "top": 598.328125,
+                "right": 355,
+                "bottom": 663.328125,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 604.328125,
+                "width": 335,
+                "height": 65,
+                "top": 604.328125,
+                "right": 355,
+                "bottom": 669.328125,
+                "left": 20
+              }
+            },
+            {
+              "node": "<p>Maria Alice · clínica fictícia · Horários de Brasília (America/Sao_Paulo)</p>",
+              "previous": {
+                "x": 20,
+                "y": 434.375,
+                "width": 335,
+                "height": 44.78125,
+                "top": 434.375,
+                "right": 355,
+                "bottom": 479.15625,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 440.375,
+                "width": 335,
+                "height": 44.78125,
+                "top": 440.375,
+                "right": 355,
+                "bottom": 485.15625,
+                "left": 20
+              }
+            }
+          ]
+        }
+      ],
+      "fcp": 1572,
+      "bytes": {
+        "total": 225469,
+        "js": 118364,
+        "css": 5860,
+        "fonts": 86660,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/PublicBookingPage-C201y-rT.js",
+          "transferred": 3618,
+          "encoded": 3318,
+          "decoded": 10173
+        },
+        {
+          "url": "/assets/circle-check-DDoWBiyB.js",
+          "transferred": 469,
+          "encoded": 169,
+          "decoded": 178
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/api-tUPCfhqn.js",
+          "transferred": 725,
+          "encoded": 425,
+          "decoded": 944
+        },
+        {
+          "url": "/assets/PublicBookingPage-9olrKslm.css",
+          "transferred": 1466,
+          "encoded": 1166,
+          "decoded": 3914
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        }
+      ]
+    },
+    {
+      "mode": "mobile",
+      "route": "agendamento",
+      "run": 2,
+      "lcp": 1848,
+      "cls": 0.002959062340750807,
+      "shifts": [
+        {
+          "value": 0.002959062340750807,
+          "sources": [
+            {
+              "node": "<form class=\"public-booking-form\" aria-busy=\"false\"><div class=\"public-booking-fields\"><section><h2>Consulta e profissional</h2><label>Avaliação / procedimento<select name=\"procedu",
+              "previous": {
+                "x": 20,
+                "y": 663.328125,
+                "width": 335,
+                "height": 148.671875,
+                "top": 663.328125,
+                "right": 355,
+                "bottom": 812,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 669.328125,
+                "width": 335,
+                "height": 142.671875,
+                "top": 669.328125,
+                "right": 355,
+                "bottom": 812,
+                "left": 20
+              }
+            },
+            {
+              "node": "<p class=\"public-booking-notice\">Demonstração sem atendimento real. Use apenas dados fictícios. O pedido depende de aceite da equipe.</p>",
+              "previous": {
+                "x": 20,
+                "y": 499.15625,
+                "width": 335,
+                "height": 99.171875,
+                "top": 499.15625,
+                "right": 355,
+                "bottom": 598.328125,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 505.15625,
+                "width": 335,
+                "height": 99.171875,
+                "top": 505.15625,
+                "right": 355,
+                "bottom": 604.328125,
+                "left": 20
+              }
+            },
+            {
+              "node": "<ol class=\"public-booking-progress\" aria-label=\"Etapas do agendamento\"><li aria-current=\"step\">Escolher consulta</li><li>Revisar e enviar</li></ol>",
+              "previous": {
+                "x": 20,
+                "y": 598.328125,
+                "width": 335,
+                "height": 65,
+                "top": 598.328125,
+                "right": 355,
+                "bottom": 663.328125,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 604.328125,
+                "width": 335,
+                "height": 65,
+                "top": 604.328125,
+                "right": 355,
+                "bottom": 669.328125,
+                "left": 20
+              }
+            },
+            {
+              "node": "<p>Maria Alice · clínica fictícia · Horários de Brasília (America/Sao_Paulo)</p>",
+              "previous": {
+                "x": 20,
+                "y": 434.375,
+                "width": 335,
+                "height": 44.78125,
+                "top": 434.375,
+                "right": 355,
+                "bottom": 479.15625,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 440.375,
+                "width": 335,
+                "height": 44.78125,
+                "top": 440.375,
+                "right": 355,
+                "bottom": 485.15625,
+                "left": 20
+              }
+            }
+          ]
+        }
+      ],
+      "fcp": 1552,
+      "bytes": {
+        "total": 225469,
+        "js": 118364,
+        "css": 5860,
+        "fonts": 86660,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/PublicBookingPage-C201y-rT.js",
+          "transferred": 3618,
+          "encoded": 3318,
+          "decoded": 10173
+        },
+        {
+          "url": "/assets/circle-check-DDoWBiyB.js",
+          "transferred": 469,
+          "encoded": 169,
+          "decoded": 178
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/api-tUPCfhqn.js",
+          "transferred": 725,
+          "encoded": 425,
+          "decoded": 944
+        },
+        {
+          "url": "/assets/PublicBookingPage-9olrKslm.css",
+          "transferred": 1466,
+          "encoded": 1166,
+          "decoded": 3914
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        }
+      ]
+    },
+    {
+      "mode": "mobile",
+      "route": "agendamento",
+      "run": 3,
+      "lcp": 1760,
+      "cls": 0.005725477393692316,
+      "shifts": [
+        {
+          "value": 0.005725477393692316,
+          "sources": [
+            {
+              "node": "<form class=\"public-booking-form\" aria-busy=\"false\"><div class=\"public-booking-fields\"><section><h2>Consulta e profissional</h2><label>Avaliação / procedimento<select name=\"procedu",
+              "previous": {
+                "x": 20,
+                "y": 662.328125,
+                "width": 335,
+                "height": 149.671875,
+                "top": 662.328125,
+                "right": 355,
+                "bottom": 812,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 669.328125,
+                "width": 335,
+                "height": 142.671875,
+                "top": 669.328125,
+                "right": 355,
+                "bottom": 812,
+                "left": 20
+              }
+            },
+            {
+              "node": "<p class=\"public-booking-notice\">Demonstração sem atendimento real. Use apenas dados fictícios. O pedido depende de aceite da equipe.</p>",
+              "previous": {
+                "x": 20,
+                "y": 499.15625,
+                "width": 335,
+                "height": 99.171875,
+                "top": 499.15625,
+                "right": 355,
+                "bottom": 598.328125,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 505.15625,
+                "width": 335,
+                "height": 99.171875,
+                "top": 505.15625,
+                "right": 355,
+                "bottom": 604.328125,
+                "left": 20
+              }
+            },
+            {
+              "node": "<ol class=\"public-booking-progress\" aria-label=\"Etapas do agendamento\"><li aria-current=\"step\">Escolher consulta</li><li>Revisar e enviar</li></ol>",
+              "previous": {
+                "x": 20,
+                "y": 598.328125,
+                "width": 335,
+                "height": 64,
+                "top": 598.328125,
+                "right": 355,
+                "bottom": 662.328125,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 604.328125,
+                "width": 335,
+                "height": 65,
+                "top": 604.328125,
+                "right": 355,
+                "bottom": 669.328125,
+                "left": 20
+              }
+            },
+            {
+              "node": "<p>Maria Alice · clínica fictícia · Horários de Brasília (America/Sao_Paulo)</p>",
+              "previous": {
+                "x": 20,
+                "y": 434.375,
+                "width": 335,
+                "height": 44.78125,
+                "top": 434.375,
+                "right": 355,
+                "bottom": 479.15625,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 440.375,
+                "width": 335,
+                "height": 44.78125,
+                "top": 440.375,
+                "right": 355,
+                "bottom": 485.15625,
+                "left": 20
+              }
+            }
+          ]
+        }
+      ],
+      "fcp": 1508,
+      "bytes": {
+        "total": 225469,
+        "js": 118364,
+        "css": 5860,
+        "fonts": 86660,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/PublicBookingPage-C201y-rT.js",
+          "transferred": 3618,
+          "encoded": 3318,
+          "decoded": 10173
+        },
+        {
+          "url": "/assets/circle-check-DDoWBiyB.js",
+          "transferred": 469,
+          "encoded": 169,
+          "decoded": 178
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/api-tUPCfhqn.js",
+          "transferred": 725,
+          "encoded": 425,
+          "decoded": 944
+        },
+        {
+          "url": "/assets/PublicBookingPage-9olrKslm.css",
+          "transferred": 1466,
+          "encoded": 1166,
+          "decoded": 3914
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        }
+      ]
+    },
+    {
+      "mode": "mobile",
+      "route": "agenda",
+      "run": 1,
+      "lcp": 2332,
+      "cls": 0,
+      "shifts": [],
+      "fcp": 1556,
+      "bytes": {
+        "total": 232362,
+        "js": 123207,
+        "css": 7310,
+        "fonts": 86660,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/assets/AgendaPage-CP1U7Fay.js",
+          "transferred": 6988,
+          "encoded": 6688,
+          "decoded": 20013
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/appointment-duration-CJXjjLh6.js",
+          "transferred": 1459,
+          "encoded": 1159,
+          "decoded": 3348
+        },
+        {
+          "url": "/assets/types-Bxx8XSZs.js",
+          "transferred": 479,
+          "encoded": 179,
+          "decoded": 279
+        },
+        {
+          "url": "/assets/api-BV6QyemV.js",
+          "transferred": 636,
+          "encoded": 336,
+          "decoded": 788
+        },
+        {
+          "url": "/assets/api-CIKcs0yn.js",
+          "transferred": 693,
+          "encoded": 393,
+          "decoded": 926
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/AgendaPage-C2ceB8SL.css",
+          "transferred": 2916,
+          "encoded": 2616,
+          "decoded": 10382
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        }
+      ]
+    },
+    {
+      "mode": "mobile",
+      "route": "agenda",
+      "run": 2,
+      "lcp": 2328,
+      "cls": 0,
+      "shifts": [],
+      "fcp": 1536,
+      "bytes": {
+        "total": 232362,
+        "js": 123207,
+        "css": 7310,
+        "fonts": 86660,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/assets/AgendaPage-CP1U7Fay.js",
+          "transferred": 6988,
+          "encoded": 6688,
+          "decoded": 20013
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/appointment-duration-CJXjjLh6.js",
+          "transferred": 1459,
+          "encoded": 1159,
+          "decoded": 3348
+        },
+        {
+          "url": "/assets/types-Bxx8XSZs.js",
+          "transferred": 479,
+          "encoded": 179,
+          "decoded": 279
+        },
+        {
+          "url": "/assets/api-BV6QyemV.js",
+          "transferred": 636,
+          "encoded": 336,
+          "decoded": 788
+        },
+        {
+          "url": "/assets/api-CIKcs0yn.js",
+          "transferred": 693,
+          "encoded": 393,
+          "decoded": 926
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/AgendaPage-C2ceB8SL.css",
+          "transferred": 2916,
+          "encoded": 2616,
+          "decoded": 10382
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        }
+      ]
+    },
+    {
+      "mode": "mobile",
+      "route": "agenda",
+      "run": 3,
+      "lcp": 2284,
+      "cls": 0,
+      "shifts": [],
+      "fcp": 1500,
+      "bytes": {
+        "total": 232362,
+        "js": 123207,
+        "css": 7310,
+        "fonts": 86660,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/assets/AgendaPage-CP1U7Fay.js",
+          "transferred": 6988,
+          "encoded": 6688,
+          "decoded": 20013
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/appointment-duration-CJXjjLh6.js",
+          "transferred": 1459,
+          "encoded": 1159,
+          "decoded": 3348
+        },
+        {
+          "url": "/assets/types-Bxx8XSZs.js",
+          "transferred": 479,
+          "encoded": 179,
+          "decoded": 279
+        },
+        {
+          "url": "/assets/api-BV6QyemV.js",
+          "transferred": 636,
+          "encoded": 336,
+          "decoded": 788
+        },
+        {
+          "url": "/assets/api-CIKcs0yn.js",
+          "transferred": 693,
+          "encoded": 393,
+          "decoded": 926
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/AgendaPage-C2ceB8SL.css",
+          "transferred": 2916,
+          "encoded": 2616,
+          "decoded": 10382
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        }
+      ]
+    },
+    {
+      "mode": "desktop",
+      "route": "home",
+      "run": 1,
+      "lcp": 596,
+      "cls": 0,
+      "shifts": [],
+      "fcp": 288,
+      "bytes": {
+        "total": 274749,
+        "js": 117649,
+        "css": 6427,
+        "fonts": 86660,
+        "images": 56382
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/LandingPage-BGFlbv6I.js",
+          "transferred": 3957,
+          "encoded": 3657,
+          "decoded": 11542
+        },
+        {
+          "url": "/assets/experience-YsvswHky.js",
+          "transferred": 365,
+          "encoded": 65,
+          "decoded": 45
+        },
+        {
+          "url": "/assets/LandingPage-CzECg9SP.css",
+          "transferred": 2033,
+          "encoded": 1733,
+          "decoded": 6615
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/images/clinic-room-800.webp",
+          "transferred": 33202,
+          "encoded": 32902,
+          "decoded": 32902
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        },
+        {
+          "url": "/images/clinic-detail-400.webp",
+          "transferred": 17126,
+          "encoded": 16826,
+          "decoded": 16826
+        }
+      ]
+    },
+    {
+      "mode": "desktop",
+      "route": "home",
+      "run": 2,
+      "lcp": 612,
+      "cls": 0,
+      "shifts": [],
+      "fcp": 296,
+      "bytes": {
+        "total": 274749,
+        "js": 117649,
+        "css": 6427,
+        "fonts": 86660,
+        "images": 56382
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/LandingPage-BGFlbv6I.js",
+          "transferred": 3957,
+          "encoded": 3657,
+          "decoded": 11542
+        },
+        {
+          "url": "/assets/experience-YsvswHky.js",
+          "transferred": 365,
+          "encoded": 65,
+          "decoded": 45
+        },
+        {
+          "url": "/assets/LandingPage-CzECg9SP.css",
+          "transferred": 2033,
+          "encoded": 1733,
+          "decoded": 6615
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/images/clinic-room-800.webp",
+          "transferred": 33202,
+          "encoded": 32902,
+          "decoded": 32902
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        },
+        {
+          "url": "/images/clinic-detail-400.webp",
+          "transferred": 17126,
+          "encoded": 16826,
+          "decoded": 16826
+        }
+      ]
+    },
+    {
+      "mode": "desktop",
+      "route": "home",
+      "run": 3,
+      "lcp": 640,
+      "cls": 0,
+      "shifts": [],
+      "fcp": 316,
+      "bytes": {
+        "total": 274749,
+        "js": 117649,
+        "css": 6427,
+        "fonts": 86660,
+        "images": 56382
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/LandingPage-BGFlbv6I.js",
+          "transferred": 3957,
+          "encoded": 3657,
+          "decoded": 11542
+        },
+        {
+          "url": "/assets/experience-YsvswHky.js",
+          "transferred": 365,
+          "encoded": 65,
+          "decoded": 45
+        },
+        {
+          "url": "/assets/LandingPage-CzECg9SP.css",
+          "transferred": 2033,
+          "encoded": 1733,
+          "decoded": 6615
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/images/clinic-room-800.webp",
+          "transferred": 33202,
+          "encoded": 32902,
+          "decoded": 32902
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        },
+        {
+          "url": "/images/clinic-detail-400.webp",
+          "transferred": 17126,
+          "encoded": 16826,
+          "decoded": 16826
+        }
+      ]
+    },
+    {
+      "mode": "desktop",
+      "route": "agendamento",
+      "run": 1,
+      "lcp": 580,
+      "cls": 0.0019267328960905351,
+      "shifts": [
+        {
+          "value": 0.0019267328960905351,
+          "sources": [
+            {
+              "node": "<div class=\"public-booking-loading\"><div class=\"async-state\" role=\"status\">Carregando dados...</div></div>",
+              "previous": {
+                "x": 240,
+                "y": 392.359375,
+                "width": 960,
+                "height": 450,
+                "top": 392.359375,
+                "right": 1200,
+                "bottom": 842.359375,
+                "left": 240
+              },
+              "current": {
+                "x": 240,
+                "y": 399.359375,
+                "width": 960,
+                "height": 450,
+                "top": 399.359375,
+                "right": 1200,
+                "bottom": 849.359375,
+                "left": 240
+              }
+            },
+            {
+              "node": "<p class=\"public-booking-notice\">Demonstração sem atendimento real. Use apenas dados fictícios. O pedido depende de aceite da equipe.</p>",
+              "previous": {
+                "x": 240,
+                "y": 337.96875,
+                "width": 960,
+                "height": 54.390625,
+                "top": 337.96875,
+                "right": 1200,
+                "bottom": 392.359375,
+                "left": 240
+              },
+              "current": {
+                "x": 240,
+                "y": 344.96875,
+                "width": 960,
+                "height": 54.390625,
+                "top": 344.96875,
+                "right": 1200,
+                "bottom": 399.359375,
+                "left": 240
+              }
+            },
+            {
+              "node": "<p>Maria Alice Odontologia · Horários de Brasília (America/Sao_Paulo)</p>",
+              "previous": {
+                "x": 360,
+                "y": 295.578125,
+                "width": 441.671875,
+                "height": 22.390625,
+                "top": 295.578125,
+                "right": 801.671875,
+                "bottom": 317.96875,
+                "left": 360
+              },
+              "current": {
+                "x": 360,
+                "y": 302.578125,
+                "width": 441.671875,
+                "height": 22.390625,
+                "top": 302.578125,
+                "right": 801.671875,
+                "bottom": 324.96875,
+                "left": 360
+              }
+            },
+            {
+              "node": "<img width=\"256\" height=\"256\" alt=\"Maria Alice Odontologia Especializada\" src=\"/brand/maria-alice-logo.webp\">",
+              "previous": {
+                "x": 240,
+                "y": 212.578125,
+                "width": 100,
+                "height": 100,
+                "top": 212.578125,
+                "right": 340,
+                "bottom": 312.578125,
+                "left": 240
+              },
+              "current": {
+                "x": 240,
+                "y": 216.078125,
+                "width": 100,
+                "height": 100,
+                "top": 216.078125,
+                "right": 340,
+                "bottom": 316.078125,
+                "left": 240
+              }
+            }
+          ]
+        }
+      ],
+      "fcp": 300,
+      "bytes": {
+        "total": 225469,
+        "js": 118364,
+        "css": 5860,
+        "fonts": 86660,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/PublicBookingPage-C201y-rT.js",
+          "transferred": 3618,
+          "encoded": 3318,
+          "decoded": 10173
+        },
+        {
+          "url": "/assets/circle-check-DDoWBiyB.js",
+          "transferred": 469,
+          "encoded": 169,
+          "decoded": 178
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/api-tUPCfhqn.js",
+          "transferred": 725,
+          "encoded": 425,
+          "decoded": 944
+        },
+        {
+          "url": "/assets/PublicBookingPage-9olrKslm.css",
+          "transferred": 1466,
+          "encoded": 1166,
+          "decoded": 3914
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        }
+      ]
+    },
+    {
+      "mode": "desktop",
+      "route": "agendamento",
+      "run": 2,
+      "lcp": 588,
+      "cls": 0.0019267328960905351,
+      "shifts": [
+        {
+          "value": 0.0019267328960905351,
+          "sources": [
+            {
+              "node": "<div class=\"public-booking-loading\"><div class=\"async-state\" role=\"status\">Carregando dados...</div></div>",
+              "previous": {
+                "x": 240,
+                "y": 392.359375,
+                "width": 960,
+                "height": 450,
+                "top": 392.359375,
+                "right": 1200,
+                "bottom": 842.359375,
+                "left": 240
+              },
+              "current": {
+                "x": 240,
+                "y": 399.359375,
+                "width": 960,
+                "height": 450,
+                "top": 399.359375,
+                "right": 1200,
+                "bottom": 849.359375,
+                "left": 240
+              }
+            },
+            {
+              "node": "<p class=\"public-booking-notice\">Demonstração sem atendimento real. Use apenas dados fictícios. O pedido depende de aceite da equipe.</p>",
+              "previous": {
+                "x": 240,
+                "y": 337.96875,
+                "width": 960,
+                "height": 54.390625,
+                "top": 337.96875,
+                "right": 1200,
+                "bottom": 392.359375,
+                "left": 240
+              },
+              "current": {
+                "x": 240,
+                "y": 344.96875,
+                "width": 960,
+                "height": 54.390625,
+                "top": 344.96875,
+                "right": 1200,
+                "bottom": 399.359375,
+                "left": 240
+              }
+            },
+            {
+              "node": "<p>Maria Alice Odontologia · Horários de Brasília (America/Sao_Paulo)</p>",
+              "previous": {
+                "x": 360,
+                "y": 295.578125,
+                "width": 441.671875,
+                "height": 22.390625,
+                "top": 295.578125,
+                "right": 801.671875,
+                "bottom": 317.96875,
+                "left": 360
+              },
+              "current": {
+                "x": 360,
+                "y": 302.578125,
+                "width": 441.671875,
+                "height": 22.390625,
+                "top": 302.578125,
+                "right": 801.671875,
+                "bottom": 324.96875,
+                "left": 360
+              }
+            },
+            {
+              "node": "<img width=\"256\" height=\"256\" alt=\"Maria Alice Odontologia Especializada\" src=\"/brand/maria-alice-logo.webp\">",
+              "previous": {
+                "x": 240,
+                "y": 212.578125,
+                "width": 100,
+                "height": 100,
+                "top": 212.578125,
+                "right": 340,
+                "bottom": 312.578125,
+                "left": 240
+              },
+              "current": {
+                "x": 240,
+                "y": 216.078125,
+                "width": 100,
+                "height": 100,
+                "top": 216.078125,
+                "right": 340,
+                "bottom": 316.078125,
+                "left": 240
+              }
+            }
+          ]
+        }
+      ],
+      "fcp": 296,
+      "bytes": {
+        "total": 225469,
+        "js": 118364,
+        "css": 5860,
+        "fonts": 86660,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/PublicBookingPage-C201y-rT.js",
+          "transferred": 3618,
+          "encoded": 3318,
+          "decoded": 10173
+        },
+        {
+          "url": "/assets/circle-check-DDoWBiyB.js",
+          "transferred": 469,
+          "encoded": 169,
+          "decoded": 178
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/api-tUPCfhqn.js",
+          "transferred": 725,
+          "encoded": 425,
+          "decoded": 944
+        },
+        {
+          "url": "/assets/PublicBookingPage-9olrKslm.css",
+          "transferred": 1466,
+          "encoded": 1166,
+          "decoded": 3914
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        }
+      ]
+    },
+    {
+      "mode": "desktop",
+      "route": "agendamento",
+      "run": 3,
+      "lcp": 588,
+      "cls": 0.0019267328960905351,
+      "shifts": [
+        {
+          "value": 0.0019267328960905351,
+          "sources": [
+            {
+              "node": "<div class=\"public-booking-loading\"><div class=\"async-state\" role=\"status\">Carregando dados...</div></div>",
+              "previous": {
+                "x": 240,
+                "y": 392.359375,
+                "width": 960,
+                "height": 450,
+                "top": 392.359375,
+                "right": 1200,
+                "bottom": 842.359375,
+                "left": 240
+              },
+              "current": {
+                "x": 240,
+                "y": 399.359375,
+                "width": 960,
+                "height": 450,
+                "top": 399.359375,
+                "right": 1200,
+                "bottom": 849.359375,
+                "left": 240
+              }
+            },
+            {
+              "node": "<p class=\"public-booking-notice\">Demonstração sem atendimento real. Use apenas dados fictícios. O pedido depende de aceite da equipe.</p>",
+              "previous": {
+                "x": 240,
+                "y": 337.96875,
+                "width": 960,
+                "height": 54.390625,
+                "top": 337.96875,
+                "right": 1200,
+                "bottom": 392.359375,
+                "left": 240
+              },
+              "current": {
+                "x": 240,
+                "y": 344.96875,
+                "width": 960,
+                "height": 54.390625,
+                "top": 344.96875,
+                "right": 1200,
+                "bottom": 399.359375,
+                "left": 240
+              }
+            },
+            {
+              "node": "<p>Maria Alice Odontologia · Horários de Brasília (America/Sao_Paulo)</p>",
+              "previous": {
+                "x": 360,
+                "y": 295.578125,
+                "width": 441.671875,
+                "height": 22.390625,
+                "top": 295.578125,
+                "right": 801.671875,
+                "bottom": 317.96875,
+                "left": 360
+              },
+              "current": {
+                "x": 360,
+                "y": 302.578125,
+                "width": 441.671875,
+                "height": 22.390625,
+                "top": 302.578125,
+                "right": 801.671875,
+                "bottom": 324.96875,
+                "left": 360
+              }
+            },
+            {
+              "node": "<img width=\"256\" height=\"256\" alt=\"Maria Alice Odontologia Especializada\" src=\"/brand/maria-alice-logo.webp\">",
+              "previous": {
+                "x": 240,
+                "y": 212.578125,
+                "width": 100,
+                "height": 100,
+                "top": 212.578125,
+                "right": 340,
+                "bottom": 312.578125,
+                "left": 240
+              },
+              "current": {
+                "x": 240,
+                "y": 216.078125,
+                "width": 100,
+                "height": 100,
+                "top": 216.078125,
+                "right": 340,
+                "bottom": 316.078125,
+                "left": 240
+              }
+            }
+          ]
+        }
+      ],
+      "fcp": 304,
+      "bytes": {
+        "total": 225469,
+        "js": 118364,
+        "css": 5860,
+        "fonts": 86660,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/assets/PublicBookingPage-C201y-rT.js",
+          "transferred": 3618,
+          "encoded": 3318,
+          "decoded": 10173
+        },
+        {
+          "url": "/assets/circle-check-DDoWBiyB.js",
+          "transferred": 469,
+          "encoded": 169,
+          "decoded": 178
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/api-tUPCfhqn.js",
+          "transferred": 725,
+          "encoded": 425,
+          "decoded": 944
+        },
+        {
+          "url": "/assets/PublicBookingPage-9olrKslm.css",
+          "transferred": 1466,
+          "encoded": 1166,
+          "decoded": 3914
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        },
+        {
+          "url": "/fonts/playfair-display-latin.woff2",
+          "transferred": 38704,
+          "encoded": 38404,
+          "decoded": 38404
+        }
+      ]
+    },
+    {
+      "mode": "desktop",
+      "route": "agenda",
+      "run": 1,
+      "lcp": 880,
+      "cls": 0.0077444658779149515,
+      "shifts": [
+        {
+          "value": 0.0077444658779149515,
+          "sources": [
+            {
+              "node": "<nav class=\"sidebar-nav\" aria-label=\"Navegação principal\"><a aria-current=\"page\" class=\"sidebar-link active\" href=\"/agenda\" data-discover=\"true\"><svg xmlns=\"http://www.w3.org/2000/",
+              "previous": {
+                "x": 16,
+                "y": 177.1875,
+                "width": 223,
+                "height": 722.8125,
+                "top": 177.1875,
+                "right": 239,
+                "bottom": 900,
+                "left": 16
+              },
+              "current": {
+                "x": 16,
+                "y": 265.1875,
+                "width": 223,
+                "height": 634.8125,
+                "top": 265.1875,
+                "right": 239,
+                "bottom": 900,
+                "left": 16
+              }
+            },
+            {
+              "node": "<small>Área da recepção</small>",
+              "previous": {
+                "x": 20,
+                "y": 147.1875,
+                "width": 215,
+                "height": 14,
+                "top": 147.1875,
+                "right": 235,
+                "bottom": 161.1875,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 235.1875,
+                "width": 215,
+                "height": 14,
+                "top": 235.1875,
+                "right": 235,
+                "bottom": 249.1875,
+                "left": 20
+              }
+            }
+          ]
+        }
+      ],
+      "fcp": 292,
+      "bytes": {
+        "total": 193658,
+        "js": 123207,
+        "css": 7310,
+        "fonts": 48256,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/assets/AgendaPage-CP1U7Fay.js",
+          "transferred": 6988,
+          "encoded": 6688,
+          "decoded": 20013
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/appointment-duration-CJXjjLh6.js",
+          "transferred": 1459,
+          "encoded": 1159,
+          "decoded": 3348
+        },
+        {
+          "url": "/assets/types-Bxx8XSZs.js",
+          "transferred": 479,
+          "encoded": 179,
+          "decoded": 279
+        },
+        {
+          "url": "/assets/api-BV6QyemV.js",
+          "transferred": 636,
+          "encoded": 336,
+          "decoded": 788
+        },
+        {
+          "url": "/assets/api-CIKcs0yn.js",
+          "transferred": 693,
+          "encoded": 393,
+          "decoded": 926
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/AgendaPage-C2ceB8SL.css",
+          "transferred": 2916,
+          "encoded": 2616,
+          "decoded": 10382
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        }
+      ]
+    },
+    {
+      "mode": "desktop",
+      "route": "agenda",
+      "run": 2,
+      "lcp": 892,
+      "cls": 0.0077444658779149515,
+      "shifts": [
+        {
+          "value": 0.0077444658779149515,
+          "sources": [
+            {
+              "node": "<nav class=\"sidebar-nav\" aria-label=\"Navegação principal\"><a aria-current=\"page\" class=\"sidebar-link active\" href=\"/agenda\" data-discover=\"true\"><svg xmlns=\"http://www.w3.org/2000/",
+              "previous": {
+                "x": 16,
+                "y": 177.1875,
+                "width": 223,
+                "height": 722.8125,
+                "top": 177.1875,
+                "right": 239,
+                "bottom": 900,
+                "left": 16
+              },
+              "current": {
+                "x": 16,
+                "y": 265.1875,
+                "width": 223,
+                "height": 634.8125,
+                "top": 265.1875,
+                "right": 239,
+                "bottom": 900,
+                "left": 16
+              }
+            },
+            {
+              "node": "<small>Área da recepção</small>",
+              "previous": {
+                "x": 20,
+                "y": 147.1875,
+                "width": 215,
+                "height": 14,
+                "top": 147.1875,
+                "right": 235,
+                "bottom": 161.1875,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 235.1875,
+                "width": 215,
+                "height": 14,
+                "top": 235.1875,
+                "right": 235,
+                "bottom": 249.1875,
+                "left": 20
+              }
+            }
+          ]
+        }
+      ],
+      "fcp": 296,
+      "bytes": {
+        "total": 193658,
+        "js": 123207,
+        "css": 7310,
+        "fonts": 48256,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/assets/AgendaPage-CP1U7Fay.js",
+          "transferred": 6988,
+          "encoded": 6688,
+          "decoded": 20013
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/appointment-duration-CJXjjLh6.js",
+          "transferred": 1459,
+          "encoded": 1159,
+          "decoded": 3348
+        },
+        {
+          "url": "/assets/types-Bxx8XSZs.js",
+          "transferred": 479,
+          "encoded": 179,
+          "decoded": 279
+        },
+        {
+          "url": "/assets/api-BV6QyemV.js",
+          "transferred": 636,
+          "encoded": 336,
+          "decoded": 788
+        },
+        {
+          "url": "/assets/api-CIKcs0yn.js",
+          "transferred": 693,
+          "encoded": 393,
+          "decoded": 926
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/AgendaPage-C2ceB8SL.css",
+          "transferred": 2916,
+          "encoded": 2616,
+          "decoded": 10382
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        }
+      ]
+    },
+    {
+      "mode": "desktop",
+      "route": "agenda",
+      "run": 3,
+      "lcp": 892,
+      "cls": 0.0077444658779149515,
+      "shifts": [
+        {
+          "value": 0.0077444658779149515,
+          "sources": [
+            {
+              "node": "<nav class=\"sidebar-nav\" aria-label=\"Navegação principal\"><a aria-current=\"page\" class=\"sidebar-link active\" href=\"/agenda\" data-discover=\"true\"><svg xmlns=\"http://www.w3.org/2000/",
+              "previous": {
+                "x": 16,
+                "y": 177.1875,
+                "width": 223,
+                "height": 722.8125,
+                "top": 177.1875,
+                "right": 239,
+                "bottom": 900,
+                "left": 16
+              },
+              "current": {
+                "x": 16,
+                "y": 265.1875,
+                "width": 223,
+                "height": 634.8125,
+                "top": 265.1875,
+                "right": 239,
+                "bottom": 900,
+                "left": 16
+              }
+            },
+            {
+              "node": "<small>Área da recepção</small>",
+              "previous": {
+                "x": 20,
+                "y": 147.1875,
+                "width": 215,
+                "height": 14,
+                "top": 147.1875,
+                "right": 235,
+                "bottom": 161.1875,
+                "left": 20
+              },
+              "current": {
+                "x": 20,
+                "y": 235.1875,
+                "width": 215,
+                "height": 14,
+                "top": 235.1875,
+                "right": 235,
+                "bottom": 249.1875,
+                "left": 20
+              }
+            }
+          ]
+        }
+      ],
+      "fcp": 292,
+      "bytes": {
+        "total": 193658,
+        "js": 123207,
+        "css": 7310,
+        "fonts": 48256,
+        "images": 6654
+      },
+      "resources": [
+        {
+          "url": "/assets/index-yby_XHyW.js",
+          "transferred": 65268,
+          "encoded": 64968,
+          "decoded": 207780
+        },
+        {
+          "url": "/assets/jsx-runtime-n5LQ9ujS.js",
+          "transferred": 3558,
+          "encoded": 3258,
+          "decoded": 8535
+        },
+        {
+          "url": "/assets/useQuery-C3ShfQ_s.js",
+          "transferred": 8083,
+          "encoded": 7783,
+          "decoded": 23654
+        },
+        {
+          "url": "/assets/useMutation-DmLH_eBj.js",
+          "transferred": 2071,
+          "encoded": 1771,
+          "decoded": 5561
+        },
+        {
+          "url": "/assets/chunk-KS7C4IRE-kLq9YJCy.js",
+          "transferred": 15432,
+          "encoded": 15132,
+          "decoded": 42751
+        },
+        {
+          "url": "/assets/api-Ddlepfaj.js",
+          "transferred": 17885,
+          "encoded": 17585,
+          "decoded": 46569
+        },
+        {
+          "url": "/assets/AuthContext-Byg2xz3F.js",
+          "transferred": 1157,
+          "encoded": 857,
+          "decoded": 1640
+        },
+        {
+          "url": "/assets/createLucideIcon-DN0J77WO.js",
+          "transferred": 1078,
+          "encoded": 778,
+          "decoded": 1385
+        },
+        {
+          "url": "/assets/calendar-days-GcwNIqd2.js",
+          "transferred": 566,
+          "encoded": 266,
+          "decoded": 494
+        },
+        {
+          "url": "/assets/link-2-Bz3zA1qP.js",
+          "transferred": 508,
+          "encoded": 208,
+          "decoded": 242
+        },
+        {
+          "url": "/assets/useMediaQuery-YZxn3h1V.js",
+          "transferred": 536,
+          "encoded": 236,
+          "decoded": 335
+        },
+        {
+          "url": "/assets/Modal-DY5UmJow.js",
+          "transferred": 1099,
+          "encoded": 799,
+          "decoded": 1705
+        },
+        {
+          "url": "/assets/clinic-time-BI-coYxj.js",
+          "transferred": 586,
+          "encoded": 286,
+          "decoded": 524
+        },
+        {
+          "url": "/assets/index-036ujhZ9.css",
+          "transferred": 4994,
+          "encoded": 4694,
+          "decoded": 20738
+        },
+        {
+          "url": "/fonts/inter-latin.woff2",
+          "transferred": 48556,
+          "encoded": 48256,
+          "decoded": 48256
+        },
+        {
+          "url": "/assets/AgendaPage-CP1U7Fay.js",
+          "transferred": 6988,
+          "encoded": 6688,
+          "decoded": 20013
+        },
+        {
+          "url": "/assets/AsyncState-55fm6vfG.js",
+          "transferred": 699,
+          "encoded": 399,
+          "decoded": 760
+        },
+        {
+          "url": "/assets/appointment-duration-CJXjjLh6.js",
+          "transferred": 1459,
+          "encoded": 1159,
+          "decoded": 3348
+        },
+        {
+          "url": "/assets/types-Bxx8XSZs.js",
+          "transferred": 479,
+          "encoded": 179,
+          "decoded": 279
+        },
+        {
+          "url": "/assets/api-BV6QyemV.js",
+          "transferred": 636,
+          "encoded": 336,
+          "decoded": 788
+        },
+        {
+          "url": "/assets/api-CIKcs0yn.js",
+          "transferred": 693,
+          "encoded": 393,
+          "decoded": 926
+        },
+        {
+          "url": "/assets/money-BvZk9YwN.js",
+          "transferred": 426,
+          "encoded": 126,
+          "decoded": 118
+        },
+        {
+          "url": "/assets/AgendaPage-C2ceB8SL.css",
+          "transferred": 2916,
+          "encoded": 2616,
+          "decoded": 10382
+        },
+        {
+          "url": "/brand/maria-alice-logo.webp",
+          "transferred": 6954,
+          "encoded": 6654,
+          "decoded": 6654
+        }
+      ]
+    }
+  ]
+}

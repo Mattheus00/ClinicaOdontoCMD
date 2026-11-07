@@ -1,0 +1,88 @@
+.ux-demo-bar {
+  padding: 12px 20px;
+  background: #242727;
+  color: #fff;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.ux-demo-bar nav {
+  display: flex;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.ux-demo-bar a {
+  color: #fff;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.ux-demo-bar button,
+.ux-demo-bar select {
+  min-height: 44px;
+  background: #fff;
+  color: #242727;
+  padding: 8px 12px;
+  border: 1px solid #c5ad7f;
+  font: inherit;
+  border-radius: 4px;
+}
+.ux-demo-bar label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ux-demo-bar small {
+  display: block;
+  font-size: 0.8125rem;
+  margin-top: 8px;
+}
+body:has(.ux-demo-bar) .app-layout {
+  height: auto;
+  min-height: 100dvh;
+  overflow: visible;
+}
+body:has(.ux-demo-bar) .sidebar {
+  position: static;
+  height: auto;
+}
+body:has(.ux-demo-bar) .main-content {
+  margin-left: 0;
+}
+@media (max-width: 800px) {
+  body:has(.ux-demo-bar) .app-layout {
+    display: flex;
+    flex-direction: column;
+  }
+  body:has(.ux-demo-bar) .sidebar {
+    position: static;
+    max-height: none;
+    order: -1;
+  }
+  body:has(.ux-demo-bar) .mobile-topbar {
+    position: static;
+  }
+  body:has(.ux-demo-bar) .main-content {
+    padding: 24px 16px;
+    overflow: visible;
+  }
+}
+
+.ux-demo-bar nav > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.ux-demo-bar select {
+  max-width: 100%;
+}
+
+/* The test controls must not reflow when the clinic fonts finish loading. */
+.ux-demo-bar {
+  font-family: system-ui, sans-serif;
+}
+.ux-demo-bar summary {
+  cursor: pointer;
+  min-height: 44px;
+  align-content: center;
+}

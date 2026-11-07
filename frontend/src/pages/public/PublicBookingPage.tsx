@@ -1,309 +1,497 @@
-import { useMemo, useState, type FormEvent } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { CalendarDays, CheckCircle2, Share2 } from 'lucide-react';
-import { EmptyState, ErrorState, LoadingState } from '../../components/AsyncState';
-import { usePublicAvailability, usePublicBook, usePublicBookingPage } from '../../features/booking/api';
-import { money } from '../../lib/money';
-import './PublicBookingPage.css';
-
-const LOGO = '/brand/maria-alice-logo.png';
-const CLINIC_TIME_ZONE = 'America/Sao_Paulo';
-
-function clinicDateIso(date = new Date()) {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: CLINIC_TIME_ZONE,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(date);
-}
-
-function todayIso() {
-  return clinicDateIso();
-}
-
-function maxDateIso() {
-  const today = clinicDateIso();
-  const cursor = new Date(`${today}T12:00:00Z`);
-  cursor.setUTCDate(cursor.getUTCDate() + 60);
-  return cursor.toISOString().slice(0, 10);
-}
-
-function formatSlotLabel(startsAt: string) {
-  const time = startsAt.includes('T') ? startsAt.split('T')[1] : startsAt;
-  return time.slice(0, 5);
-}
-
-function formatConfirmationDate(value: string) {
-  return new Intl.DateTimeFormat('pt-BR', {
-    dateStyle: 'full',
-    timeStyle: 'short',
-  }).format(new Date(value));
-}
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Link, useParams } from "react-router-dom";
+import { CheckCircle2 } from "lucide-react";
+import {
+  EmptyState,
+  ErrorState,
+  LoadingState,
+} from "../../components/AsyncState";
+import {
+  usePublicAvailability,
+  usePublicBook,
+  usePublicBookingPage,
+} from "../../features/booking/api";
+import { clinicDate, clinicDateTime, clinicTime } from "../../lib/clinic-time";
+import { isUxDemo } from "../../lib/experience";
+import { money } from "../../lib/money";
+import "./PublicBookingPage.css";
 
 export default function PublicBookingPage() {
   const { slug } = useParams();
   const page = usePublicBookingPage(slug);
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [professionalId, setProfessionalId] = useState('');
-  const [procedureId, setProcedureId] = useState('');
-  const [date, setDate] = useState(todayIso());
-  const [startsAt, setStartsAt] = useState('');
-  const [notes, setNotes] = useState('');
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [professionalId, setProfessionalId] = useState("");
+  const [procedureId, setProcedureId] = useState("");
+  const [date, setDate] = useState(clinicDate());
+  const [startsAt, setStartsAt] = useState("");
+  const [review, setReview] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-
+  const [recoverSlot, setRecoverSlot] = useState(false);
+  const errorNotice = useRef<HTMLParagraphElement>(null);
+  const slots = useRef<HTMLFieldSetElement>(null);
+  useEffect(() => {
+    if (formError) errorNotice.current?.focus();
+  }, [formError]);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const dateInput = useRef<HTMLInputElement>(null);
+  const nameInput = useRef<HTMLInputElement>(null);
+  const procedureInput = useRef<HTMLSelectElement>(null);
+  const editSection = (section: "consulta" | "horario" | "dados") => {
+    setReview(false);
+    requestAnimationFrame(() => {
+      const input =
+        section === "horario"
+          ? dateInput.current
+          : section === "dados"
+            ? nameInput.current
+            : procedureInput.current;
+      input?.focus();
+    });
+  };
   const availability = usePublicAvailability(slug, professionalId, date);
   const book = usePublicBook(slug);
-
-  const selectedProcedure = useMemo(
-    () => page.data?.procedures.find((item) => item.id === procedureId) ?? null,
-    [page.data?.procedures, procedureId],
+  const selectedProcedure = page.data?.procedures.find(
+    (item) => item.id === procedureId,
   );
-
-  if (page.isLoading) return <LoadingState />;
-  if (page.isError || !page.data) {
-    return (
-      <main className="public-booking">
-        <div className="public-booking-shell">
-          <ErrorState
-            message="Este link de agendamento não foi encontrado ou a clínica não está aceitando reservas online."
-            onRetry={() => page.refetch()}
-          />
-          <Link className="public-booking-home" to="/">
-            Voltar ao início
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
-  if (book.isSuccess && book.data) {
-    return (
-      <main className="public-booking">
-        <div className="public-booking-shell public-booking-success">
-          <CheckCircle2 size={42} />
-          <h1>Solicitação enviada</h1>
-          <p>
-            Olá, <strong>{book.data.patientName}</strong>. Pedido recebido pela{' '}
-            <strong>{book.data.clinicName}</strong>. A equipe vai analisar e confirmar o horário.
-          </p>
-          <ul>
-            <li>
-              <span>Dentista</span>
-              <strong>{book.data.professionalName}</strong>
-            </li>
-            <li>
-              <span>Procedimento</span>
-              <strong>{book.data.procedureName}</strong>
-            </li>
-            <li>
-              <span>Horário solicitado</span>
-              <strong>{formatConfirmationDate(book.data.startsAt)}</strong>
-            </li>
-          </ul>
-          <p className="public-booking-success-note">
-            Você pode receber a confirmação pelo WhatsApp. O horário fica reservado enquanto a clínica aceita.
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  const data = page.data;
-  const noDentists = data.professionals.length === 0;
-  const noProcedures = data.procedures.length === 0;
-
-  const onSubmit = (event: FormEvent) => {
+  const selectedProfessional = page.data?.professionals.find(
+    (item) => item.id === professionalId,
+  );
+  const maxDate = new Date(`${clinicDate()}T12:00:00Z`);
+  maxDate.setUTCDate(maxDate.getUTCDate() + 60);
+  const focusHeading = () =>
+    requestAnimationFrame(() => heading.current?.focus());
+  const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormError(null);
-    if (!professionalId || !procedureId || !startsAt) {
-      setFormError('Escolha dentista, procedimento e horário.');
+    setRecoverSlot(false);
+    if (
+      !startsAt ||
+      !availability.data?.slots.includes(startsAt) ||
+      date < clinicDate()
+    ) {
+      setFormError(
+        "Escolha um horário disponível em uma data atual ou futura. Seus dados foram preservados.",
+      );
+      setReview(false);
+      setRecoverSlot(true);
+      return;
+    }
+    if (!review) {
+      setReview(true);
+      focusHeading();
       return;
     }
     book.mutate(
       {
-        name,
-        phone,
-        email: email || undefined,
+        name: name.trim(),
+        phone: phone.trim(),
+        email: email.trim() || undefined,
         professionalId,
         procedureId,
         startsAt,
-        notes: notes || undefined,
       },
       {
+        onSuccess: focusHeading,
         onError: (error) => {
-          const message =
-            error && typeof error === 'object' && 'response' in error
-              ? ((error as { response?: { data?: { message?: string } } }).response?.data?.message ?? null)
-              : null;
-          setFormError(message ?? 'Não foi possível concluir o agendamento.');
+          const status = (error as { response?: { status?: number } }).response
+            ?.status;
+          setFormError(
+            status === 409
+              ? "Este horário acabou de ficar indisponível. Escolha outro horário; seus dados foram preservados."
+              : "Não foi possível enviar a solicitação. Seus dados foram preservados. Tente novamente.",
+          );
+          if (status === 409) {
+            setReview(false);
+            setStartsAt("");
+            setRecoverSlot(true);
+            void availability.refetch();
+          }
         },
       },
     );
   };
-
   return (
     <main className="public-booking">
       <div className="public-booking-shell">
+        <Link className="public-booking-home" to="/">
+          Voltar ao início
+        </Link>
         <header className="public-booking-header">
-          <img src={LOGO} alt="Maria Alice Odontologia Especializada" className="public-booking-logo" />
+          <img
+            src="/brand/maria-alice-logo.webp"
+            width="256"
+            height="256"
+            alt="Maria Alice Odontologia Especializada"
+          />
           <div>
-            <p className="public-booking-kicker">
-              <Share2 size={14} /> Agendamento online
+            <p className="public-booking-kicker">Agendamento online</p>
+            <h1 ref={heading} tabIndex={-1}>
+              {book.isSuccess
+                ? "Solicitação enviada"
+                : review
+                  ? "Revise sua solicitação"
+                  : "Agendar avaliação"}
+            </h1>
+            <p>
+              {page.data?.clinicName ?? "Maria Alice Odontologia"} · Horários de
+              Brasília (America/Sao_Paulo)
             </p>
-            <h1>{data.clinicName}</h1>
-            <p>Escolha o horário e envie sua solicitação em poucos passos.</p>
           </div>
         </header>
-
-        {noDentists || noProcedures ? (
+        <p className="public-booking-notice">
+          Demonstração sem atendimento real. Use apenas dados fictícios. O
+          pedido depende de aceite da equipe.
+        </p>
+        {page.isLoading ? (
+          <div className="public-booking-loading"><LoadingState /></div>
+        ) : !slug ? (
+          <EmptyState
+            title="Link da clínica necessário"
+            description="Abra o link de agendamento fornecido pela equipe. O endereço público desta clínica ainda não foi configurado."
+          />
+        ) : page.isError || !page.data ? (
+          <ErrorState
+            message="Não foi possível abrir este link de agendamento. Confira o endereço ou tente novamente."
+            onRetry={() => page.refetch()}
+          />
+        ) : book.isSuccess && book.data ? (
+          <section className="public-booking-success" role="status">
+            <CheckCircle2 size={36} aria-hidden="true" />
+            <h2>Pedido recebido, {book.data.patientName}.</h2>
+            <p>
+              O envio ainda não confirma o atendimento. Aguarde a análise da
+              equipe.
+            </p>
+            <dl>
+              <dt>Profissional</dt>
+              <dd>{book.data.professionalName}</dd>
+              <dt>Avaliação / procedimento</dt>
+              <dd>{book.data.procedureName}</dd>
+              <dt>Horário solicitado</dt>
+              <dd>{clinicDateTime(book.data.startsAt)} (Brasília)</dd>
+              <dt>Situação</dt>
+              <dd>Aguardando aceite</dd>
+            </dl>
+            <Link to="/" className="btn btn-secondary">
+              Voltar ao início
+            </Link>
+          </section>
+        ) : !page.data.professionals.length || !page.data.procedures.length ? (
           <EmptyState
             title="Agendamento temporariamente indisponível"
-            description={
-              noDentists
-                ? 'A clínica ainda não cadastrou dentistas para atendimento online.'
-                : 'A clínica ainda não cadastrou procedimentos para atendimento online.'
-            }
+            description="Ainda não há profissionais ou serviços disponíveis neste link."
           />
         ) : (
-          <form className="public-booking-form" onSubmit={onSubmit}>
-            <section>
-              <h2>Seus dados</h2>
-              <label>
-                Nome completo
-                <input className="input-field" value={name} onChange={(e) => setName(e.target.value)} required />
-              </label>
-              <label>
-                WhatsApp
-                <input
-                  className="input-field"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  inputMode="tel"
-                  placeholder="(11) 99999-9999"
-                  required
-                />
-              </label>
-              <label>
-                E-mail <span>(opcional)</span>
-                <input
-                  className="input-field"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </label>
-            </section>
-
-            <section>
-              <h2>Consulta</h2>
-              <label>
-                Dentista
-                <select
-                  className="input-field"
-                  value={professionalId}
-                  onChange={(e) => {
-                    setProfessionalId(e.target.value);
-                    setStartsAt('');
-                  }}
-                  required
-                >
-                  <option value="">Selecione</option>
-                  {data.professionals.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                      {item.specialty ? ` — ${item.specialty}` : ''}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Procedimento
-                <select
-                  className="input-field"
-                  value={procedureId}
-                  onChange={(e) => setProcedureId(e.target.value)}
-                  required
-                >
-                  <option value="">Selecione</option>
-                  {data.procedures.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name} — {money(item.price)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              {selectedProcedure ? (
-                <p className="public-booking-procedure-hint">Valor de referência: {money(selectedProcedure.price)}</p>
-              ) : null}
-            </section>
-
-            <section>
-              <h2>
-                <CalendarDays size={18} /> Horário
-              </h2>
-              <label className="public-booking-date-field">
-                Data
-                <input
-                  className="input-field"
-                  type="date"
-                  min={todayIso()}
-                  max={maxDateIso()}
-                  value={date}
-                  onChange={(e) => {
-                    setDate(e.target.value);
-                    setStartsAt('');
-                  }}
-                  required
-                />
-              </label>
-
-              {!professionalId ? (
-                <p className="public-booking-slots-empty">Selecione um dentista para ver os horários.</p>
-              ) : availability.isLoading ? (
-                <p className="public-booking-slots-empty">Carregando horários...</p>
-              ) : availability.isError ? (
-                <p className="public-booking-slots-empty">Não foi possível carregar os horários.</p>
-              ) : availability.data?.slots.length ? (
-                <div className="public-booking-slots" role="listbox" aria-label="Horários disponíveis">
-                  {availability.data.slots.map((slot) => (
-                    <button
-                      key={slot}
-                      type="button"
-                      className={`public-booking-slot${startsAt === slot ? ' is-selected' : ''}`}
-                      onClick={() => setStartsAt(slot)}
+          <>
+            <ol
+              className="public-booking-progress"
+              aria-label="Etapas do agendamento"
+            >
+              <li aria-current={!review ? "step" : undefined}>
+                Escolher consulta
+              </li>
+              <li aria-current={review ? "step" : undefined}>
+                Revisar e enviar
+              </li>
+            </ol>
+            <form
+              className="public-booking-form"
+              onSubmit={submit}
+              aria-busy={book.isPending}
+            >
+              <div hidden={review} className="public-booking-fields">
+                <section>
+                  <h2>Consulta e profissional</h2>
+                  <label>
+                    Avaliação / procedimento
+                    <select
+                      ref={procedureInput}
+                      name="procedureId"
+                      className="input-field"
+                      value={procedureId}
+                      onChange={(e) => setProcedureId(e.target.value)}
+                      required
                     >
-                      {formatSlotLabel(slot)}
+                      <option value="">Selecione</option>
+                      {page.data.procedures.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {selectedProcedure ? (
+                    <p className="public-booking-hint">
+                      {isUxDemo
+                        ? "Valores dependem da avaliação. Nenhuma cobrança nesta demonstração."
+                        : `Valor de referência informado pela clínica: ${money(selectedProcedure.price)}. Sem pagamento online.`}
+                    </p>
+                  ) : null}
+                  <label>
+                    Profissional
+                    <select
+                      className="input-field"
+                      value={professionalId}
+                      onChange={(e) => {
+                        setProfessionalId(e.target.value);
+                        setStartsAt("");
+                      }}
+                      required
+                    >
+                      <option value="">Selecione</option>
+                      {page.data.professionals.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                          {item.specialty ? ` — ${item.specialty}` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </section>
+                <section>
+                  <h2>Data e horário</h2>
+                  <label>
+                    Data
+                    <input
+                      ref={dateInput}
+                      name="date"
+                      className="input-field"
+                      type="date"
+                      min={clinicDate()}
+                      max={maxDate.toISOString().slice(0, 10)}
+                      value={date}
+                      onChange={(e) => {
+                        setDate(e.target.value);
+                        setStartsAt("");
+                      }}
+                      required
+                    />
+                  </label>
+                  <p className="public-booking-hint" id="slot-zone">
+                    Horários de Brasília · America/Sao_Paulo
+                  </p>
+                  {!professionalId ? (
+                    <p className="public-booking-state">
+                      Selecione um profissional para ver os horários.
+                    </p>
+                  ) : availability.isFetching ? (
+                    <p className="public-booking-state" role="status">
+                      Carregando horários...
+                    </p>
+                  ) : availability.isError ? (
+                    <div role="alert">
+                      <p>Não foi possível carregar os horários.</p>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => availability.refetch()}
+                      >
+                        Tentar novamente
+                      </button>
+                    </div>
+                  ) : availability.data?.slots.length ? (
+                    <fieldset
+                      className="public-booking-slots"
+                      ref={slots}
+                      aria-describedby="slot-zone"
+                    >
+                      <legend>Horários disponíveis</legend>
+                      {availability.data.slots.map((slot) => (
+                        <label
+                          key={slot}
+                          className={`public-booking-slot${startsAt === slot ? " is-selected" : ""}`}
+                        >
+                          <input
+                            type="radio"
+                            name="horario"
+                            value={slot}
+                            checked={startsAt === slot}
+                            onChange={() => {
+                              setStartsAt(slot);
+                              if (recoverSlot) {
+                                setFormError(null);
+                                setRecoverSlot(false);
+                              }
+                            }}
+                            required
+                          />
+                          {clinicTime(slot)}
+                        </label>
+                      ))}
+                    </fieldset>
+                  ) : (
+                    <p className="public-booking-state" role="status">
+                      Nenhum horário livre neste dia. Escolha outra data.
+                    </p>
+                  )}
+                </section>
+                <section className="public-booking-identification">
+                  <h2>Identificação</h2>
+                  <p className="public-booking-hint">
+                    Informe somente dados fictícios. Não inclua informações de
+                    saúde.
+                  </p>
+                  <label>
+                    Nome completo
+                    <input
+                      ref={nameInput}
+                      name="name"
+                      className="input-field"
+                      autoComplete="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      maxLength={120}
+                    />
+                  </label>
+                  <label>
+                    Telefone de contato
+                    <input
+                      className="input-field"
+                      type="tel"
+                      name="phone"
+                      autoComplete="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                      maxLength={30}
+                      aria-describedby="phone-hint"
+                    />
+                  </label>
+                  <p className="public-booking-hint" id="phone-hint">
+                    Contato exigido pelo fluxo atual para tratar a solicitação.{" "}
+                    {isUxDemo
+                      ? "Nenhuma mensagem é enviada pela simulação."
+                      : ""}
+                  </p>
+                  <label>
+                    E-mail (opcional)
+                    <input
+                      className="input-field"
+                      type="email"
+                      name="email"
+                      spellCheck={false}
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      maxLength={254}
+                    />
+                  </label>
+                </section>
+              </div>
+              {review ? (
+                <section className="public-booking-review">
+                  <h2>Confira antes de enviar</h2>
+                  <dl>
+                    <dt>Avaliação / procedimento</dt>
+                    <dd>{selectedProcedure?.name}</dd>
+                    <dt>Profissional</dt>
+                    <dd>{selectedProfessional?.name}</dd>
+                    <dt>Horário de Brasília</dt>
+                    <dd>{clinicDateTime(startsAt)}</dd>
+                    <dt>Nome</dt>
+                    <dd>{name}</dd>
+                    <dt>Telefone de contato</dt>
+                    <dd>{phone}</dd>
+                    {email ? (
+                      <>
+                        <dt>E-mail</dt>
+                        <dd>{email}</dd>
+                      </>
+                    ) : null}
+                  </dl>
+                  <p>
+                    O envio cria uma solicitação pendente de aceite, sem
+                    confirmação imediata. Não há pagamento online.
+                  </p>
+                  <div
+                    className="public-booking-edit-actions"
+                    role="group"
+                    aria-label="Alterar informações da solicitação"
+                  >
+                    <button
+                      className="btn btn-secondary"
+                      type="button"
+                      disabled={book.isPending}
+                      onClick={() => editSection("consulta")}
+                    >
+                      Alterar consulta
                     </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="public-booking-slots-empty">Nenhum horário livre neste dia. Tente outra data.</p>
+                    <button
+                      className="btn btn-secondary"
+                      type="button"
+                      disabled={book.isPending}
+                      onClick={() => editSection("horario")}
+                    >
+                      Alterar horário
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      type="button"
+                      disabled={book.isPending}
+                      onClick={() => editSection("dados")}
+                    >
+                      Alterar dados
+                    </button>
+                  </div>
+                </section>
+              ) : null}
+              {formError ? (
+                <p ref={errorNotice} tabIndex={-1} className="public-booking-error" role="alert">
+                  {formError}
+                </p>
+              ) : null}
+              <div role="status" className="public-booking-update-status">
+                {recoverSlot && (availability.isFetching
+                  ? "Atualizando horários."
+                  : availability.isSuccess ? "Horários disponíveis atualizados." : "")}
+              </div>
+              {recoverSlot && (
+                <button type="button" className="btn btn-secondary" disabled={availability.isFetching}
+                  onClick={() => (slots.current?.querySelector<HTMLInputElement>("input") ?? dateInput.current)?.focus()}>
+                  Escolher outro horário
+                </button>
               )}
-            </section>
-
-            <section>
-              <label>
-                Observações <span>(opcional)</span>
-                <textarea
-                  className="input-field public-booking-notes"
-                  rows={3}
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Conte brevemente o motivo da consulta"
-                />
-              </label>
-            </section>
-
-            {formError ? <p className="public-booking-error">{formError}</p> : null}
-
-            <button className="btn btn-primary public-booking-submit" type="submit" disabled={book.isPending}>
-              {book.isPending ? 'Enviando...' : 'Enviar solicitação'}
-            </button>
-          </form>
+              {!review && startsAt && availability.data?.slots.includes(startsAt) && (
+                <p className="public-booking-hint">
+                  <strong>Horário escolhido</strong> · {clinicDateTime(startsAt)} (Brasília)
+                </p>
+              )}
+              <p className="public-booking-hint public-booking-legal">
+                Política de Privacidade e Termos de Serviço pendentes de
+                validação. Ambiente para avaliação local com dados fictícios.
+              </p>
+              <button
+                className="btn btn-primary public-booking-submit"
+                type="submit"
+                disabled={
+                  book.isPending ||
+                  availability.isFetching ||
+                  availability.isError
+                }
+              >
+                {book.isPending
+                  ? "Enviando..."
+                  : review
+                    ? "Enviar solicitação"
+                    : "Revisar solicitação"}
+              </button>
+            </form>
+          </>
         )}
+        <aside
+          className="public-booking-help"
+          aria-label="Ajuda com o agendamento"
+          hidden={page.isLoading}
+        >
+          <strong>Precisa esclarecer uma dúvida?</strong>
+          <p>Veja como funciona o pedido e o aceite da equipe.</p>
+          <a href="/#duvidas" target="_blank" rel="noopener noreferrer">
+            Consultar dúvidas frequentes (nova aba)
+          </a>
+        </aside>
       </div>
     </main>
   );

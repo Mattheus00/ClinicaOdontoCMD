@@ -3,6 +3,8 @@
 /* ============================================ */
 
 @import './styles/maria-alice-theme.css';
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/inter-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400 900; font-display: swap; src: url('/fonts/playfair-display-latin.woff2') format('woff2'); }
 
 :root {
   --font-size-xs: 0.75rem;
@@ -45,7 +47,7 @@ html,
 body,
 #root {
   max-width: 100%;
-  overflow-x: hidden;
+
 }
 
 .app-layout {
@@ -418,3 +420,10 @@ button:disabled {
     padding: 0.7rem;
   }
 }
+
+.skip-link { position: absolute; top: 8px; left: 8px; padding: 12px; background: #fff; color: #59431b; z-index: 200; transform: translateY(-250%); }
+.skip-link:focus { transform: translateY(0); }
+:focus-visible { outline: 3px solid #755a25; outline-offset: 3px; }
+.btn,.btn-sm,.icon-button { min-height: 44px; min-width: 44px; }
+input,select,textarea { font-size: max(1rem, 16px); }
+@media(prefers-reduced-motion: reduce) { *,*::before,*::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

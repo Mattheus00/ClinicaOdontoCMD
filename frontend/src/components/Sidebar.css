@@ -54,7 +54,9 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .sidebar-logout-btn:hover {
@@ -84,5 +86,41 @@
     margin: 0;
     padding: 0;
     border: 0;
+  }
+}
+
+.sidebar-more {
+  font-family: inherit;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+}
+.sidebar-more-links {
+  display: grid;
+}
+.sidebar-more-links a {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 12px;
+}
+.sidebar-logout-btn {
+  min-height: 44px;
+}
+@media (max-width: 800px) {
+  .sidebar .sidebar-link {
+    font-size: 0.875rem;
+    min-height: 56px;
+    max-height: none;
+  }
+  .sidebar .sidebar-link .sidebar-link-label-full {
+    display: block;
+  }
+  .sidebar .sidebar-link .sidebar-link-label-short {
+    display: none;
+  }
+  .sidebar .sidebar-link span {
+    white-space: normal;
+    overflow: visible;
   }
 }

@@ -1,28 +1,35 @@
-import { useEffect, useState, type FormEvent } from 'react';
-import { ArrowRight, CalendarDays, Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { api } from '../../services/api';
-import { readApiError } from '../../lib/api-error';
-import './Login.css';
+import { useEffect, useState, type FormEvent } from "react";
+import {
+  ArrowRight,
+  CalendarDays,
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  Mail,
+} from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { api } from "../../services/api";
+import { readApiError } from "../../lib/api-error";
+import "./Login.css";
 
-const LOGO = '/brand/maria-alice-logo.png';
-const REMEMBER_ME_KEY = 'dentic.rememberMe';
-const REMEMBER_EMAIL_KEY = 'dentic.rememberEmail';
+const LOGO = "/brand/maria-alice-logo.webp";
+const REMEMBER_ME_KEY = "dentic.rememberMe";
+const REMEMBER_EMAIL_KEY = "dentic.rememberEmail";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const savedRemember = localStorage.getItem(REMEMBER_ME_KEY) === 'true';
+    const savedRemember = localStorage.getItem(REMEMBER_ME_KEY) === "true";
     setRememberMe(savedRemember);
     if (savedRemember) {
       const savedEmail = localStorage.getItem(REMEMBER_EMAIL_KEY);
@@ -32,11 +39,11 @@ export default function LoginPage() {
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const response = await api.post<{ accessToken?: string }>('/auth/login', {
+      const response = await api.post<{ accessToken?: string }>("/auth/login", {
         email,
         password,
         rememberMe,
@@ -45,17 +52,21 @@ export default function LoginPage() {
       login(response.data.accessToken);
 
       if (rememberMe) {
-        localStorage.setItem(REMEMBER_ME_KEY, 'true');
+        localStorage.setItem(REMEMBER_ME_KEY, "true");
         localStorage.setItem(REMEMBER_EMAIL_KEY, email.trim().toLowerCase());
       } else {
         localStorage.removeItem(REMEMBER_ME_KEY);
         localStorage.removeItem(REMEMBER_EMAIL_KEY);
       }
 
-      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? '/agenda';
+      const from =
+        (location.state as { from?: { pathname?: string } } | null)?.from
+          ?.pathname ?? "/agenda";
       navigate(from, { replace: true });
     } catch (error: unknown) {
-      setError(readApiError(error, 'E-mail ou senha não conferem. Tente novamente.'));
+      setError(
+        readApiError(error, "E-mail ou senha não conferem. Tente novamente."),
+      );
     } finally {
       setLoading(false);
     }
@@ -64,8 +75,16 @@ export default function LoginPage() {
   return (
     <main className="auth-layout">
       <aside className="auth-aside">
-        <Link to="/" className="auth-brand" aria-label="Ir para a página inicial">
-          <img src={LOGO} alt="Maria Alice Odontologia Especializada" className="auth-logo" />
+        <Link
+          to="/"
+          className="auth-brand"
+          aria-label="Ir para a página inicial"
+        >
+          <img
+            src={LOGO}
+            alt="Maria Alice Odontologia Especializada"
+            className="auth-logo"
+          />
         </Link>
 
         <div className="auth-copy">
@@ -73,7 +92,10 @@ export default function LoginPage() {
           <h1>
             Uma clínica organizada começa com uma <em>rotina simples</em>.
           </h1>
-          <p>Agenda, pacientes e equipe reunidos em um só lugar — com a elegância que sua clínica merece.</p>
+          <p>
+            Agenda, pacientes e equipe reunidos em um só lugar — com a elegância
+            que sua clínica merece.
+          </p>
         </div>
 
         <div className="auth-points">
@@ -91,10 +113,13 @@ export default function LoginPage() {
       <section className="auth-panel">
         <div className="auth-card">
           <span className="auth-eyebrow">ACESSO À PLATAFORMA</span>
-          <h2>Boas-vindas de volta</h2>
-          <p className="auth-lead">Entre para acessar a gestão da sua clínica.</p>
+          <h2>Acesso da equipe</h2>
+          <p className="auth-lead">
+            Entre com sua conta para acessar a área da clínica.
+          </p>
           <p className="auth-hint">
-            Dentistas devem usar o <strong>link de convite</strong> enviado pelo administrador para criar a senha no primeiro acesso.
+            Dentistas devem usar o <strong>link de convite</strong> enviado pelo
+            administrador para criar a senha no primeiro acesso.
           </p>
 
           <form onSubmit={submit} className="auth-form">
@@ -118,7 +143,7 @@ export default function LoginPage() {
               <span className="auth-input">
                 <LockKeyhole size={18} />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="Sua senha"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -129,7 +154,7 @@ export default function LoginPage() {
                   type="button"
                   className="auth-password-toggle"
                   onClick={() => setShowPassword((current) => !current)}
-                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -151,9 +176,13 @@ export default function LoginPage() {
               </div>
             )}
 
-            <button type="submit" className="btn btn-primary auth-submit" disabled={loading}>
+            <button
+              type="submit"
+              className="btn btn-primary auth-submit"
+              disabled={loading}
+            >
               {loading ? (
-                'Entrando...'
+                "Entrando..."
               ) : (
                 <>
                   Entrar <ArrowRight size={18} />
@@ -163,7 +192,8 @@ export default function LoginPage() {
           </form>
 
           <p className="auth-switch">
-            Ainda não usa a Maria Alice? <Link to="/cadastro">Cadastre sua clínica</Link>
+            Responsável pela configuração inicial?{" "}
+            <Link to="/cadastro">Configurar acesso da clínica</Link>
           </p>
         </div>
       </section>

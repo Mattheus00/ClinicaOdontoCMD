@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-31T21:14:07.485Z",
+  "checks": [
+    "Grade semanal com rolagem localizada operável por teclado",
+    "Página sem rolagem horizontal a 1024px",
+    "Consulta da grade abre com Enter",
+    "Escape restaura foco à consulta"
+  ],
+  "passed": true
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "path": "/",
+    "state": "normal",
+    "results": {
+      "checked": 41,
+      "failures": [],
+      "skipped": []
+    }
+  },
+  {
+    "path": "/agendar/demonstracao",
+    "state": "normal",
+    "results": {
+      "checked": 29,
+      "failures": [],
+      "skipped": []
+    }
+  },
+  {
+    "path": "/agenda",
+    "state": "normal",
+    "results": {
+      "checked": 43,
+      "failures": [],
+      "skipped": []
+    }
+  },
+  {
+    "path": "/agendar/demonstracao",
+    "state": "selecionado",
+    "results": {
+      "checked": 37,
+      "failures": [],
+      "skipped": []
+    }
+  },
+  {
+    "path": "/agendar/demonstracao",
+    "state": "erro",
+    "results": {
+      "checked": 30,
+      "failures": [],
+      "skipped": []
+    }
+  },
+  {
+    "path": "/agenda",
+    "state": "detalhes",
+    "results": {
+      "checked": 62,
+      "failures": [],
+      "skipped": []
+    }
+  }
+]

@@ -1,24 +1,37 @@
-import { useMemo, useState } from 'react';
-import type { Appointment } from '../../api/types';
-import { layoutConcurrentAppointments } from './schedule-layout';
-import './AgendaScheduleGrid.css';
+import { clinicDate, clinicTime, clinicInstant } from "../../lib/clinic-time";
+import { useMemo, useState } from "react";
+import type { Appointment } from "../../api/types";
+import { layoutConcurrentAppointments } from "./schedule-layout";
+import "./AgendaScheduleGrid.css";
 const START_HOUR = 7;
 const END_HOUR = 20;
 const SLOT_MINUTES = 30;
 const ROW_HEIGHT = 52;
 
-const WEEKDAY_LABELS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+const WEEKDAY_LABELS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 
 type Slot = { label: string; value: string };
-type WeekDay = { date: string; label: string; dayNumber: number; isToday: boolean };
+type WeekDay = {
+  date: string;
+  label: string;
+  dayNumber: number;
+  isToday: boolean;
+};
 
 type Props = {
   weekDays: WeekDay[];
   appointments: Appointment[];
   defaultProfessionalId?: string;
   showProfessionalName?: boolean;
-  onReschedule?: (payload: { id: string; startsAt: string; professionalId: string }) => void;
-  onSlotClick?: (payload: { startsAt: string; professionalId?: string }) => void;
+  onReschedule?: (payload: {
+    id: string;
+    startsAt: string;
+    professionalId: string;
+  }) => void;
+  onSlotClick?: (payload: {
+    startsAt: string;
+    professionalId?: string;
+  }) => void;
   onAppointmentSelect?: (appointmentId: string) => void;
   isRescheduling?: boolean;
 };
@@ -27,7 +40,7 @@ function buildSlots(): Slot[] {
   const slots: Slot[] = [];
   for (let hour = START_HOUR; hour < END_HOUR; hour += 1) {
     for (let minute = 0; minute < 60; minute += SLOT_MINUTES) {
-      const label = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+      const label = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
       slots.push({ label, value: label });
     }
   }
@@ -35,10 +48,10 @@ function buildSlots(): Slot[] {
 }
 
 function toLocalDateKey(value: string | Date) {
-  const date = typeof value === 'string' ? new Date(value) : value;
+  const date = typeof value === "string" ? new Date(value) : value;
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -49,20 +62,19 @@ function slotIndexFromDate(value: Date): number {
 }
 
 function formatTimeRange(startsAt: string, endsAt: string) {
-  const formatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  return `${formatter.format(new Date(startsAt))} – ${formatter.format(new Date(endsAt))}`;
+  return `${clinicTime(startsAt)} – ${clinicTime(endsAt)}`;
 }
 
 const statusClass: Record<string, string> = {
-  PENDING: 'schedule-event-pending',
-  CONFIRMED: 'schedule-event-confirmed',
-  SCHEDULED: 'schedule-event-scheduled',
-  CANCELLED: 'schedule-event-cancelled',
-  COMPLETED: 'schedule-event-completed',
+  PENDING: "schedule-event-pending",
+  CONFIRMED: "schedule-event-confirmed",
+  SCHEDULED: "schedule-event-scheduled",
+  CANCELLED: "schedule-event-cancelled",
+  COMPLETED: "schedule-event-completed",
 };
 
 export function getWeekDays(anchorDate: string): WeekDay[] {
-  const todayKey = toLocalDateKey(new Date());
+  const todayKey = clinicDate();
   const base = new Date(`${anchorDate}T12:00:00`);
   const day = base.getDay();
   const mondayOffset = day === 0 ? -6 : 1 - day;
@@ -103,7 +115,7 @@ export default function AgendaScheduleGrid({
       map.set(day.date, []);
     }
     for (const appointment of appointments) {
-      const key = toLocalDateKey(appointment.startsAt);
+      const key = clinicDate(appointment.startsAt);
       const list = map.get(key);
       if (list) list.push(appointment);
     }
@@ -111,7 +123,10 @@ export default function AgendaScheduleGrid({
   }, [appointments, weekDays]);
 
   const layoutByDay = useMemo(() => {
-    const map = new Map<string, Map<string, { columnIndex: number; columnCount: number }>>();
+    const map = new Map<
+      string,
+      Map<string, { columnIndex: number; columnCount: number }>
+    >();
     for (const [day, dayAppointments] of appointmentsByDay) {
       map.set(day, layoutConcurrentAppointments(dayAppointments));
     }
@@ -121,14 +136,17 @@ export default function AgendaScheduleGrid({
   const handleDrop = (dayDate: string, slotValue: string) => {
     if (!draggingId || isRescheduling) return;
     const appointment = appointments.find((item) => item.id === draggingId);
-    if (!appointment || (appointment.status !== 'SCHEDULED' && appointment.status !== 'CONFIRMED')) {
+    if (
+      !appointment ||
+      (appointment.status !== "SCHEDULED" && appointment.status !== "CONFIRMED")
+    ) {
       return;
     }
 
     const startsAt = `${dayDate}T${slotValue}:00`;
-    const currentStart = new Date(appointment.startsAt);
-    const currentSlot = `${String(currentStart.getHours()).padStart(2, '0')}:${String(currentStart.getMinutes()).padStart(2, '0')}`;
-    const currentDay = toLocalDateKey(currentStart);
+    const currentStart = clinicInstant(appointment.startsAt);
+    const currentSlot = clinicTime(appointment.startsAt);
+    const currentDay = clinicDate(currentStart);
     const sameSlot = currentSlot === slotValue && currentDay === dayDate;
 
     if (!sameSlot && onReschedule) {
@@ -147,14 +165,23 @@ export default function AgendaScheduleGrid({
     <div className="schedule-shell">
       <div className="schedule-hint">
         {canEdit
-          ? 'Arraste os agendamentos entre dias e horários. Clique em um horário vazio para criar uma nova consulta.'
-          : 'Clique em um agendamento para ver detalhes e confirmar atendimento.'}
+          ? "Abra uma consulta para ver detalhes ou remarcar. Selecione um horário vazio para criar uma consulta. Também é possível arrastar."
+          : "Clique em um agendamento para ver detalhes e confirmar atendimento."}
       </div>
 
-      <div className="schedule-grid" style={{ '--schedule-cols': 7 } as React.CSSProperties}>
+      <div
+        className="schedule-grid"
+        role="region"
+        aria-label="Agenda semanal com rolagem horizontal"
+        tabIndex={0}
+        style={{ "--schedule-cols": 7 } as React.CSSProperties}
+      >
         <div className="schedule-corner" />
         {weekDays.map((day) => (
-          <div key={day.date} className={`schedule-header ${day.isToday ? 'is-today' : ''}`}>
+          <div
+            key={day.date}
+            className={`schedule-header ${day.isToday ? "is-today" : ""}`}
+          >
             <strong>{day.label}</strong>
             <span className="schedule-day-number">{day.dayNumber}</span>
           </div>
@@ -162,7 +189,11 @@ export default function AgendaScheduleGrid({
 
         <div className="schedule-time-column">
           {slots.map((slot) => (
-            <div key={slot.value} className="schedule-time-label" style={{ height: ROW_HEIGHT }}>
+            <div
+              key={slot.value}
+              className="schedule-time-label"
+              style={{ height: ROW_HEIGHT }}
+            >
               {slot.label}
             </div>
           ))}
@@ -175,7 +206,7 @@ export default function AgendaScheduleGrid({
           return (
             <div
               key={day.date}
-              className={`schedule-column ${day.isToday ? 'is-today' : ''}`}
+              className={`schedule-column ${day.isToday ? "is-today" : ""}`}
               style={{ height: slots.length * ROW_HEIGHT }}
             >
               {slots.map((slot) => {
@@ -184,7 +215,7 @@ export default function AgendaScheduleGrid({
                   <button
                     key={targetKey}
                     type="button"
-                    className={`schedule-slot ${dropTarget === targetKey ? 'is-drop-target' : ''}`}
+                    className={`schedule-slot ${dropTarget === targetKey ? "is-drop-target" : ""}`}
                     style={{ height: ROW_HEIGHT }}
                     onClick={() =>
                       onSlotClick?.({
@@ -209,31 +240,39 @@ export default function AgendaScheduleGrid({
               })}
 
               {columnAppointments.map((appointment) => {
-                const start = new Date(appointment.startsAt);
-                const index = slotIndexFromDate(start);
+                const start = clinicInstant(appointment.startsAt);
+                const index = slotIndexFromDate(
+                  new Date(`2000-01-01T${clinicTime(appointment.startsAt)}:00`),
+                );
                 if (index < 0 || index >= slots.length) return null;
 
                 const durationSlots = Math.max(
                   1,
                   Math.round(
-                    (new Date(appointment.endsAt).getTime() - start.getTime()) / (SLOT_MINUTES * 60 * 1000),
+                    (new Date(appointment.endsAt).getTime() - start.getTime()) /
+                      (SLOT_MINUTES * 60 * 1000),
                   ),
                 );
 
                 const draggable =
                   canEdit &&
                   !isRescheduling &&
-                  (appointment.status === 'SCHEDULED' || appointment.status === 'CONFIRMED');
-                const layout = dayLayout.get(appointment.id) ?? { columnIndex: 0, columnCount: 1 };
+                  (appointment.status === "SCHEDULED" ||
+                    appointment.status === "CONFIRMED");
+                const layout = dayLayout.get(appointment.id) ?? {
+                  columnIndex: 0,
+                  columnCount: 1,
+                };
                 const gap = 2;
                 const horizontalPadding = 6;
                 const widthExpression = `calc((100% - ${horizontalPadding * 2}px - ${(layout.columnCount - 1) * gap}px) / ${layout.columnCount})`;
                 const leftExpression = `calc(${horizontalPadding}px + ${layout.columnIndex} * (${widthExpression} + ${gap}px))`;
 
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={appointment.id}
-                    className={`schedule-event ${statusClass[appointment.status] ?? 'schedule-event-scheduled'} ${draggingId === appointment.id ? 'is-dragging' : ''}`}
+                    className={`schedule-event ${statusClass[appointment.status] ?? "schedule-event-scheduled"} ${draggingId === appointment.id ? "is-dragging" : ""}`}
                     style={{
                       top: index * ROW_HEIGHT + 3,
                       height: durationSlots * ROW_HEIGHT - 6,
@@ -246,8 +285,11 @@ export default function AgendaScheduleGrid({
                         event.preventDefault();
                         return;
                       }
-                      event.dataTransfer.setData('text/appointment-id', appointment.id);
-                      event.dataTransfer.effectAllowed = 'move';
+                      event.dataTransfer.setData(
+                        "text/appointment-id",
+                        appointment.id,
+                      );
+                      event.dataTransfer.effectAllowed = "move";
                       setDraggingId(appointment.id);
                     }}
                     onDragEnd={() => {
@@ -260,11 +302,32 @@ export default function AgendaScheduleGrid({
                     }}
                   >
                     <strong>{appointment.patient.name}</strong>
-                    <span>{formatTimeRange(appointment.startsAt, appointment.endsAt)}</span>
-                    {appointment.procedure ? <span className="schedule-procedure">{appointment.procedure.name}</span> : null}
-                    {showProfessionalName ? <em>{appointment.professional.name}</em> : null}
-                    <small>{appointment.status === 'CANCELLED' ? 'Cancelado' : canEdit ? 'Arraste para remarcar' : 'Clique para detalhes'}</small>
-                  </div>
+                    <span>
+                      {formatTimeRange(
+                        appointment.startsAt,
+                        appointment.endsAt,
+                      )}
+                    </span>
+                    {appointment.procedure ? (
+                      <span className="schedule-procedure">
+                        {appointment.procedure.name}
+                      </span>
+                    ) : null}
+                    {showProfessionalName ? (
+                      <em>{appointment.professional.name}</em>
+                    ) : null}
+                    <small>
+                      {
+                        {
+                          PENDING: "Aguardando aceite",
+                          SCHEDULED: "Agendada",
+                          CONFIRMED: "Confirmada (legado)",
+                          COMPLETED: "Realizada",
+                          CANCELLED: "Cancelada",
+                        }[appointment.status]
+                      }
+                    </small>
+                  </button>
                 );
               })}
             </div>

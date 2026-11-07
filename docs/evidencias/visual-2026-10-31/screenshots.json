@@ -1,0 +1,51 @@
+[
+  {
+    "file": "agenda-desktop.webp",
+    "width": 1440,
+    "height": 1119,
+    "bytes": 58350,
+    "sha256": "a9b93fde564e8a0b9af88a900d07b78720cde3bef6722db50cf2f6577fa12ac5"
+  },
+  {
+    "file": "booking-review-mobile.webp",
+    "width": 375,
+    "height": 1811,
+    "bytes": 65066,
+    "sha256": "f668f7a60f8099c8222c1e5ea12caa4aa6cf3221ffe61bc891cf0f5ad59be163"
+  },
+  {
+    "file": "footer-desktop.webp",
+    "width": 1440,
+    "height": 440,
+    "bytes": 25888,
+    "sha256": "b23a7379ff3a672f79c99e55a91b0c648ad089ae032c0f1b5fec38d43e1ab5c8"
+  },
+  {
+    "file": "footer-mobile.webp",
+    "width": 375,
+    "height": 1072,
+    "bytes": 24728,
+    "sha256": "186c941896d2cec75d80af205afa69c5520873a41edf9a6794db57e86c347e9c"
+  },
+  {
+    "file": "home-desktop.webp",
+    "width": 1440,
+    "height": 1000,
+    "bytes": 71928,
+    "sha256": "b66f1dd95d4195b94d1e58b72a1e838abc5780d5e1b517b23a8ea214455f4b25"
+  },
+  {
+    "file": "home-full-desktop.webp",
+    "width": 1440,
+    "height": 3872,
+    "bytes": 286496,
+    "sha256": "48f808997a53b5e06b9f5299dd3a8f90b53660ce76fd7dcc622e0b9eadc46c80"
+  },
+  {
+    "file": "home-mobile.webp",
+    "width": 375,
+    "height": 6504,
+    "bytes": 243516,
+    "sha256": "8fc73addcbe1609c0b0d9f62a0f9dbf357abf67dcfd92c13c0d595699f4e29b4"
+  }
+]

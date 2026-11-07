@@ -19,3 +19,6 @@
 
 .vercel
 .env*
+
+**/dist-ux-demo/
+frontend/test-results/

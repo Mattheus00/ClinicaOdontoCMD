@@ -9,7 +9,10 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "dev:ux": "vite --mode ux-demo --host 127.0.0.1",
+    "build:ux": "tsc -b && vite build --mode ux-demo",
+    "preview:ux": "node scripts/serve-ux.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

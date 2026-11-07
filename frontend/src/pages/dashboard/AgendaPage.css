@@ -1,6 +1,11 @@
 .agenda-page {
   max-width: 100%;
-  overflow-x: hidden;
+}
+.agenda-control-label {
+  grid-column: 1 / -1;
+  color: #444748;
+  font-size: 0.8125rem;
+  font-weight: 600;
 }
 
 .appointment-whatsapp-hint {
@@ -181,4 +186,174 @@
   font-weight: 400;
   color: var(--color-muted, #6b7280);
   line-height: 1.4;
+}
+
+.agenda-page .page-header {
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.agenda-page .page-title {
+  font-family: var(--font-family);
+}
+.agenda-zone {
+  font-size: 0.875rem;
+  color: #515353;
+  margin-bottom: 12px;
+}
+.agenda-rule-note {
+  padding: 12px 16px;
+  border-left: 3px solid #a68b5b;
+  background: #eee7d9;
+  color: #59431b;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.agenda-page .agenda-toolbar {
+  flex-wrap: wrap;
+  box-shadow: none;
+  padding: 16px;
+}
+.agenda-page .agenda-toolbar-main {
+  flex-wrap: wrap;
+}
+.agenda-page .agenda-filter {
+  flex-shrink: 1;
+  font-size: 0.875rem;
+  min-width: 0;
+}
+.agenda-page .agenda-week-range {
+  font-size: 0.875rem;
+}
+.agenda-date {
+  display: grid;
+  gap: 6px;
+  font-size: 0.875rem;
+}
+.agenda-date input {
+  max-width: 100%;
+  min-width: 0;
+}
+.agenda-view-controls {
+  display: flex;
+  align-items: end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.agenda-view-controls label {
+  display: grid;
+  gap: 6px;
+}
+.agenda-view-controls p {
+  font-size: 0.875rem;
+  color: #515353;
+  padding-block: 12px;
+}
+.agenda-view-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.agenda-view-switch [aria-pressed="true"] {
+  background: #eee7d9;
+  border-color: #755a25;
+  color: #59431b;
+}
+.agenda-page .btn,
+.agenda-page .btn-sm,
+.agenda-page input,
+.agenda-page select {
+  min-height: 44px;
+}
+.agenda-page .input-field {
+  border-color: #807c75;
+}
+.agenda-page .agenda-mobile-list {
+  gap: 24px;
+}
+.agenda-page .agenda-mobile-card {
+  font-family: inherit;
+}
+.agenda-page .agenda-mobile-card-time strong {
+  font-size: 1.125rem;
+  font-variant-numeric: tabular-nums;
+}
+.agenda-page .agenda-mobile-card-time span,
+.agenda-page .agenda-mobile-card-body > span:not(.badge),
+.agenda-page .agenda-mobile-empty {
+  font-size: 0.875rem;
+}
+.agenda-page .agenda-mobile-card-body strong {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.agenda-page .agenda-mobile-card.status-cancelled {
+  opacity: 1;
+}
+.agenda-page .badge {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  white-space: normal;
+}
+.agenda-page .schedule-event {
+  font-family: inherit;
+  text-align: left;
+  border-width: 1px;
+  cursor: pointer;
+}
+.agenda-page .schedule-time-label {
+  color: #515353;
+  font-size: 0.8125rem;
+}
+.agenda-page .schedule-event:focus-visible {
+  z-index: 10;
+  outline: 3px solid #755a25;
+}
+.appointment-reschedule {
+  display: grid;
+  gap: 12px;
+  padding-block: 16px;
+  border-block: 1px solid #ddd9d1;
+}
+.appointment-reschedule label {
+  display: grid;
+  gap: 8px;
+}
+.appointment-reschedule input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #807c75;
+}
+@media (max-width: 768px) {
+  .agenda-page .page-header {
+    align-items: start;
+    gap: 12px;
+  }
+  .agenda-page .page-header > .btn {
+    width: 100%;
+  }
+  .agenda-page .agenda-week-controls .btn {
+    min-height: 44px;
+  }
+  .agenda-view-controls > label {
+    width: 100%;
+  }
+}
+.agenda-mobile-filters {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.agenda-mobile-filters summary {
+  min-height: 44px;
+  padding: .625rem .75rem;
+  cursor: pointer;
+}
+.agenda-mobile-filters > div {
+  display: grid;
+  gap: .75rem;
+  padding: .75rem;
 }

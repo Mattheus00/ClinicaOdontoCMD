@@ -88,7 +88,10 @@
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
   }
 
   .mobile-topbar-logout:active {
@@ -96,4 +99,12 @@
     border-color: rgba(117, 90, 37, 0.28);
     color: var(--color-secondary);
   }
+}
+
+.mobile-topbar-logout {
+  min-height: 44px;
+  min-width: 44px;
+}
+.mobile-topbar-copy span {
+  font-size: 0.875rem;
 }

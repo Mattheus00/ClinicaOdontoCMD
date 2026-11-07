@@ -1,0 +1,37 @@
+[
+  {
+    "file": "clinic-detail-400.webp",
+    "width": 400,
+    "height": 500,
+    "bytes": 16826,
+    "sha256": "977f85a834910a73be4de0a425e17ed88a1e315e42194a605c1ae44023faa67e"
+  },
+  {
+    "file": "clinic-detail-800.webp",
+    "width": 800,
+    "height": 1000,
+    "bytes": 44486,
+    "sha256": "dc15450bd0e082973f7a0b18050d8a1b5efcab11bc8dbb61cfa01b78899a6554"
+  },
+  {
+    "file": "clinic-room-1200.webp",
+    "width": 1200,
+    "height": 1000,
+    "bytes": 58110,
+    "sha256": "014a78ce89462c23a635622acc7c00ba54ba2fa42665ace3df03aa13defce084"
+  },
+  {
+    "file": "clinic-room-480.webp",
+    "width": 480,
+    "height": 400,
+    "bytes": 16026,
+    "sha256": "cdf672d739c70b88d9a41c102155b03bad733f3e0d2a8e5286258da651fd9d8d"
+  },
+  {
+    "file": "clinic-room-800.webp",
+    "width": 800,
+    "height": 667,
+    "bytes": 32902,
+    "sha256": "52fd563eb4f6807b0ef122265f6b2104ac526dfed6be95f9b9b8e703cd4ddd79"
+  }
+]

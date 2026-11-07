@@ -1,0 +1,74 @@
+[
+  {
+    "file": "agenda-1440.webp",
+    "width": 1440,
+    "height": 1019,
+    "bytes": 56932,
+    "format": "WebP",
+    "sha256": "0a83a91fffa1e5e2ce99c25ba0efab14dc08b3ad642c25c105b5deeefdbb997e"
+  },
+  {
+    "file": "agenda-375.webp",
+    "width": 375,
+    "height": 1501,
+    "bytes": 48786,
+    "format": "WebP",
+    "sha256": "d7541cc1147a2138b2e0d4803e1fc56505dce4b21e7d2d7892e9d829bf12ed1e"
+  },
+  {
+    "file": "booking-1440.webp",
+    "width": 1440,
+    "height": 1352,
+    "bytes": 62690,
+    "format": "WebP",
+    "sha256": "49e2f8c37625ed772474b95246f658fd10f8eb389eebdfda52d5ec80b01f09b4"
+  },
+  {
+    "file": "booking-375.webp",
+    "width": 375,
+    "height": 1866,
+    "bytes": 57692,
+    "format": "WebP",
+    "sha256": "d61ddaca70aa676d4572977788049f021612c59028a6553eccf6dc179cb70738"
+  },
+  {
+    "file": "booking-filled-1440.webp",
+    "width": 1440,
+    "height": 1510,
+    "bytes": 74530,
+    "format": "WebP",
+    "sha256": "dd8239bada344cb1a4521f39f8d9f9303a9a29601df351e76bab7bcafb2f8e93"
+  },
+  {
+    "file": "booking-filled-375.webp",
+    "width": 375,
+    "height": 2125,
+    "bytes": 68872,
+    "format": "WebP",
+    "sha256": "78948e86fc276e881ee78a69923118b0b392696bd8e5c5f85fb23aced081f63a"
+  },
+  {
+    "file": "booking-success-375.webp",
+    "width": 375,
+    "height": 1270,
+    "bytes": 43008,
+    "format": "WebP",
+    "sha256": "08c77573b813496ad2c624d647b1b7dc47078f226e2475b786aad7a2aae45a77"
+  },
+  {
+    "file": "home-1440.webp",
+    "width": 1440,
+    "height": 2352,
+    "bytes": 151940,
+    "format": "WebP",
+    "sha256": "d869168bfabdf422ba1177120412283d0c0ef926b34b77b1564faa7efab7c808"
+  },
+  {
+    "file": "home-375.webp",
+    "width": 375,
+    "height": 3668,
+    "bytes": 132456,
+    "format": "WebP",
+    "sha256": "8e55efa358d32fead80fbfdb9464ff525e0a889af2443ec14793c03f5f6867e2"
+  }
+]

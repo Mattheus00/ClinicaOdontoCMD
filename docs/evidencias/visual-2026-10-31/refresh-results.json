@@ -1,0 +1,100 @@
+{
+  "date": "2026-11-01T00:16:01.719Z",
+  "browser": "151.0.7922.34",
+  "results": [
+    {
+      "name": "Âncoras internas apontam para seções existentes",
+      "passed": true
+    },
+    {
+      "name": "FAQ apresenta seis respostas sem interação adicional",
+      "passed": true
+    },
+    {
+      "name": "clinic-room-480: WebP servido abaixo de 300 KB",
+      "passed": true
+    },
+    {
+      "name": "clinic-room-800: WebP servido abaixo de 300 KB",
+      "passed": true
+    },
+    {
+      "name": "clinic-room-1200: WebP servido abaixo de 300 KB",
+      "passed": true
+    },
+    {
+      "name": "clinic-detail-400: WebP servido abaixo de 300 KB",
+      "passed": true
+    },
+    {
+      "name": "clinic-detail-800: WebP servido abaixo de 300 KB",
+      "passed": true
+    },
+    {
+      "name": "Fotos carregadas, dimensionadas e com descrição",
+      "passed": true
+    },
+    {
+      "name": "Alterar horário leva foco ao campo correspondente",
+      "passed": true
+    },
+    {
+      "name": "Alterar horário preserva identificação e horário",
+      "passed": true
+    },
+    {
+      "name": "Alterar dados leva foco ao campo correspondente",
+      "passed": true
+    },
+    {
+      "name": "Alterar dados preserva identificação e horário",
+      "passed": true
+    },
+    {
+      "name": "Alterar consulta leva foco ao campo correspondente",
+      "passed": true
+    },
+    {
+      "name": "Alterar consulta preserva identificação e horário",
+      "passed": true
+    },
+    {
+      "name": "Ajuda posiciona a nova aba na seção de dúvidas",
+      "passed": true
+    },
+    {
+      "name": "Ajuda abre FAQ sem perder a revisão",
+      "passed": true
+    },
+    {
+      "name": "Reload preserva data, profissional e situação",
+      "passed": true
+    },
+    {
+      "name": "Reload preserva período semanal",
+      "passed": true
+    },
+    {
+      "name": "Voltar preserva filtros sem dados pessoais na URL",
+      "passed": true
+    },
+    {
+      "name": "Grade semanal preservada após recarregar",
+      "passed": true
+    },
+    {
+      "name": "Filtros inválidos não quebram a agenda",
+      "passed": true
+    },
+    {
+      "name": "Sem requisições externas no carregamento ou ajuda",
+      "passed": true
+    },
+    {
+      "name": "Sem erros de JavaScript",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "external": []
+}

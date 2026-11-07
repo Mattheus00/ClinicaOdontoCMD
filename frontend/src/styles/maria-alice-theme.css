@@ -9,8 +9,8 @@
   --color-surface-low: #f5f3f3;
   --color-border: #c4c7c7;
   --color-border-hover: #b8a898;
-  --color-primary: #000000;
-  --color-primary-hover: #755a25;
+  --color-primary: #755a25;
+  --color-primary-hover: #59431b;
   --color-primary-glow: rgba(117, 90, 37, 0.12);
   --color-secondary: #755a25;
   --color-secondary-soft: #fdd897;
@@ -20,9 +20,9 @@
   --color-danger: #ba1a1a;
   --color-text: #1b1c1c;
   --color-text-secondary: #444748;
-  --color-text-muted: #747878;
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: 'Playfair Display', Georgia, serif;
+  --color-text-muted: #5c6060;
+  --font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 8px;
@@ -164,7 +164,7 @@ a.btn-whatsapp:hover {
 }
 
 .btn-primary:hover {
-  background: var(--color-secondary);
+  background: var(--color-primary-hover);
   color: #fff;
 }
 
@@ -216,7 +216,9 @@ a.btn-whatsapp:hover {
   font-family: var(--font-family);
   font-size: 14px;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .input-field::placeholder {
@@ -509,7 +511,8 @@ a.btn-whatsapp:hover {
 
   .main-content {
     margin-left: 0;
-    padding: calc(76px + env(safe-area-inset-top)) 14px calc(72px + env(safe-area-inset-bottom));
+    padding: calc(76px + env(safe-area-inset-top)) 14px
+      calc(72px + env(safe-area-inset-bottom));
     overflow-x: hidden;
   }
 

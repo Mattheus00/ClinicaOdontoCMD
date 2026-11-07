@@ -1,367 +1,455 @@
-import { useEffect, useId, useState } from 'react';
-import { Camera, Eye, Globe, Mail, MapPin, Menu, Microscope, Phone, Settings2, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import './LandingPage.css';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { Menu, X, ArrowUpRight, ArrowUp } from "lucide-react";
+import { Link } from "react-router-dom";
+import { bookingPath, isUxDemo } from "../../lib/experience";
+import "./LandingPage.css";
 
-const LOGO = '/brand/maria-alice-logo.png';
-
+const LOGO = "/brand/maria-alice-logo.webp";
 const NAV = [
-  { href: '#tratamentos', label: 'Tratamentos' },
-  { href: '#tecnologia', label: 'Tecnologia' },
-  { href: '#resultados', label: 'Resultados' },
-  { href: '#contato', label: 'Contato' },
+  { href: "#avaliacao", label: "A avaliação" },
+  { href: "#como-funciona", label: "Como funciona" },
+  { href: "#duvidas", label: "Dúvidas frequentes" },
 ];
-
-const TREATMENTS = [
+const STEPS = [
   {
-    title: 'Facetas em Porcelana Artesanais',
-    description:
-      'Lâminas personalizadas com precisão para harmonizar forma, cor e alinhamento, preservando a naturalidade e a integridade estrutural.',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDkMGfDTIqdsjKqUcWeZtdftWcEDmNDf6gjhW-PDClaQJL6OQ5JxSUmIM4lh5iMPGRiXMQxaHUJnn-a245Rsvwq7M_7EeYeUkFaVY0XqbU5D_XvlW91D3OX1C23pWdHZkTZqWQ8RFakcNIiRlV-Qc7UjjiUC738khN5wTqB1PAfcKfAiDslu3frl6-SfCq6jwa_462-U9qz3s-58Z9Y7B5_ZG_vreL8YSErPLI_FAaycTAW5bIrhrvSPM57mbBNMQQJ_ydJQqNC2E0',
-    cta: 'Conhecer facetas',
+    title: "Escolha seu horário",
+    text: "Selecione a avaliação, o profissional e um horário disponível.",
   },
   {
-    title: 'Invisalign® Avançado',
-    description:
-      'Ortodontia discreta com planejamento digital 3D para um caminho confortável e invisível até o sorriso ideal.',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAoNYAfGerOyxqlqW3_t5EvsOVGgQpOWyrotLoB4S4gbGGExFDZNG-b2naJS9jHLpD8KTaMdDDTYMNbqtAzbH14jBcXAu1hDv2nfOyxrmJlK17fIwtXuaWXKGRzu3pZ5QtUQ-i9UnkakGdSssB7Wz-vwAc7R0kQWfhUyBGUqkKrhRItjquq4_Lld66ceo31NVuWiNFxCYcJN37NwO2sri265WUFn_aEnrVt675D-HJoXw2WZdWBdFJim-TW913y0m7udhpxDbAx880',
-    cta: 'Descobrir Invisalign',
+    title: "Revise com calma",
+    text: "Confira suas escolhas e os dados de contato antes de enviar.",
+  },
+  {
+    title: "Aguarde o aceite",
+    text: "A equipe analisa a solicitação. O envio ainda não confirma o atendimento.",
   },
 ];
-
-const TECH_FEATURES = [
+const FAQ = [
   {
-    icon: Microscope,
-    title: 'Escaneamento intraoral 3D',
-    text: 'Moldagens digitais de alta precisão, sem o desconforto dos moldes tradicionais.',
+    question: "Como solicito uma avaliação?",
+    answer:
+      "Escolha o serviço, o profissional, a data e um dos horários disponíveis. Preencha a identificação, revise suas escolhas e envie a solicitação.",
   },
   {
-    icon: Eye,
-    title: 'Simulação do sorriso',
-    text: 'Visualize o resultado final antes mesmo da primeira sessão de tratamento.',
+    question: "O envio já confirma meu horário?",
+    answer:
+      "Não. O pedido fica aguardando aceite da equipe. Nesta demonstração, ainda não existe uma área do paciente para acompanhar a solicitação e nenhuma mensagem é enviada.",
   },
   {
-    icon: Settings2,
-    title: 'Restauração CAD/CAM',
-    text: 'Design e fresagem internos para coroas e facetas com precisão no mesmo dia.',
-  },
-];
-
-const GALLERY = [
-  {
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBX99VjoN03pZxCZEGoQ5C-SRmAOs7gOs2YxNoUAyHqdKwtmSmSfo4rTfYbfgmLtp-HI0YmKfryYk0Xtr-wogGfN0MoMAb06pKPjO4u47P3SDfi6CxJmfQ1O8kyd6x712B2JV3uZKBj7_3CoMovW7ib-nUOIpvOWMPaWBgRc5Z9LyDuR-EMs7gDFM6Q3k4Nno0CL77UBf_AXxYouX8sShOT0d4M0NYPGGKPiyaOPoKFdeCnysAw2pXkx8cNMvA-x3KU3hTlb4o6KjQ',
-    label: 'Caso 042',
-    className: 'gallery-item--hero',
+    question: "Existe pagamento pelo site?",
+    answer:
+      "Não há cobrança ou pagamento online nesta demonstração. Valores e condições de um atendimento real precisam ser definidos após avaliação.",
   },
   {
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBHzbhwa-M2Dsfltcg3g4Sd7w4tAOOPwCrTfAhR3kQbaBp_qM6jBKIbhy4M2kXA4C9jsM5uM2O08GNTgkRuVUGEYTj6D-_C2wAOolxnPUoOsNxiTV_Qht1iFOo88V8vUHkHAiaVgqCjO-wLdJoMEB4lt5XANzq-L8mv5wYS_eHguutQBMp8d5eHlB7GaEf4q8KVo3mzxW2BMOOlkHwlvnfnVHRsCQ6hMtUmKB3vwVw2zHrn-LdyrPFdGWdxaRzAfwgn7JUiHlFq31Y',
-    className: 'gallery-item--sm',
+    question: "Como cancelar ou remarcar?",
+    answer:
+      "Nesta versão, essas ações são feitas pela recepção na agenda. O paciente ainda não pode alterar o pedido pelo site. A política de prazos será definida antes de um uso real.",
   },
   {
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAyaIFUPt2QrxKNgrDuvJermTY1ys8_YYSjJ39JDelutsw0DgKsmCZSzSCUgF81Dsyvye68w0JHg3OhwnvYUTBaqu22WFVd1aY6AbIiuib2RQcOQxFVuE45_FEon3uFoGvYI4lXpRe3MZbVMeT9bzjHHTgOtaPk13lM15g9xxp-JVTtav5fA5UyqEvQHT8962olPsOZrcA1lKbF_wDOq4ZYWkoUAfnPHDYCKcl14dCOvEAwLyuAPqCHdbY6SIMCPC75JOtAMqPYBkk',
-    className: 'gallery-item--tall',
+    question: "Quais dados devo preencher?",
+    answer:
+      "Para explorar a demonstração, use nome e telefone fictícios. O e-mail é opcional. Não informe dados pessoais reais ou informações de saúde.",
   },
   {
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCh7N_RNHz5e6hmDCqzRJFOETXZ7ctLP43ETrjlfOHhAPLi-F1cWR9a5N3-ih9JLkke7l7K41DtTKig3RnA8_lBhlg4Z3o79vDtfvcLqHkuny0VQ6WZ1pjls8-PWcZK_JD70nRvd9bYunS8O0XvG8qdcRieZfI-vt-ZNhSocoXERZZqiDuVrkJvTQH8__VbniXfeYyUwigIjDOCb4e3HcMhWFFkGbVN1USk4JF7JuXxFxOHg8jjMADWHN-YV4N9KvnHn51YqF0xsAs',
-    className: 'gallery-item--sm',
+    question: "Esta clínica oferece atendimento real?",
+    answer:
+      "Não. Maria Alice é uma clínica fictícia neste projeto. As fotos são de banco de imagens e não representam suas instalações ou equipe.",
   },
 ];
 
-const FOOTER_LINKS = ['Política de privacidade', 'Termos de uso', 'Código de ética', 'Suporte'];
+const HERO_SLIDES = [
+  { label: "Avaliação", title: "Seu cuidado começa com uma conversa.", copy: "A avaliação é o primeiro passo para entender o que seu sorriso precisa.", image: "/images/clinic-room-800.webp", srcSet: "/images/clinic-room-480.webp 480w, /images/clinic-room-800.webp 800w, /images/clinic-room-1200.webp 1200w", alt: "Sala odontológica iluminada com cadeira de atendimento." },
+  { label: "Ambiente", title: "O cuidado está nos detalhes.", copy: "Conheça o ambiente que inspira esta demonstração.", image: "/images/clinic-detail-800.webp", srcSet: "/images/clinic-detail-400.webp 400w, /images/clinic-detail-800.webp 800w", alt: "Detalhe dos equipamentos de um consultório odontológico." },
+  { label: "Agendamento", title: "O próximo passo, no seu tempo.", copy: "Escolha um horário, confira os dados e envie sua solicitação à equipe.", image: "/images/clinic-room-800.webp", srcSet: "/images/clinic-room-480.webp 480w, /images/clinic-room-800.webp 800w, /images/clinic-room-1200.webp 1200w", alt: "Vista ampla de um consultório odontológico." },
+];
 
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuId = useId();
-
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [dark, setDark] = useState(() => {
+    try { return localStorage.getItem("maria-alice-theme") === "dark"; }
+    catch { return false; }
+  });
+  const [playing, setPlaying] = useState(() =>
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+  const [hovered, setHovered] = useState(false);
+  const rotating = playing && !hovered;
   useEffect(() => {
-    const onResize = () => {
-      if (window.matchMedia('(min-width: 769px)').matches) {
-        setMenuOpen(false);
-      }
+    if (!rotating) return;
+    const timer = window.setTimeout(() => {
+      setSlideIndex((index) => (index + 1) % HERO_SLIDES.length);
+    }, 5000);
+    return () => window.clearTimeout(timer);
+  }, [rotating, slideIndex]);
+  const slide = HERO_SLIDES[slideIndex];
+  const moveSlide = (direction: number) => setSlideIndex((index) =>
+    (index + direction + HERO_SLIDES.length) % HERO_SLIDES.length,
+  );
+  const toggleTheme = () => {
+    setDark(!dark);
+    try { localStorage.setItem("maria-alice-theme", dark ? "light" : "dark"); }
+    catch { /* The toggle remains usable when storage is unavailable. */ }
+  };
+  const menuId = useId();
+  const toggle = useRef<HTMLButtonElement>(null);
+  const hero = useRef<HTMLElement>(null);
+  const header = useRef<HTMLElement>(null);
+  const notice = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const section = hero.current;
+    if (!section) return;
+    const updateInset = () => {
+      const top = section.getBoundingClientRect().top + window.scrollY;
+      section.style.setProperty("--hero-top", `${top}px`);
     };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    const observer = new ResizeObserver(updateInset);
+    const demoBar = isUxDemo ? document.querySelector(".ux-demo-bar") : null;
+    for (const element of [header.current, notice.current, demoBar]) {
+      if (element) observer.observe(element);
+    }
+    updateInset();
+    window.addEventListener("resize", updateInset);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateInset);
+    };
   }, []);
 
+  const teamPath = isUxDemo ? "/agenda" : "/login";
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [menuOpen]);
-
-  const closeMenu = () => setMenuOpen(false);
-
+    // The route loads lazily; the browser may resolve an incoming anchor before its section exists.
+    const target = window.location.hash.slice(1);
+    if (target) document.getElementById(target)?.scrollIntoView({ block: "start" });
+  }, []);
   return (
-    <div className={`landing${menuOpen ? ' is-menu-open' : ''}`}>
-      <header className="landing-nav-bar">
+    <div
+      className="landing"
+      data-theme={dark ? "dark" : "light"}
+      id="inicio"
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && menuOpen) {
+          setMenuOpen(false);
+          toggle.current?.focus();
+        }
+      }}
+    >
+      <a className="skip-link" href="#conteudo">
+        Pular para o conteúdo
+      </a>
+      <div ref={notice} className="landing-demo">
+        Clínica fictícia · Demonstração sem atendimento real
+      </div>
+      <header ref={header} className="landing-nav-bar">
         <div className="landing-wrap landing-nav-inner">
-          <Link to="/" className="landing-brand" onClick={closeMenu}>
-            <img src={LOGO} alt="Maria Alice Odontologia Especializada" />
+          <Link
+            to="/"
+            className="landing-brand"
+            aria-label="Maria Alice, início"
+          >
+            <img
+              src={LOGO}
+              width="256"
+              height="256"
+              alt=""
+            />
+            <span><strong>Maria Alice</strong><small>Odontologia especializada</small></span>
           </Link>
-
           <nav className="landing-menu" aria-label="Navegação principal">
-            {NAV.map((item, index) => (
-              <a key={item.href} href={item.href} className={index === 0 ? 'is-active' : undefined}>
+            {NAV.map((item) => (
+              <a key={item.href} href={item.href}>
                 {item.label}
               </a>
             ))}
           </nav>
-
           <div className="landing-nav-actions">
-            <Link to="/login" className="landing-btn landing-btn-outline landing-portal-link">
-              Área da clínica
+            <button type="button" className="landing-theme-toggle" aria-label="Tema escuro" aria-pressed={dark} onClick={toggleTheme}>
+              {dark ? "Claro" : "Escuro"}
+            </button>
+            <Link
+              to={teamPath}
+              reloadDocument={isUxDemo}
+              className="landing-team"
+            >
+              Acesso da equipe <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
-            <a href="#contato" className="landing-btn landing-btn-primary" onClick={closeMenu}>
-              Fale conosco
-            </a>
             <button
+              ref={toggle}
               type="button"
               className="landing-menu-toggle"
-              aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+              aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
               aria-expanded={menuOpen}
               aria-controls={menuId}
-              onClick={() => setMenuOpen((open) => !open)}
+              onClick={() => setMenuOpen(!menuOpen)}
             >
-              {menuOpen ? <X size={22} strokeWidth={1.75} /> : <Menu size={22} strokeWidth={1.75} />}
+              {menuOpen ? (
+                <X aria-hidden="true" />
+              ) : (
+                <Menu aria-hidden="true" />
+              )}
             </button>
           </div>
         </div>
-
-        <div
+        <nav
           id={menuId}
-          className={`landing-mobile-panel${menuOpen ? ' is-open' : ''}`}
-          aria-hidden={!menuOpen}
+          className="landing-mobile-panel"
+          hidden={!menuOpen}
+          aria-label="Menu móvel"
         >
-          <nav className="landing-mobile-nav" aria-label="Menu mobile">
-            {NAV.map((item) => (
-              <a key={item.href} href={item.href} onClick={closeMenu}>
-                {item.label}
-              </a>
-            ))}
-          </nav>
-          <div className="landing-mobile-actions">
-            <Link to="/login" className="landing-btn landing-btn-primary" onClick={closeMenu}>
-              Área da clínica
+          {NAV.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              onClick={() => setMenuOpen(false)}
+            >
+              {item.label}
+            </a>
+          ))}
+          <Link to={bookingPath} onClick={() => setMenuOpen(false)}>
+            Agendar avaliação
+          </Link>
+          <Link to={teamPath} reloadDocument={isUxDemo}>
+            Acesso da equipe
+          </Link>
+        </nav>
+      </header>
+      <main id="conteudo">
+        <section ref={hero} className="landing-hero" aria-roledescription="carrossel" aria-label="Apresentação da clínica"
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          onFocus={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget) &&
+                event.currentTarget.matches(":has(:focus-visible)")) {
+              setPlaying(false);
+            }
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+              event.preventDefault();
+              moveSlide(event.key === "ArrowLeft" ? -1 : 1);
+            }
+          }}>
+          <figure className="landing-hero-media">
+            <img key={slideIndex} src={slide.image} srcSet={slide.srcSet}
+              sizes="100vw"
+              width="1200" height="1000" fetchPriority={slideIndex === 0 ? "high" : "auto"}
+              alt={slide.alt} />
+            <figcaption>Imagem ilustrativa · Pavel Danilyuk / Pexels</figcaption>
+          </figure>
+          <div className="landing-hero-copy">
+            <div aria-live={rotating ? "off" : "polite"} aria-atomic="true">
+            <div key={slideIndex} className="landing-slide-copy">
+              <p className="landing-intro">{slide.label}</p>
+              <h1>{slide.title}</h1>
+              <p>{slide.copy}</p>
+            </div>
+            </div>
+            <Link to={bookingPath} className="landing-btn landing-btn-primary">
+              Agendar avaliação <ArrowUpRight size={20} aria-hidden="true" />
             </Link>
-            <a href="#contato" className="landing-btn landing-btn-outline" onClick={closeMenu}>
-              Fale conosco
+            <p className="landing-hero-note">A confirmação depende do aceite da equipe.</p>
+          </div>
+          <div className="landing-slide-controls" role="group" aria-label="Controles do carrossel">
+            <button type="button"
+              aria-label={playing ? "Pausar carrossel" : "Reproduzir carrossel"}
+              onClick={() => setPlaying(!playing)}>
+              <span aria-hidden="true">{playing ? "Ⅱ" : "▶"}</span>
+            </button>
+            <button type="button" aria-label="Slide anterior" onClick={() => moveSlide(-1)}>‹</button>
+            {HERO_SLIDES.map((item, index) => (
+              <button type="button" key={item.label} className="landing-slide-dot"
+                aria-label={item.label} aria-current={index === slideIndex ? "true" : undefined}
+                onClick={() => setSlideIndex(index)}><span /></button>
+            ))}
+            <button type="button" aria-label="Próximo slide" onClick={() => moveSlide(1)}>›</button>
+          </div>
+        </section>
+        <section
+          id="avaliacao"
+          className="landing-section landing-evaluation-section"
+        >
+          <div className="landing-wrap landing-evaluation">
+            <div className="landing-evaluation-heading">
+              <h2>Primeiro, entender você.</h2>
+              <p>
+                A avaliação abre espaço para conversar sobre suas necessidades e
+                os próximos passos com um profissional.
+              </p>
+            </div>
+            <div className="landing-evaluation-note">
+              <h3>Uma escolha de cada vez.</h3>
+              <p>
+                Você escolhe o profissional, a data e o horário. Depois, confere
+                tudo antes de enviar o pedido à equipe.
+              </p>
+              <p>
+                Valores e condições dependem de avaliação. Não há pagamento
+                online nesta etapa.
+              </p>
+              <a href="#como-funciona">
+                Veja como solicitar{" "}
+                <ArrowUpRight size={18} aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+        </section>
+        <section id="como-funciona" className="landing-section landing-wrap">
+          <div className="landing-section-heading">
+            <h2>
+              Do primeiro passo
+              <br />
+              ao pedido enviado.
+            </h2>
+            <p>Um caminho curto, com espaço para conferir cada detalhe.</p>
+          </div>
+          <ol className="landing-steps">
+            {STEPS.map((step, index) => (
+              <li key={step.title}>
+                <span className="landing-step-number" aria-hidden="true">
+                  0{index + 1}
+                </span>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+        <section id="clinica" className="landing-section landing-about-section">
+          <div className="landing-wrap landing-about">
+            <figure className="landing-about-photo">
+              <img
+                src="/images/clinic-detail-800.webp"
+                srcSet="/images/clinic-detail-400.webp 400w, /images/clinic-detail-800.webp 800w"
+                sizes="(min-width: 900px) 400px, (min-width: 600px) 50vw, calc(100vw - 40px)"
+                width="800"
+                height="1000"
+                loading="lazy"
+                decoding="async"
+                alt="Detalhe de uma sala de atendimento odontológico; fotografia de banco de imagens."
+              />
+              <figcaption>
+                Imagem ilustrativa · Pavel Danilyuk / Pexels
+              </figcaption>
+            </figure>
+            <div className="landing-about-copy">
+              <h2>
+                O cuidado está
+                <br />
+                nos detalhes.
+              </h2>
+              <p>
+                Da escolha do horário à organização da agenda, este projeto
+                explora uma experiência mais clara para pacientes e equipe.
+              </p>
+              <p>
+                Maria Alice é uma clínica fictícia. Os profissionais, serviços e
+                horários da demonstração são exemplos. As fotografias ilustram o
+                ambiente e serão substituídas por imagens da clínica quando
+                disponíveis.
+              </p>
+              <Link to={bookingPath} className="landing-text-link">
+                Explorar o agendamento{" "}
+                <ArrowUpRight size={20} aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        </section>
+        <section id="duvidas" className="landing-section landing-wrap">
+          <div className="landing-section-heading">
+            <h2>Dúvidas frequentes.</h2>
+            <p>O que você precisa saber antes de solicitar uma avaliação.</p>
+          </div>
+          <div className="landing-faq">
+            {FAQ.map((item) => (
+              <article key={item.question}>
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+        <section
+          id="contato"
+          className="landing-contact landing-wrap"
+          aria-labelledby="contact-title"
+        >
+          <div>
+            <h2 id="contact-title">
+              Informação clara,
+              <br />
+              desde o primeiro contato.
+            </h2>
+            <p>
+              Esta demonstração não possui telefone, endereço ou redes sociais
+              de atendimento. Os canais oficiais serão publicados após
+              validação.
+            </p>
+          </div>
+          <a href="#duvidas" className="landing-btn landing-btn-secondary">
+            Consultar dúvidas frequentes
+          </a>
+        </section>
+      </main>
+      <footer className="landing-footer">
+        <div className="landing-wrap landing-footer-grid">
+          <div className="landing-footer-brand">
+            <img
+              src={LOGO}
+              width="256"
+              height="256"
+              alt="Maria Alice Odontologia Especializada"
+            />
+            <p>
+              Uma experiência de cuidado,
+              <br />
+              desde a primeira escolha.
+            </p>
+            <small>
+              Projeto demonstrativo.
+              <br />
+              Use somente dados fictícios.
+            </small>
+          </div>
+          <nav aria-label="Sobre a clínica">
+            <h2>A clínica</h2>
+            <a href="#avaliacao">A avaliação</a>
+            <a href="#como-funciona">Como funciona</a>
+            <a href="#clinica">Sobre o projeto</a>
+          </nav>
+          <nav aria-label="Agendamento e ajuda">
+            <h2>Agendamento e ajuda</h2>
+            <Link to={bookingPath}>Solicitar uma avaliação</Link>
+            <a href="#duvidas">Dúvidas frequentes</a>
+            <Link to={teamPath} reloadDocument={isUxDemo}>
+              Acesso da equipe
+            </Link>
+          </nav>
+          <div>
+            <h2>Contato e informações</h2>
+            <a href="#contato">Canais de atendimento</a>
+            <a href="#informacoes">Privacidade e termos</a>
+            <a
+              href="https://www.pexels.com/photo/a-dental-equipment-in-the-clinic-6812453/"
+              rel="noreferrer"
+            >
+              Fotografias: Pavel Danilyuk / Pexels{" "}
+              <ArrowUpRight size={14} aria-hidden="true" />
             </a>
           </div>
         </div>
-      </header>
-
-      <main>
-        <section className="landing-hero">
-          <div className="landing-hero-panel">
-            <div className="landing-hero-copy">
-              <span className="landing-kicker">Arquitetura do sorriso de alto padrão</span>
-              <h1>
-                Elevando a excelência odontológica à <em>precisão artística.</em>
-              </h1>
-              <p>
-                Uma experiência clínica boutique onde tecnologia 3D de ponta encontra o toque refinado
-                do design artesanal de sorrisos.
-              </p>
-              <div className="landing-hero-buttons">
-                <a href="#tratamentos" className="landing-btn landing-btn-primary">
-                  Ver tratamentos exclusivos
-                </a>
-                <a href="#tecnologia" className="landing-btn landing-btn-outline">
-                  Nossa tecnologia
-                </a>
-              </div>
-            </div>
-
-            <div className="landing-hero-media" aria-hidden="true">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXZ3KHfsZidIZQVQP-7Ghs0DI6CbbLq2JXNdK9fw9eOnyOmSPedMgAu0Z772AF9l9Mu7a3mRugEyWkIKEqXWrxFJOg4nuu9nTclIjt9RZPolbBbtagZxWUz8y1repQEqLGhXXGTKmaJJVpiZ8J6zblY_LZ0uZx83BK3Z3FbNbYsRMefFknIGbkwjajkjc3oApuAGONUgE_ZtWDj5QE5hcRWZpXgGpSutxizIJj481jSrtXSvmuJs8j4v36Cwal4nUGYJjk0iwWmw4"
-                alt=""
-              />
-            </div>
-          </div>
-        </section>
-
-        <section id="tratamentos" className="landing-section">
-          <div className="landing-wrap">
-            <div className="landing-section-title">
-              <h2>Arquitetura do sorriso exclusiva</h2>
-              <span className="landing-title-line" />
-            </div>
-
-            <div className="landing-treatments">
-              {TREATMENTS.map((item) => (
-                <article key={item.title} className="landing-treatment-card">
-                  <div className="landing-treatment-media">
-                    <img src={item.image} alt={item.title} loading="lazy" />
-                    <div className="landing-treatment-overlay">
-                      <span>{item.cta}</span>
-                    </div>
-                  </div>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="tecnologia" className="landing-section landing-section-muted">
-          <div className="landing-wrap landing-tech-grid">
-            <div className="landing-tech-copy">
-              <span className="landing-kicker">A vantagem digital</span>
-              <h2>Planejamento digital do sorriso e integração 3D</h2>
-              <ul className="landing-tech-list">
-                {TECH_FEATURES.map(({ icon: Icon, title, text }) => (
-                  <li key={title}>
-                    <Icon size={28} strokeWidth={1.5} />
-                    <div>
-                      <h4>{title}</h4>
-                      <p>{text}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="landing-tech-visual">
-              <div className="landing-tech-ring" aria-hidden="true" />
-              <figure>
-                <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXbClWrepNlPLCHgGj1IZQvp8FD9P2hN3utAnhcAlgkOqyqXpkl8L1JQ-K_HVaQt614NUurZh4ebE0eTO19k5qm-4tog7EbuLN-m6X-e43-Fj924jIdIDJW7vo8avQCW6NekbIrI4rolZDN4htBFE6fMRgCmwg8ALwDJUUjOQ8runEkaSgMjs7npxo4J8oYb3ujjybQi_Gh92twdUdXJzHnD1skXo2aOTp2Pjyh54tazbOhYUGihGQx2KXhjNHDtCId7j6NanPWVQ"
-                  alt="Monitor com escaneamento dental 3D"
-                  loading="lazy"
-                />
-              </figure>
-            </div>
-          </div>
-        </section>
-
-        <section className="landing-section">
-          <div className="landing-wrap landing-about-grid">
-            <figure className="landing-about-photo">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIL63TFEv0hxaRvzU6dmpLgJP51jncFAyhxWe9rwK9qBC0CqSbZf3DrwUBP3GKFM8qPegVR6WWnRzjQJZUU0wyaI1DThD86doyI8GtBvicz_gi-kEytR2Qc5KBNyuHilWlFCcgwxDBvNqTPVJ6gm_NiPPTUnxcYleibGTPGUp28_ap47wSKMnVGNXptq-qODF_8Ps946ms3glSZuAUeJlp6gAZWpsDD7A8yEwwbCsW4odOHLCtr_5YKTAmfXCTPZ3T4wXdavEX538"
-                alt="Dra. Maria Alice"
-                loading="lazy"
-              />
-            </figure>
-
-            <div className="landing-about-copy">
-              <h2>
-                Dra. Maria Alice
-                <span>Arquiteta do sorriso</span>
-              </h2>
-              <p className="landing-about-lead">
-                Com mais de 15 anos de experiência em odontologia restauradora e estética, a Dra.
-                Maria Alice une expertise cirúrgica a um olhar artístico refinado.
-              </p>
-              <p>
-                Sua filosofia centra-se na restauração conservadora: cada intervenção preserva ao
-                máximo a estrutura natural do dente, alcançando resultados estéticos de padrão
-                internacional.
-              </p>
-              <div className="landing-credentials">
-                <div>
-                  <strong>MSc em Odontologia</strong>
-                  <span>Restauração estética</span>
-                </div>
-                <div>
-                  <strong>Certificação internacional</strong>
-                  <span>Odontologia estética</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="resultados" className="landing-section landing-section-dark">
-          <div className="landing-wrap">
-            <div className="landing-results-head">
-              <div>
-                <span className="landing-kicker landing-kicker-light">Resultados comprovados</span>
-                <h2>A arte do resultado</h2>
-              </div>
-              <button type="button" className="landing-link-light">
-                Ver todos os casos
-              </button>
-            </div>
-
-            <div className="landing-gallery">
-              {GALLERY.map((item, index) => (
-                <figure key={index} className={`landing-gallery-item ${item.className}`}>
-                  <img src={item.image} alt="" loading="lazy" />
-                  {item.label && <figcaption>{item.label}</figcaption>}
-                </figure>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer id="contato" className="landing-footer">
-        <div className="landing-wrap landing-footer-grid">
-          <div className="landing-footer-brand">
-            <img src={LOGO} alt="Maria Alice Odontologia" />
+        <div className="landing-wrap landing-footer-bottom" id="informacoes">
+          <div>
+            <p>Maria Alice · Clínica fictícia, sem atendimento real.</p>
             <p>
-              Redefinindo a experiência odontológica com atendimento boutique e precisão cirúrgica.
+              Política de Privacidade e Termos de Serviço em preparação para
+              revisão. Esta versão é destinada a testes locais com dados
+              fictícios.
             </p>
-            <div className="landing-social">
-              <a href="#" aria-label="Site">
-                <Globe size={18} />
-              </a>
-              <a href="#" aria-label="Instagram">
-                <Camera size={18} />
-              </a>
-            </div>
           </div>
-
-          <div>
-            <h4>Contato</h4>
-            <ul className="landing-contact-list">
-              <li>
-                <MapPin size={18} />
-                <span>
-                  Av. Paulista, 1000 — Sala 502
-                  <br />
-                  São Paulo, Brasil
-                </span>
-              </li>
-              <li>
-                <Phone size={18} />
-                <span>+55 (11) 99999-0000</span>
-              </li>
-              <li>
-                <Mail size={18} />
-                <span>concierge@mariaalice.com</span>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4>Links rápidos</h4>
-            <ul className="landing-footer-links">
-              {FOOTER_LINKS.map((link) => (
-                <li key={link}>
-                  <a href="#">{link}</a>
-                </li>
-              ))}
-              <li>
-                <Link to="/login">Área da clínica</Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="landing-wrap landing-footer-bottom">
-          <p>© {new Date().getFullYear()} Maria Alice Odontologia Especializada. Todos os direitos reservados.</p>
-          <p>Designed for Excellence</p>
+          <a href="#inicio">
+            Voltar ao topo <ArrowUp size={16} aria-hidden="true" />
+          </a>
         </div>
       </footer>
     </div>

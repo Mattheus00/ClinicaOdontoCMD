@@ -1,0 +1,228 @@
+{
+  "date": "2026-10-31T21:17:18.746Z",
+  "chromium": "bundled Playwright Chromium",
+  "results": [
+    {
+      "name": "home 320px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "booking 320px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "agenda 320px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "home 375px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "booking 375px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "agenda 375px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "home 600px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "booking 600px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "agenda 600px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "home 768px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "booking 768px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "agenda 768px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "home 900px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "booking 900px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "agenda 900px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "home 1024px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "booking 1024px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "agenda 1024px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "home 1280px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "booking 1280px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "agenda 1280px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "home 1440px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "booking 1440px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "agenda 1440px sem estouro",
+      "passed": true
+    },
+    {
+      "name": "Menu expandido",
+      "passed": true
+    },
+    {
+      "name": "Escape devolve foco ao menu",
+      "passed": true
+    },
+    {
+      "name": "Acesso da equipe da home abre a recepção simulada",
+      "passed": true
+    },
+    {
+      "name": "Horários por setas do teclado",
+      "passed": true
+    },
+    {
+      "name": "Foco na revisão",
+      "passed": true
+    },
+    {
+      "name": "Conflito preserva identificação",
+      "passed": true
+    },
+    {
+      "name": "Erro mantém revisão e dados",
+      "passed": true
+    },
+    {
+      "name": "Sucesso informa pendência",
+      "passed": true
+    },
+    {
+      "name": "Solicitação visível à recepção na mesma aba",
+      "passed": true
+    },
+    {
+      "name": "Filtro de situação",
+      "passed": true
+    },
+    {
+      "name": "Remarcação na simulação",
+      "passed": true
+    },
+    {
+      "name": "Falha na remarcação preserva horário anterior na simulação",
+      "passed": true
+    },
+    {
+      "name": "Aceite não é confirmação de presença",
+      "passed": true
+    },
+    {
+      "name": "Escape fecha diálogo",
+      "passed": true
+    },
+    {
+      "name": "Cancelamento na simulação",
+      "passed": true
+    },
+    {
+      "name": "Agendamento manual na simulação",
+      "passed": true
+    },
+    {
+      "name": "Formulário manual acessível no celular",
+      "passed": true
+    },
+    {
+      "name": "Disponibilidade empty",
+      "passed": true
+    },
+    {
+      "name": "Disponibilidade error",
+      "passed": true
+    },
+    {
+      "name": "/ texto 200% sem estouro",
+      "passed": true
+    },
+    {
+      "name": "/agendar/demonstracao texto 200% sem estouro",
+      "passed": true
+    },
+    {
+      "name": "/agenda texto 200% sem estouro",
+      "passed": true
+    },
+    {
+      "name": "Agenda paisagem 900x375",
+      "passed": true
+    },
+    {
+      "name": "Sem erros JavaScript",
+      "passed": true
+    },
+    {
+      "name": "Sem requisições externas",
+      "passed": true
+    },
+    {
+      "name": "/ zoom 200% emulado (768px físicos / 384px CSS, escala 2)",
+      "passed": true
+    },
+    {
+      "name": "/agendar/demonstracao zoom 200% emulado (768px físicos / 384px CSS, escala 2)",
+      "passed": true
+    },
+    {
+      "name": "/agenda zoom 200% emulado (768px físicos / 384px CSS, escala 2)",
+      "passed": true
+    },
+    {
+      "name": "WebKit / 375px",
+      "passed": true
+    },
+    {
+      "name": "WebKit /agendar/demonstracao 375px",
+      "passed": true
+    },
+    {
+      "name": "WebKit /agenda 375px",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "external": []
+}
