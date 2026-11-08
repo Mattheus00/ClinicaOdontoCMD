@@ -1,36 +1,39 @@
-/* Maria Alice Odontologia — design system (stitch) */
-/* Fonts are loaded via <link> in index.html to avoid render-blocking @import. */
+/* Velora — painel administrativo (design system) */
+/* Fonts: Inter + Playfair Display via index.css @font-face. */
 
 :root {
-  --color-bg: #fbf9f8;
+  --color-espresso: #211914;
+  --color-brown: #3a2a20;
+  --color-champagne: #c9a970;
+  --color-bg: #faf8f5;
   --color-bg-card: #ffffff;
   --color-bg-elevated: #ffffff;
-  --color-surface: #f5f3f3;
-  --color-surface-low: #f5f3f3;
-  --color-border: #c4c7c7;
-  --color-border-hover: #b8a898;
-  --color-primary: #000000;
-  --color-primary-hover: #755a25;
-  --color-primary-glow: rgba(117, 90, 37, 0.12);
-  --color-secondary: #755a25;
-  --color-secondary-soft: #fdd897;
-  --color-secondary-container: rgba(253, 216, 151, 0.35);
-  --color-success: #16825d;
-  --color-warning: #9a620b;
-  --color-danger: #ba1a1a;
-  --color-text: #1b1c1c;
-  --color-text-secondary: #444748;
-  --color-text-muted: #646b66;
+  --color-surface: #f3efe9;
+  --color-surface-low: #f3efe9;
+  --color-border: #e4ddd4;
+  --color-border-hover: #c9a970;
+  --color-primary: #252923;
+  --color-primary-hover: #3a2a20;
+  --color-primary-glow: rgba(201, 169, 112, 0.22);
+  --color-secondary: #c9a970;
+  --color-secondary-soft: #f3e6cf;
+  --color-secondary-container: rgba(201, 169, 112, 0.22);
+  --color-success: #315c46;
+  --color-warning: #b8860b;
+  --color-danger: #b74848;
+  --color-text: #252923;
+  --color-text-secondary: #5f5953;
+  --color-text-muted: #6f6861;
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-display: 'Playfair Display', Georgia, serif;
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.06);
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 2px rgba(33, 25, 20, 0.04);
+  --shadow-md: 0 8px 24px rgba(33, 25, 20, 0.06);
+  --shadow-lg: 0 16px 40px rgba(33, 25, 20, 0.08);
   --shadow-glow: none;
-  --signature-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --signature-shadow: 0 8px 24px rgba(33, 25, 20, 0.05);
 }
 
 body {
@@ -133,22 +136,23 @@ a.btn-whatsapp:hover {
   gap: 8px;
   padding: 0 18px;
   border: 1px solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   font-family: var(--font-family);
   font-size: 14px;
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0;
   text-transform: none;
-  min-height: 40px;
+  min-height: 46px;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
   transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease,
-    box-shadow 0.15s ease;
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
 }
 
 .btn-sm {
@@ -158,14 +162,18 @@ a.btn-whatsapp:hover {
 }
 
 .btn-primary {
-  background: var(--color-primary);
-  color: #fff;
-  box-shadow: none;
+  background: #211914;
+  color: #faf8f5;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  min-height: 46px;
+  padding-inline: 22px;
+  border-radius: 13px;
 }
 
 .btn-primary:hover {
-  background: var(--color-secondary);
-  color: #fff;
+  background: #3a2a20;
+  color: #faf8f5;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 18px rgba(33, 25, 20, 0.16);
 }
 
 .btn-secondary {
@@ -207,7 +215,7 @@ a.btn-whatsapp:hover {
 .form-grid input,
 .form-grid select {
   width: 100%;
-  min-height: 42px;
+  min-height: 46px;
   padding: 0 14px;
   border: 1px solid var(--color-border);
   background: #fff;
@@ -216,7 +224,7 @@ a.btn-whatsapp:hover {
   font-family: var(--font-family);
   font-size: 14px;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .input-field::placeholder {
@@ -232,41 +240,58 @@ a.btn-whatsapp:hover {
 }
 
 .sidebar {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 256px;
+  width: 240px;
   height: 100%;
   max-height: 100%;
   align-self: stretch;
   overflow: hidden;
-  background: var(--color-surface-low);
-  border-right: 1px solid rgba(196, 199, 199, 0.45);
-  padding: 20px 16px 16px;
+  background: linear-gradient(180deg, #211914 0%, #3a2a20 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 22px 14px 16px;
+  color: #faf8f5;
 }
 
 .sidebar-brand {
   display: block;
   flex-shrink: 0;
-  padding: 0 4px 16px;
+  padding: 0 8px 18px;
   margin: 0;
   background: none;
   -webkit-text-fill-color: initial;
 }
 
+.sidebar-brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .sidebar-brand img {
   display: block;
-  width: 100%;
-  max-width: 190px;
-  height: auto;
-  max-height: 88px;
+  width: 36px;
+  height: 36px;
+  max-width: 36px;
   object-fit: contain;
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+.sidebar-brand-lockup strong {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  color: #faf8f5;
 }
 
 .sidebar-brand small {
   display: block;
   margin-top: 8px;
-  color: var(--color-text-muted);
+  color: rgba(250, 248, 245, 0.55);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -281,17 +306,18 @@ a.btn-whatsapp:hover {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--color-text-secondary);
-  border-radius: var(--radius-md);
-  margin-bottom: 4px;
-  padding: 10px 14px;
-  font-size: 13px;
+  color: rgba(250, 248, 245, 0.78);
+  border-radius: 10px;
+  margin-bottom: 2px;
+  padding: 11px 14px;
+  font-size: 13.5px;
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
   text-decoration: none;
   border: 1px solid transparent;
   outline: none;
+  transition: background 150ms ease, color 150ms ease;
 }
 
 .sidebar-link-label-short {
@@ -299,24 +325,24 @@ a.btn-whatsapp:hover {
 }
 
 .sidebar-link:hover {
-  background: var(--color-bg-card);
-  color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.06);
+  color: #faf8f5;
 }
 
 .sidebar-link.active {
-  background: var(--color-secondary-container);
-  color: var(--color-secondary);
-  border-color: rgba(117, 90, 37, 0.18);
+  background: rgba(201, 169, 112, 0.92);
+  color: var(--color-espresso);
+  border-color: transparent;
   font-weight: 600;
 }
 
 .sidebar-link:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-primary-glow);
+  box-shadow: 0 0 0 2px rgba(201, 169, 112, 0.55);
 }
 
 .sidebar-footer {
-  border-color: rgba(196, 199, 199, 0.45);
+  border-color: rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
   margin-top: auto;
 }
@@ -450,9 +476,10 @@ a.btn-whatsapp:hover {
     align-items: stretch;
     padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
     border-right: 0;
-    border-top: 1px solid rgba(196, 199, 199, 0.45);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+    border-top: 1px solid rgba(33, 25, 20, 0.08);
+    box-shadow: 0 -8px 24px rgba(33, 25, 20, 0.08);
     background: #fff;
+    color: var(--color-text);
   }
 
   .sidebar-brand,

@@ -1,3 +1,4 @@
+import { clinicDate, clinicTime } from '../../lib/clinic-time';
 import type { Appointment } from '../../api/types';
 import './AgendaMobileList.css';
 
@@ -12,17 +13,8 @@ const STATUS: Record<string, { label: string; className: string }> = {
   NO_SHOW: { label: 'Faltou', className: 'badge-warning' },
 };
 
-function toLocalDateKey(value: string) {
-  const date = new Date(value);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function formatTime(value: string) {
-  return new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(new Date(value));
-}
+const toLocalDateKey = clinicDate;
+const formatTime = clinicTime;
 
 type Props = {
   weekDays: WeekDay[];
@@ -67,7 +59,7 @@ export default function AgendaMobileList({
                     >
                       <div className="agenda-mobile-card-time">
                         <strong>{formatTime(appointment.startsAt)}</strong>
-                        <span>{formatTime(appointment.endsAt)}</span>
+                        <span>{appointment.durationMinutes} min</span>
                       </div>
                       <div className="agenda-mobile-card-body">
                         <strong>{appointment.patient.name}</strong>

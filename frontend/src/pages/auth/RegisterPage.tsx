@@ -1,4 +1,16 @@
-import { Building2, CheckCircle2, LockKeyhole, Mail, Phone, type LucideIcon } from 'lucide-react';
+import {
+  ArrowRight,
+  Building2,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  Layers,
+  LockKeyhole,
+  Mail,
+  Phone,
+  UsersRound,
+  type LucideIcon,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,9 +18,7 @@ import { z } from 'zod';
 import { Link } from 'react-router-dom';
 import { maskPhone, withMask } from '../../lib/masks';
 import { api } from '../../services/api';
-import './Login.css';
-
-const LOGO = '/brand/maria-alice-logo.png';
+import { AuthBrand, AuthShell } from './AuthShell';
 
 const phoneSchema = z
   .string()
@@ -31,18 +41,19 @@ const schema = z.object({
 type RegisterData = z.infer<typeof schema>;
 
 const fields: [keyof RegisterData, string, LucideIcon, string][] = [
-  ['clinicName', 'Clínica', Building2, 'Maria Alice Odontologia Especializada'],
+  ['clinicName', 'Clínica', Building2, 'Ex.: Clínica São Lucas'],
   ['phone', 'Telefone', Phone, 'Ex.: (11) 99999-9999'],
-  ['email', 'E-mail', Mail, 'contato@clinica.com.br'],
+  ['email', 'E-mail', Mail, 'Seu e-mail profissional'],
   ['password', 'Senha', LockKeyhole, 'Crie uma senha segura'],
 ];
 
 export default function RegisterPage() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<RegisterData>({
     resolver: zodResolver(schema),
-    defaultValues: { clinicName: 'Maria Alice Odontologia Especializada' },
+    defaultValues: { clinicName: '' },
   });
 
   const submit = form.handleSubmit(async (data) => {
@@ -57,89 +68,140 @@ export default function RegisterPage() {
 
   if (sent) {
     return (
-      <main className="auth-success">
-        <section>
-          <span className="success-icon">
-            <CheckCircle2 size={35} />
+      <AuthShell centered>
+        <section className="auth-shell-card">
+          <span className="auth-shell-success-icon" aria-hidden="true">
+            <CheckCircle2 size={34} />
           </span>
           <h1>Conta criada com sucesso</h1>
-          <p>
-            Seu acesso já está pronto. Faça login para organizar a agenda e a equipe da clínica.
-          </p>
-          <Link className="btn btn-primary" to="/login">
+          <p>Seu acesso já está pronto. Faça login para organizar a agenda e a equipe da clínica.</p>
+          <Link className="auth-shell-submit" to="/login">
             Ir para o login
+            <ArrowRight size={18} strokeWidth={1.8} />
           </Link>
         </section>
-      </main>
+      </AuthShell>
     );
   }
 
   return (
-    <main className="auth-layout">
-      <aside className="auth-aside">
-        <Link to="/" className="auth-brand" aria-label="Ir para a página inicial">
-          <img src={LOGO} alt="Maria Alice Odontologia Especializada" className="auth-logo" />
-        </Link>
+    <AuthShell>
+      <aside className="auth-shell-aside">
+        <AuthBrand />
 
-        <div className="auth-copy">
-          <span className="auth-kicker">PORTAL MARIA ALICE</span>
+        <div className="auth-shell-copy">
+          <p className="auth-shell-kicker">PORTAL VELORA</p>
           <h1>
-            Gestão dedicada para a nossa <em>clínica</em>.
+            Gestão dedicada para a nossa <em>clínica.</em>
           </h1>
-          <p>Organize pacientes, dentistas, consultas e financeiro com praticidade no dia a dia.</p>
-        </div>
-
-        <div className="auth-points">
-          <span>
-            <CheckCircle2 size={18} />
-            Acesso exclusivo da equipe
-          </span>
-          <span>
-            <CheckCircle2 size={18} />
-            Tudo em um só lugar
-          </span>
+          <p className="auth-shell-desc">
+            Organize pacientes, dentistas, consultas e financeiro com praticidade no dia a dia.
+          </p>
+          <ul className="auth-shell-points">
+            <li>
+              <UsersRound size={18} strokeWidth={1.6} aria-hidden="true" />
+              Acesso exclusivo da equipe
+            </li>
+            <li>
+              <Layers size={18} strokeWidth={1.6} aria-hidden="true" />
+              Tudo em um só lugar
+            </li>
+          </ul>
         </div>
       </aside>
 
-      <section className="auth-panel">
-        <div className="auth-card auth-card-register">
-          <span className="auth-eyebrow">PRIMEIRO ACESSO</span>
-          <h2>Vamos começar</h2>
-          <p className="auth-lead">Preencha os dados abaixo para criar seu acesso à plataforma.</p>
+      <section className="auth-shell-panel" aria-labelledby="register-title">
+        <div className="auth-shell-card">
+          <p className="auth-shell-eyebrow">PRIMEIRO ACESSO</p>
+          <h2 id="register-title">Vamos começar</h2>
+          <p className="auth-shell-lead">
+            Preencha os dados abaixo para criar seu acesso à plataforma.
+          </p>
 
-          <form className="auth-form" onSubmit={submit}>
+          <form className="auth-shell-form" onSubmit={submit} noValidate>
             {fields.map(([field, label, Icon, placeholder]) => {
               const registration = form.register(field);
+              const isPassword = field === 'password';
+              const inputId = `register-${field}`;
               return (
-                <label key={field}>
-                  {label}
-                  <span className="auth-input">
-                    <Icon size={18} />
+                <div key={field} className="auth-shell-field">
+                  <label className="auth-shell-label" htmlFor={inputId}>
+                    {label}
+                  </label>
+                  <span className="auth-shell-input">
+                    <Icon size={18} strokeWidth={1.6} aria-hidden="true" />
                     <input
-                      type={field === 'password' ? 'password' : field === 'email' ? 'email' : 'text'}
+                      id={inputId}
+                      type={
+                        isPassword
+                          ? showPassword
+                            ? 'text'
+                            : 'password'
+                          : field === 'email'
+                            ? 'email'
+                            : 'text'
+                      }
                       inputMode={field === 'phone' ? 'tel' : undefined}
+                      autoComplete={
+                        isPassword ? 'new-password' : field === 'email' ? 'email' : 'organization'
+                      }
                       placeholder={placeholder}
+                      aria-invalid={Boolean(form.formState.errors[field])}
+                      aria-describedby={
+                        form.formState.errors[field] ? `${field}-error` : undefined
+                      }
                       {...registration}
-                      onChange={field === 'phone' ? withMask(maskPhone, registration.onChange) : registration.onChange}
+                      onChange={
+                        field === 'phone'
+                          ? withMask(maskPhone, registration.onChange)
+                          : registration.onChange
+                      }
                     />
+                    {isPassword ? (
+                      <button
+                        type="button"
+                        className="auth-shell-toggle"
+                        onClick={() => setShowPassword((current) => !current)}
+                        aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    ) : null}
                   </span>
-                  <small>{form.formState.errors[field]?.message}</small>
-                </label>
+                  <small id={`${field}-error`}>
+                    {form.formState.errors[field]?.message}
+                  </small>
+                </div>
               );
             })}
 
-            {error && <p className="form-error">{error}</p>}
+            {error ? (
+              <p className="auth-shell-error" role="alert">
+                {error}
+              </p>
+            ) : null}
 
-            <button className="btn btn-primary auth-submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? 'Criando acesso...' : 'Criar acesso'}
+            <button
+              className="auth-shell-submit"
+              type="submit"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? (
+                'Criando acesso...'
+              ) : (
+                <>
+                  Criar acesso
+                  <ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" />
+                </>
+              )}
             </button>
           </form>
 
-          <p className="auth-switch">
+          <p className="auth-shell-switch">
             Já possui uma conta? <Link to="/login">Entrar</Link>
           </p>
         </div>
       </section>
-    </main>
+    </AuthShell>
   );
 }

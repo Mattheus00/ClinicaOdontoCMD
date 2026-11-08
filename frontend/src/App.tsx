@@ -76,6 +76,7 @@ function AppRoutes() {
         <Route path="/confirmar-email" element={<ConfirmEmailPage />} />
         <Route path="/convite/:token" element={<DentistInvitePage />} />
         <Route path="/agendar/:slug" element={<PublicBookingPage />} />
+        <Route path="/agendar" element={<PublicBookingPage />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/agenda" element={<AgendaPage />} />

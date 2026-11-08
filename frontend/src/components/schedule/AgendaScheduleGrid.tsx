@@ -1,3 +1,4 @@
+import { clinicDate, clinicDateTime, clinicTime } from '../../lib/clinic-time';
 import { useMemo, useState } from 'react';
 import type { Appointment } from '../../api/types';
 import { layoutConcurrentAppointments } from './schedule-layout';
@@ -34,13 +35,8 @@ function buildSlots(): Slot[] {
   return slots;
 }
 
-function toLocalDateKey(value: string | Date) {
-  const date = typeof value === 'string' ? new Date(value) : value;
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+const toLocalDateKey = clinicDate;
+const wallDate = (value: string) => new Date(clinicDateTime(value));
 
 function slotIndexFromDate(value: Date): number {
   const minutes = value.getHours() * 60 + value.getMinutes();
@@ -49,8 +45,7 @@ function slotIndexFromDate(value: Date): number {
 }
 
 function formatTimeRange(startsAt: string, endsAt: string) {
-  const formatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  return `${formatter.format(new Date(startsAt))} – ${formatter.format(new Date(endsAt))}`;
+  return `${clinicTime(startsAt)} – ${clinicTime(endsAt)}`;
 }
 
 const statusClass: Record<string, string> = {
@@ -60,6 +55,7 @@ const statusClass: Record<string, string> = {
   CANCELLED: 'schedule-event-cancelled',
   COMPLETED: 'schedule-event-completed',
 };
+const statusLabel: Record<string, string> = { PENDING: 'Aguardando aceite', SCHEDULED: 'Agendada', CONFIRMED: 'Confirmada', COMPLETED: 'Realizada', CANCELLED: 'Cancelada', NO_SHOW: 'Faltou' };
 
 export function getWeekDays(anchorDate: string): WeekDay[] {
   const todayKey = toLocalDateKey(new Date());
@@ -72,7 +68,7 @@ export function getWeekDays(anchorDate: string): WeekDay[] {
   return Array.from({ length: 7 }, (_, index) => {
     const current = new Date(monday);
     current.setDate(monday.getDate() + index);
-    const date = toLocalDateKey(current);
+    const date = `${current.getFullYear()}-${String(current.getMonth()+1).padStart(2,'0')}-${String(current.getDate()).padStart(2,'0')}`;
     return {
       date,
       label: WEEKDAY_LABELS[index],
@@ -126,9 +122,9 @@ export default function AgendaScheduleGrid({
     }
 
     const startsAt = `${dayDate}T${slotValue}:00`;
-    const currentStart = new Date(appointment.startsAt);
+    const currentStart = wallDate(appointment.startsAt);
     const currentSlot = `${String(currentStart.getHours()).padStart(2, '0')}:${String(currentStart.getMinutes()).padStart(2, '0')}`;
-    const currentDay = toLocalDateKey(currentStart);
+    const currentDay = toLocalDateKey(appointment.startsAt);
     const sameSlot = currentSlot === slotValue && currentDay === dayDate;
 
     if (!sameSlot && onReschedule) {
@@ -144,14 +140,14 @@ export default function AgendaScheduleGrid({
   };
 
   return (
-    <div className="schedule-shell">
+    <div className="schedule-shell" role="region" aria-label="Grade de consultas" tabIndex={0}>
       <div className="schedule-hint">
         {canEdit
-          ? 'Arraste os agendamentos entre dias e horários. Clique em um horário vazio para criar uma nova consulta.'
+          ? 'Abra uma consulta para remarcar pelo teclado ou arraste entre horários. Use Novo agendamento para criar uma consulta.'
           : 'Clique em um agendamento para ver detalhes e confirmar atendimento.'}
       </div>
 
-      <div className="schedule-grid" style={{ '--schedule-cols': 7 } as React.CSSProperties}>
+      <div className="schedule-grid" style={{ '--schedule-cols': weekDays.length } as React.CSSProperties}>
         <div className="schedule-corner" />
         {weekDays.map((day) => (
           <div key={day.date} className={`schedule-header ${day.isToday ? 'is-today' : ''}`}>
@@ -211,14 +207,14 @@ export default function AgendaScheduleGrid({
               })}
 
               {columnAppointments.map((appointment) => {
-                const start = new Date(appointment.startsAt);
+                const start = wallDate(appointment.startsAt);
                 const index = slotIndexFromDate(start);
                 if (index < 0 || index >= slots.length) return null;
 
                 const durationSlots = Math.max(
                   1,
                   Math.round(
-                    (new Date(appointment.endsAt).getTime() - start.getTime()) / (SLOT_MINUTES * 60 * 1000),
+                    (wallDate(appointment.endsAt).getTime() - start.getTime()) / (SLOT_MINUTES * 60 * 1000),
                   ),
                 );
 
@@ -267,7 +263,7 @@ export default function AgendaScheduleGrid({
                     <span>{formatTimeRange(appointment.startsAt, appointment.endsAt)}</span>
                     {appointment.procedure ? <span className="schedule-procedure">{appointment.procedure.name}</span> : null}
                     {showProfessionalName ? <em>{appointment.professional.name}</em> : null}
-                    <small>{appointment.status === 'CANCELLED' ? 'Cancelado' : canEdit ? 'Arraste para remarcar' : 'Clique para detalhes'}</small>
+                    <small>{statusLabel[appointment.status] ?? appointment.status}</small>
                   </button>
                 );
               })}

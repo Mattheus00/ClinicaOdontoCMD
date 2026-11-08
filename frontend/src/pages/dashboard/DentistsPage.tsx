@@ -1,7 +1,9 @@
 import { useDataReadyMetric } from '../../lib/performance';
 import { useState, type FormEvent } from 'react';
+import { Plus } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
+import { PageHeader } from '../../components/panel/PageHeader';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   useCreateProfessional,
@@ -18,6 +20,7 @@ type DeleteTarget = Pick<Professional, 'id' | 'name' | 'appointmentCount'>;
 export default function DentistsPage() {
   const { role } = useAuth();
   const canManage = role === 'ADMIN';
+  const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [specialty, setSpecialty] = useState('');
@@ -34,9 +37,22 @@ export default function DentistsPage() {
     if (!url) return;
     setLatestInviteName(dentistName);
     setLatestInviteUrl(url);
-    window.setTimeout(() => {
-      document.getElementById('dentist-invite-link')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 100);
+    setCreateOpen(true);
+  };
+
+  const closeCreateModal = () => {
+    setCreateOpen(false);
+    setName('');
+    setEmail('');
+    setSpecialty('');
+    setLatestInviteUrl('');
+    setLatestInviteName('');
+  };
+
+  const openCreateModal = () => {
+    setLatestInviteUrl('');
+    setLatestInviteName('');
+    setCreateOpen(true);
   };
 
   const submit = (event: FormEvent) => {
@@ -106,77 +122,22 @@ export default function DentistsPage() {
   return (
     <div className="dentists-page">
       <RefreshState fetching={dentists.isRefetching} error={dentists.isError && Boolean(dentists.data)} onRetry={() => dentists.refetch()} />
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Dentistas</h1>
-          <p className="page-subtitle">
-            {canManage
-              ? 'Cadastre a equipe e envie o link de primeiro acesso.'
-              : 'Consulte a equipe de dentistas da clínica.'}
-          </p>
-        </div>
-      </div>
-
-      {canManage ? (
-        <section className="glass-card dentists-form-card">
-          <h2 className="card-section-title">Adicionar dentista</h2>
-          <form className="dashboard-form" onSubmit={submit}>
-            <label>
-              Nome completo
-              <input
-                required
-                className="input-field"
-                placeholder="Ex.: Dra. Maria Alice"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </label>
-            <label>
-              E-mail
-              <input
-                required
-                type="email"
-                className="input-field"
-                placeholder="dentista@clinica.com.br"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </label>
-            <label>
-              Especialidade
-              <input
-                className="input-field"
-                placeholder="Ex.: Ortodontia"
-                value={specialty}
-                onChange={(e) => setSpecialty(e.target.value)}
-              />
-            </label>
-
-            {latestInviteUrl && (
-              <div id="dentist-invite-link" className="dentist-invite-field">
-                <span className="dentist-invite-label">Link de primeiro acesso</span>
-                {latestInviteName ? (
-                  <p className="dentist-invite-success">
-                    Link gerado para <strong>{latestInviteName}</strong>. Envie para o dentista concluir o cadastro.
-                  </p>
-                ) : null}
-                <div className="dentist-invite-row">
-                  <input className="input-field" readOnly value={latestInviteUrl} aria-label="Link de convite" />
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => copyInvite(latestInviteUrl)}>
-                    Copiar link
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="dashboard-form-actions">
-              <button className="btn btn-primary" disabled={create.isPending}>
-                {create.isPending ? 'Salvando...' : 'Cadastrar e gerar link'}
-              </button>
-            </div>
-          </form>
-        </section>
-      ) : null}
+      <PageHeader
+        eyebrow="EQUIPE DA CLÍNICA"
+        title="Dentistas"
+        description={
+          canManage
+            ? 'Cadastre a equipe e envie o link de primeiro acesso.'
+            : 'Consulte a equipe de dentistas da clínica.'
+        }
+        actions={
+          canManage ? (
+            <button className="btn btn-primary" type="button" onClick={openCreateModal}>
+              <Plus size={18} /> Novo dentista
+            </button>
+          ) : null
+        }
+      />
 
       {dentists.isLoading ? (
         <LoadingState />
@@ -198,7 +159,12 @@ export default function DentistsPage() {
               <tbody>
                 {dentists.data.content.map((dentist) => (
                   <tr key={dentist.id}>
-                    <td className="dentist-name">{dentist.name}</td>
+                    <td className="dentist-name">
+                      <span className="dentist-avatar" aria-hidden="true">
+                        {dentist.name.trim().charAt(0).toUpperCase() || 'D'}
+                      </span>
+                      <strong>{dentist.name}</strong>
+                    </td>
                     <td>{dentist.email || '—'}</td>
                     <td>{dentist.specialty || 'Clínico geral'}</td>
                     <td className="col-left">
@@ -291,8 +257,80 @@ export default function DentistsPage() {
         <EmptyState
           title="Nenhum dentista cadastrado"
           description="Cadastre um dentista para liberar os agendamentos."
+          action={
+            canManage ? (
+              <button className="btn btn-primary" type="button" onClick={openCreateModal}>
+                Novo dentista
+              </button>
+            ) : undefined
+          }
         />
       )}
+
+      {createOpen && canManage ? (
+        <Modal title="Adicionar dentista" onClose={closeCreateModal}>
+          <form className="form-grid" onSubmit={submit}>
+            <label>
+              Nome completo
+              <input
+                required
+                className="input-field"
+                placeholder="Ex.: Dra. Maria Alice"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </label>
+            <label>
+              E-mail
+              <input
+                required
+                type="email"
+                className="input-field"
+                placeholder="dentista@clinica.com.br"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </label>
+            <label className="full-width">
+              Especialidade
+              <input
+                className="input-field"
+                placeholder="Ex.: Ortodontia"
+                value={specialty}
+                onChange={(e) => setSpecialty(e.target.value)}
+              />
+            </label>
+
+            {latestInviteUrl ? (
+              <div id="dentist-invite-link" className="dentist-invite-field full-width">
+                <span className="dentist-invite-label">Link de primeiro acesso</span>
+                {latestInviteName ? (
+                  <p className="dentist-invite-success">
+                    Link gerado para <strong>{latestInviteName}</strong>. Envie para o dentista concluir o cadastro.
+                  </p>
+                ) : null}
+                <div className="dentist-invite-row">
+                  <input className="input-field" readOnly value={latestInviteUrl} aria-label="Link de convite" />
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => copyInvite(latestInviteUrl)}>
+                    Copiar link
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="modal-actions full-width">
+              <button className="btn btn-secondary" type="button" onClick={closeCreateModal}>
+                {latestInviteUrl ? 'Fechar' : 'Cancelar'}
+              </button>
+              {!latestInviteUrl ? (
+                <button className="btn btn-primary" disabled={create.isPending}>
+                  {create.isPending ? 'Salvando...' : 'Cadastrar e gerar link'}
+                </button>
+              ) : null}
+            </div>
+          </form>
+        </Modal>
+      ) : null}
 
       {deleteTarget && (
         <Modal title="Excluir dentista" onClose={() => setDeleteTarget(null)}>

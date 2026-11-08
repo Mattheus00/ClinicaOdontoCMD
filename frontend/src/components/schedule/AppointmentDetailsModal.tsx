@@ -1,3 +1,4 @@
+import { clinicDate, clinicDateLabel, clinicTime } from '../../lib/clinic-time';
 import { useEffect, useId, useState } from 'react';
 import { ArrowUpRight, CalendarDays, Check, Clock3, FileText, Hourglass, Link2, MessageCircle, Save, Stethoscope } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -102,8 +103,8 @@ export function AppointmentDetailsModal({ appointment, report, canEditReport, is
 
       <dl className="appointment-meta">
         <div><Stethoscope size={18} aria-hidden="true" /><div><dt>Dentista</dt><dd>{appointment.professional.name}</dd></div></div>
-        <div><CalendarDays size={18} aria-hidden="true" /><div><dt>Data da consulta</dt><dd>{new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(starts)}<small>{new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(starts)}</small></dd></div></div>
-        <div><Clock3 size={18} aria-hidden="true" /><div><dt>Horário</dt><dd><time dateTime={appointment.startsAt}>{new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(starts)}</time></dd></div></div>
+        <div><CalendarDays size={18} aria-hidden="true" /><div><dt>Data da consulta</dt><dd>{clinicDateLabel(clinicDate(appointment.startsAt))}<small>{'Horário de Brasília'}</small></dd></div></div>
+        <div><Clock3 size={18} aria-hidden="true" /><div><dt>Horário</dt><dd><time dateTime={appointment.startsAt}>{clinicTime(appointment.startsAt)}</time></dd></div></div>
         <div><Hourglass size={18} aria-hidden="true" /><div><dt>Duração</dt><dd>{formatAppointmentDuration(duration)}</dd></div></div>
       </dl>
 

@@ -7,7 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { readApiError } from '../../lib/api-error';
 import './Login.css';
 
-const LOGO = '/brand/maria-alice-logo.png';
+const LOGO = '/brand/velora-logo-white.png';
 
 export default function DentistInvitePage() {
   const { token } = useParams();
@@ -67,7 +67,11 @@ export default function DentistInvitePage() {
     <main className="auth-layout">
       <aside className="auth-aside">
         <Link to="/" className="auth-brand" aria-label="Ir para a página inicial">
-          <img src={LOGO} alt="Maria Alice Odontologia Especializada" className="auth-logo" />
+          <img src={LOGO} alt="" className="auth-logo" />
+          <span className="auth-brand-copy">
+            <strong>Velora</strong>
+            <small>Gestão elegante para clínicas</small>
+          </span>
         </Link>
 
         <div className="auth-copy">

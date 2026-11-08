@@ -1,0 +1,82 @@
+:root {
+  --exp-paper: #faf8f4;
+  --exp-card: #fff;
+  --exp-wash: #f0ebe2;
+  --exp-ink: #242b28;
+  --exp-muted: #626760;
+  --exp-line: #d5d1c8;
+  --exp-accent: #775c2c;
+  --exp-focus: #476f91;
+  --exp-radius: 16px;
+  --exp-space: 8px;
+}
+:root[data-clinic-theme="dark"] {
+  --exp-paper: #171e1b;
+  --exp-card: #222b26;
+  --exp-wash: #2e3830;
+  --exp-ink: #f5f2e9;
+  --exp-muted: #c1c8be;
+  --exp-line: #627066;
+  --exp-accent: #e7c283;
+  --exp-focus: #97c9ee;
+}
+.experience-theme {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--exp-line);
+  border-radius: 50%;
+  color: var(--exp-ink);
+  background: var(--exp-card);
+  cursor: pointer;
+}
+:is(.landing, .public-booking) {
+  color: var(--exp-ink);
+}
+:is(.landing, .public-booking) :focus-visible {
+  outline: 3px solid var(--exp-focus);
+  outline-offset: 4px;
+}
+.public-booking {
+  --color-text: var(--exp-ink);
+  --color-text-secondary: var(--exp-muted);
+  --color-text-muted: var(--exp-muted);
+  --color-bg: var(--exp-paper);
+  --color-surface: var(--exp-wash);
+  --color-surface-low: var(--exp-wash);
+  --color-card: var(--exp-card);
+  --color-border: var(--exp-line);
+  --color-secondary: var(--exp-accent);
+}
+.public-booking .input-field {
+  color: var(--exp-ink);
+  background: var(--exp-card);
+  border-color: var(--exp-line);
+  min-height: 44px;
+}
+.public-booking .btn-primary {
+  background: #2e483c;
+  color: white;
+  border-color: #2e483c;
+  min-height: 44px;
+}
+.public-booking .btn-secondary {
+  background: var(--exp-card);
+  color: var(--exp-ink);
+  border-color: var(--exp-line);
+  min-height: 44px;
+}
+.public-booking .btn-ghost {
+  color: var(--exp-ink);
+  min-height: 44px;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.landing, .public-booking) *,
+  :is(.landing, .public-booking) *::before {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

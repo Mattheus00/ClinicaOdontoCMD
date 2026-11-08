@@ -6,7 +6,7 @@ import { openWelcomeTour } from '../lib/welcomeTour';
 import './StaffNotificationBell.css';
 import './MobileTopbar.css';
 
-const LOGO = '/brand/maria-alice-logo.png';
+const LOGO = '/brand/velora-logo.png';
 
 export default function MobileTopbar() {
   const { logout, role } = useAuth();
@@ -17,9 +17,9 @@ export default function MobileTopbar() {
   return (
     <header className="mobile-topbar">
       <div className="mobile-topbar-brand">
-        <img src={LOGO} alt="Maria Alice Odontologia Especializada" className="mobile-topbar-logo" />
+        <img src={LOGO} alt="Velora" className="mobile-topbar-logo" />
         <div className="mobile-topbar-copy">
-          <strong>Maria Alice</strong>
+          <strong>Velora</strong>
           <span>{portalLabel}</span>
         </div>
       </div>

@@ -1,10 +1,11 @@
 import { useDataReadyMetric } from '../../lib/performance';
 import { Pagination } from '../../components/Pagination';
 import { useDebouncedValue } from '../../lib/useDebouncedValue';
-import { ArrowDownToLine, ArrowUpFromLine, CheckCircle2, Pencil, Trash2 } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, CheckCircle2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState, type FormEvent } from 'react';
 import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
+import { PageHeader } from '../../components/panel/PageHeader';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   useCreateStockItem,
@@ -192,17 +193,18 @@ export default function StockPage() {
 
   return (
     <div className="stock-page">
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Estoque</h1>
-          <p className="page-subtitle">Controle materiais odontológicos e os demais itens da clínica.</p>
-        </div>
-        {canManage ? (
-          <button type="button" className="btn btn-primary" onClick={() => setCreating(true)}>
-            Registrar material
-          </button>
-        ) : null}
-      </div>
+      <PageHeader
+        eyebrow="CONTROLE DE MATERIAIS"
+        title="Estoque"
+        description="Controle materiais odontológicos e outros itens da clínica."
+        actions={
+          canManage ? (
+            <button type="button" className="btn btn-primary" onClick={() => setCreating(true)}>
+              <Plus size={18} /> Registrar material
+            </button>
+          ) : null
+        }
+      />
 
       <div className="stock-summary">
         <article>

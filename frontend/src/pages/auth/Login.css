@@ -29,6 +29,7 @@
 .auth-brand {
   display: inline-flex;
   align-items: center;
+  gap: 16px;
   text-decoration: none;
   width: fit-content;
   transition: opacity 0.15s ease;
@@ -45,11 +46,33 @@
 }
 
 .auth-logo {
-  height: 200px;
-  width: auto;
-  max-width: min(400px, 85vw);
+  height: 56px;
+  width: 56px;
+  max-width: min(72px, 20vw);
   object-fit: contain;
-  filter: brightness(1.05);
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+.auth-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #f7f2ea;
+}
+
+.auth-brand-copy strong {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.auth-brand-copy small {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  opacity: 0.78;
 }
 
 .auth-copy {
@@ -322,7 +345,8 @@
   }
 
   .auth-logo {
-    height: 148px;
+    height: 48px;
+    width: 48px;
   }
 
   .auth-copy {

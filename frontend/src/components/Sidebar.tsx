@@ -19,7 +19,7 @@ import { openWelcomeTour } from '../lib/welcomeTour';
 import './Sidebar.css';
 import './StaffNotificationBell.css';
 
-const LOGO = '/brand/maria-alice-logo.png';
+const LOGO = '/brand/velora-logo-white.webp';
 
 type AppRole = 'ADMIN' | 'SECRETARY' | 'DENTIST';
 
@@ -64,7 +64,10 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <img src={LOGO} alt="Maria Alice Odontologia Especializada" />
+        <div className="sidebar-brand-lockup">
+          <img src={LOGO} alt="" />
+          <strong>Velora</strong>
+        </div>
         <small>{role === 'DENTIST' ? 'Portal do dentista' : 'Portal de gestão'}</small>
       </div>
 
