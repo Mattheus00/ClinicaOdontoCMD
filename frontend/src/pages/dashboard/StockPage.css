@@ -11,9 +11,6 @@
 
 .stock-summary article {
   padding: 16px 18px;
-  background: #fff;
-  border: 1px solid rgba(196, 199, 199, 0.45);
-  border-radius: var(--radius-lg);
 }
 
 .stock-summary span {
@@ -66,9 +63,10 @@
 }
 
 .stock-filters button.is-active {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-  color: #fff;
+  border-color: var(--color-champagne);
+  background: rgba(201, 169, 112, 0.18);
+  color: var(--color-espresso);
+  font-weight: 600;
 }
 
 .stock-page td small {

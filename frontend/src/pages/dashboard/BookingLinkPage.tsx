@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Check, Copy, Link2, RefreshCw, Share2 } from 'lucide-react';
 import { ErrorState, LoadingState } from '../../components/AsyncState';
+import { PageHeader } from '../../components/panel/PageHeader';
 import { useBookingLink, useRegenerateBookingLink } from '../../features/booking/api';
 import './BookingLinkPage.css';
 
@@ -40,14 +41,11 @@ export default function BookingLinkPage() {
 
   return (
     <div className="booking-link-page">
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Link da bio</h1>
-          <p className="page-subtitle">
-            Gere um link para a bio ou stories. Quem abrir consegue solicitar uma consulta online.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="AGENDAMENTO ONLINE"
+        title="Link da bio"
+        description="Compartilhe o agendamento online da sua clínica."
+      />
 
       <section className="booking-link-hero">
         <div className="booking-link-hero-icon">

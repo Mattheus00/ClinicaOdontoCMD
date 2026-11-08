@@ -1,11 +1,13 @@
 import { useDataReadyMetric } from '../../lib/performance';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ChevronRight, Phone, Plus, Search, X } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
 import { Modal } from '../../components/Modal';
+import { PageHeader } from '../../components/panel/PageHeader';
 import { maskCpf, maskPhone, withMask } from '../../lib/masks';
 import { useDebouncedValue } from '../../lib/useDebouncedValue';
 import { useCreatePatient, usePatients } from '../../features/patients/api';
@@ -26,6 +28,33 @@ const schema = z.object({
 });
 
 type PatientForm = z.infer<typeof schema>;
+
+const AVATAR_TONE_COUNT = 6;
+
+function patientInitial(name: string) {
+  const letter = name.trim().charAt(0);
+  return letter ? letter.toLocaleUpperCase('pt-BR') : '?';
+}
+
+function patientAvatarTone(name: string) {
+  const normalized = name.trim().toLocaleLowerCase('pt-BR');
+  let hash = 0;
+  for (const char of normalized) {
+    hash = (hash + char.charCodeAt(0)) % AVATAR_TONE_COUNT;
+  }
+  return hash;
+}
+
+function PatientAvatar({ name }: { name: string }) {
+  return (
+    <span
+      className={`patient-avatar patient-avatar-tone-${patientAvatarTone(name)}`}
+      aria-hidden="true"
+    >
+      {patientInitial(name)}
+    </span>
+  );
+}
 
 export default function PatientsPage() {
   const [search, setSearch] = useState('');
@@ -55,26 +84,44 @@ export default function PatientsPage() {
   return (
     <div>
       <RefreshState fetching={patients.isRefetching} error={patients.isError && Boolean(patients.data)} onRetry={() => patients.refetch()} />
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Pacientes</h1>
-          <p className="page-subtitle">Cadastros, contatos e prontuário completo.</p>
-        </div>
-        <button className="btn btn-primary" onClick={() => setOpen(true)}>
-          Novo paciente
-        </button>
-      </div>
+      <PageHeader
+        eyebrow="GESTÃO DE PACIENTES"
+        title="Pacientes"
+        description="Cadastros, contatos e prontuário completo."
+        actions={
+          <button className="btn btn-primary" onClick={() => setOpen(true)}>
+            <Plus size={18} /> Novo paciente
+          </button>
+        }
+      />
 
       <div className="patients-toolbar">
-        <input
-          className="input-field search-field"
-          placeholder="Buscar por nome, telefone ou CPF"
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(0);
-          }}
-        />
+        <label className="patients-search" htmlFor="patients-search">
+          <Search size={18} aria-hidden="true" />
+          <input
+            id="patients-search"
+            className="input-field search-field"
+            placeholder="Buscar por nome, telefone ou CPF"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(0);
+            }}
+          />
+          {search ? (
+            <button
+              type="button"
+              className="patients-search-clear"
+              aria-label="Limpar busca"
+              onClick={() => {
+                setSearch('');
+                setPage(0);
+              }}
+            >
+              <X size={16} />
+            </button>
+          ) : null}
+        </label>
       </div>
 
       {patients.isLoading ? (
@@ -83,53 +130,34 @@ export default function PatientsPage() {
         <ErrorState onRetry={() => patients.refetch()} />
       ) : patients.data?.content.length ? (
         <>
-          <div className="table-wrap desktop-only">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Paciente</th>
-                  <th>Telefone</th>
-                  <th>CPF</th>
-                  <th>E-mail</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {patients.data.content.map((patient) => (
-                  <tr key={patient.id}>
-                    <td className="patient-name">{patient.name}</td>
-                    <td>{maskPhone(patient.phone)}</td>
-                    <td>{patient.cpf ? maskCpf(patient.cpf) : '—'}</td>
-                    <td>{patient.email ?? '—'}</td>
-                    <td>
-                      <Link className="btn btn-ghost btn-sm" to={`/patients/${patient.id}`}>
-                        Abrir ficha
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mobile-card-list mobile-only" aria-label="Lista de pacientes">
-            {patients.data.content.map((patient) => (
-              <article key={patient.id} className="mobile-card">
-                <div className="mobile-card-head">
-                  <strong>{patient.name}</strong>
-                </div>
-                <div className="mobile-card-meta">
-                  <p>{maskPhone(patient.phone)}</p>
-                  <p>{patient.cpf ? maskCpf(patient.cpf) : 'CPF não informado'}</p>
-                  {patient.email ? <p>{patient.email}</p> : null}
-                </div>
-                <div className="mobile-card-actions">
-                  <Link className="btn btn-primary btn-sm" to={`/patients/${patient.id}`}>
-                    Abrir ficha
-                  </Link>
-                </div>
-              </article>
-            ))}
+          <div className="patients-queue" aria-label="Fila de cadastro de pacientes">
+            {patients.data.content.map((patient) => {
+              const tone = patientAvatarTone(patient.name);
+              return (
+                <Link
+                  key={patient.id}
+                  to={`/patients/${patient.id}`}
+                  className={`patient-queue-card patient-queue-tone-${tone}`}
+                  aria-label={`Abrir ficha de ${patient.name}`}
+                >
+                  <PatientAvatar name={patient.name} />
+                  <div className="patient-queue-body">
+                    <strong className="patient-queue-name">{patient.name}</strong>
+                    <span className="patient-queue-meta">
+                      <Phone size={14} aria-hidden="true" />
+                      {maskPhone(patient.phone)}
+                      {patient.cpf ? ` · ${maskCpf(patient.cpf)}` : null}
+                    </span>
+                  </div>
+                  <ChevronRight
+                    className="patient-queue-chevron"
+                    size={20}
+                    strokeWidth={2.25}
+                    aria-hidden="true"
+                  />
+                </Link>
+              );
+            })}
           </div>
 
           <div className="pagination">

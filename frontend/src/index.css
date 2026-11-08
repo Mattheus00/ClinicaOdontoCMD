@@ -12,7 +12,7 @@
   src: url('@fontsource-variable/playfair-display/files/playfair-display-latin-wght-italic.woff2') format('woff2');
 }
 /* ============================================ */
-/* Design System — Maria Alice Odontologia      */
+/* Design System — Velora */
 /* ============================================ */
 
 
@@ -56,8 +56,24 @@
 html,
 body,
 #root {
+  width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
+html.landing-active,
+html.landing-active body,
+html.landing-active #root {
+  overflow-x: clip !important;
+  overscroll-behavior-x: none;
+  max-width: 100%;
+  width: 100%;
+  touch-action: pan-y;
+}
+
+html.landing-active body {
+  position: relative;
 }
 
 .app-layout {
@@ -200,17 +216,17 @@ button:disabled {
   display: grid;
   place-items: center;
   padding: var(--spacing-md);
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(33, 25, 20, 0.42);
 }
 
 .modal {
   width: min(560px, 100%);
   max-height: calc(100vh - 2rem);
   overflow: auto;
-  background: #fff;
-  border: 1px solid rgba(196, 199, 199, 0.45);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 22px;
+  box-shadow: 0 24px 64px rgba(33, 25, 20, 0.18);
 }
 
 .modal-header {

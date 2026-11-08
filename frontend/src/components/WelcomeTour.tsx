@@ -33,7 +33,7 @@ type TourStep = {
 const STEPS: TourStep[] = [
   {
     icon: Sparkles,
-    title: 'Boas-vindas ao portal Maria Alice',
+    title: 'Boas-vindas ao portal Velora',
     description:
       'Em poucos passos você vai conhecer as áreas do sistema. Você pode pular agora e rever este tutorial quando quiser pelo botão "Tutorial" no menu.',
     roles: ['ADMIN', 'SECRETARY', 'DENTIST'],

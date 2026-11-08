@@ -1,13 +1,20 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { ArrowRight, CalendarDays, Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react';
+import {
+  ArrowRight,
+  CalendarDays,
+  Eye,
+  EyeOff,
+  Info,
+  LockKeyhole,
+  Mail,
+} from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
 import { readApiError } from '../../lib/api-error';
-import './Login.css';
 import { preloadDestination } from '../../lib/route-preload';
+import { AuthBrand, AuthShell } from './AuthShell';
 
-const LOGO = '/brand/maria-alice-logo.png';
 const REMEMBER_ME_KEY = 'dentic.rememberMe';
 const REMEMBER_EMAIL_KEY = 'dentic.rememberEmail';
 
@@ -64,62 +71,73 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="auth-layout">
-      <aside className="auth-aside">
-        <Link to="/" className="auth-brand" aria-label="Ir para a página inicial">
-          <img src={LOGO} alt="Maria Alice Odontologia Especializada" className="auth-logo" />
-        </Link>
+    <AuthShell>
+      <aside className="auth-shell-aside">
+        <AuthBrand />
 
-        <div className="auth-copy">
-          <span className="auth-kicker">GESTÃO ODONTOLÓGICA</span>
+        <div className="auth-shell-copy">
+          <p className="auth-shell-kicker">GESTÃO ELEGANTE</p>
           <h1>
-            Uma clínica organizada começa com uma <em>rotina simples</em>.
+            Uma clínica organizada começa com uma <em>rotina simples.</em>
           </h1>
-          <p>Agenda, pacientes e equipe reunidos em um só lugar — com a elegância que sua clínica merece.</p>
-        </div>
-
-        <div className="auth-points">
-          <span>
-            <CalendarDays size={18} />
-            Agenda centralizada
-          </span>
-          <span>
-            <LockKeyhole size={18} />
-            Dados protegidos
-          </span>
+          <p className="auth-shell-desc">
+            Agenda, pacientes e equipe reunidos em um só lugar — com a elegância que sua clínica
+            merece.
+          </p>
+          <ul className="auth-shell-points">
+            <li>
+              <CalendarDays size={18} strokeWidth={1.6} aria-hidden="true" />
+              Agenda centralizada
+            </li>
+            <li>
+              <LockKeyhole size={18} strokeWidth={1.6} aria-hidden="true" />
+              Dados protegidos
+            </li>
+          </ul>
         </div>
       </aside>
 
-      <section className="auth-panel">
-        <div className="auth-card">
-          <span className="auth-eyebrow">ACESSO À PLATAFORMA</span>
-          <h2>Boas-vindas de volta</h2>
-          <p className="auth-lead">Entre para acessar a gestão da sua clínica.</p>
-          <p className="auth-hint">
-            Dentistas devem usar o <strong>link de convite</strong> enviado pelo administrador para criar a senha no primeiro acesso.
+      <section className="auth-shell-panel" aria-labelledby="login-title">
+        <div className="auth-shell-card auth-shell-card--login">
+          <p className="auth-shell-eyebrow">ACESSO À PLATAFORMA</p>
+          <h2 id="login-title">Boas-vindas de volta</h2>
+          <p className="auth-shell-lead">Entre para acessar a gestão da sua clínica.</p>
+
+          <p className="auth-shell-hint">
+            <Info size={18} strokeWidth={1.6} aria-hidden="true" />
+            <span>
+              Dentistas devem usar o <strong>link de convite</strong> enviado pelo administrador
+              para criar a senha no primeiro acesso.
+            </span>
           </p>
 
-          <form onSubmit={submit} className="auth-form">
-            <label>
-              E-mail
-              <span className="auth-input">
-                <Mail size={18} />
+          <form onSubmit={submit} className="auth-shell-form">
+            <div className="auth-shell-field">
+              <label className="auth-shell-label" htmlFor="login-email">
+                E-mail
+              </label>
+              <span className="auth-shell-input">
+                <Mail size={18} strokeWidth={1.6} aria-hidden="true" />
                 <input
+                  id="login-email"
                   type="email"
-                  placeholder="voce@clinica.com.br"
+                  placeholder="Seu e-mail"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   required
                   autoComplete="email"
                 />
               </span>
-            </label>
+            </div>
 
-            <label>
-              Senha
-              <span className="auth-input">
-                <LockKeyhole size={18} />
+            <div className="auth-shell-field">
+              <label className="auth-shell-label" htmlFor="login-password">
+                Senha
+              </label>
+              <span className="auth-shell-input">
+                <LockKeyhole size={18} strokeWidth={1.6} aria-hidden="true" />
                 <input
+                  id="login-password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Sua senha"
                   value={password}
@@ -129,16 +147,16 @@ export default function LoginPage() {
                 />
                 <button
                   type="button"
-                  className="auth-password-toggle"
+                  className="auth-shell-toggle"
                   onClick={() => setShowPassword((current) => !current)}
                   aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </span>
-            </label>
+            </div>
 
-            <label className="auth-remember">
+            <label className="auth-shell-remember">
               <input
                 type="checkbox"
                 checked={rememberMe}
@@ -147,28 +165,29 @@ export default function LoginPage() {
               Manter conectado
             </label>
 
-            {error && (
-              <div className="login-error" role="alert">
+            {error ? (
+              <div className="auth-shell-error" role="alert">
                 {error}
               </div>
-            )}
+            ) : null}
 
-            <button type="submit" className="btn btn-primary auth-submit" disabled={loading}>
+            <button type="submit" className="auth-shell-submit" disabled={loading}>
               {loading ? (
                 'Entrando...'
               ) : (
                 <>
-                  Entrar <ArrowRight size={18} />
+                  Entrar
+                  <ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" />
                 </>
               )}
             </button>
           </form>
 
-          <p className="auth-switch">
-            Ainda não usa a Maria Alice? <Link to="/cadastro">Cadastre sua clínica</Link>
+          <p className="auth-shell-switch">
+            Ainda não usa a Velora? <Link to="/cadastro">Cadastre sua clínica</Link>
           </p>
         </div>
       </section>
-    </main>
+    </AuthShell>
   );
 }

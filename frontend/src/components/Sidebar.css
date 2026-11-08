@@ -2,17 +2,17 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   padding: 8px 10px;
-  border: 1px solid rgba(196, 199, 199, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  background: #fcfbf8;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .sidebar-notifications > span {
   font-size: 12px;
   font-weight: 600;
-  color: var(--color-text-secondary);
+  color: rgba(250, 248, 245, 0.72);
 }
 
 .sidebar-nav {
@@ -35,31 +35,31 @@
   flex-shrink: 0;
   margin-top: auto;
   padding-top: var(--spacing-md);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-logout-btn {
   width: 100%;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 38px;
+  justify-content: flex-start;
+  gap: 10px;
+  min-height: 42px;
   padding: 0 14px;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 10px;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: rgba(250, 248, 245, 0.72);
   font-family: var(--font-family);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 150ms ease, color 150ms ease;
 }
 
 .sidebar-logout-btn:hover {
-  background: var(--color-bg-card);
-  color: var(--color-danger);
+  background: rgba(255, 255, 255, 0.06);
+  color: #faf8f5;
 }
 
 .sidebar-tour-btn {
@@ -67,7 +67,11 @@
 }
 
 .sidebar-tour-btn:hover {
-  color: var(--color-secondary);
+  color: var(--color-champagne);
+}
+
+.sidebar .sidebar-logout-btn:last-child:hover {
+  color: #f0a8a0;
 }
 
 .sidebar-more { position: fixed; bottom: calc(76px + env(safe-area-inset-bottom)); right: 12px; left: 12px; z-index: 48; padding: 18px; display: grid; gap: 8px; background: white; border: 1px solid var(--color-border); border-radius: 14px; box-shadow: var(--shadow-lg); }
@@ -76,8 +80,19 @@
 
 /* Sidebar.css loads after the theme — keep mobile bottom bar horizontal. */
 @media (max-width: 800px) {
-  .sidebar .sidebar-link { font-size: 11px; min-height: 56px; border: 0; background-color: transparent; font-family: inherit; cursor: pointer; }
-  .sidebar .sidebar-link.active { background: var(--color-secondary-container); }
+  .sidebar .sidebar-link {
+    font-size: 11px;
+    min-height: 56px;
+    border: 0;
+    background-color: transparent;
+    color: var(--color-text-secondary);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .sidebar .sidebar-link.active {
+    background: rgba(201, 169, 112, 0.22);
+    color: var(--color-espresso);
+  }
   .sidebar-notifications {
     display: none;
   }
