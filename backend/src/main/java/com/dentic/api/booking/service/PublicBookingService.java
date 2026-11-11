@@ -207,7 +207,10 @@ public class PublicBookingService {
         try {
             appointment = appointments.save(appointment);
         } catch (DataIntegrityViolationException ex) {
-            throw new IllegalArgumentException("Este horário não está mais disponível. Escolha outro.");
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Este horário não está mais disponível. Escolha outro."
+            );
         }
 
         String whenLabel = startsAt.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm"));

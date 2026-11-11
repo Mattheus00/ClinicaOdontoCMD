@@ -78,7 +78,11 @@ export function AppointmentDetailsModal({ appointment, report, canEditReport, is
         {busy.cancel ? 'Cancelando…' : pending ? 'Recusar solicitação' : 'Cancelar agendamento'}
       </button>}
       <div className="appointment-main-actions">
-        {onReschedule && <button type="button" className="btn btn-secondary" disabled={submitting} onClick={() => attemptExit(onReschedule)}>Reagendar</button>}
+        {onReschedule && !pending && (
+          <button type="button" className="btn btn-secondary" disabled={submitting} onClick={() => attemptExit(onReschedule)}>
+            Reagendar
+          </button>
+        )}
         <button type="button" className="btn btn-secondary" disabled={submitting} onClick={() => attemptExit(onClose)}>Fechar</button>
         {isAdmin && pending && <button type="button" className="btn btn-primary" disabled={submitting} onClick={onAccept}>
           <Check size={16} aria-hidden="true" />{busy.accept ? 'Aceitando…' : 'Aceitar agendamento'}
@@ -86,9 +90,11 @@ export function AppointmentDetailsModal({ appointment, report, canEditReport, is
         {canConclude && <button type="button" className="btn btn-primary" disabled={submitting || !appointment.procedure || !canEditReport} onClick={onConfirm}>
           <Check size={16} aria-hidden="true" />{busy.confirm ? 'Concluindo…' : 'Concluir atendimento'}
         </button>}
-        {canEditReport && <button type="button" className="btn btn-secondary" disabled={submitting || !reportDirty} onClick={() => saveReport()}>
-          <Save size={16} aria-hidden="true" />{busy.save ? 'Salvando…' : 'Salvar relatório'}
-        </button>}
+        {canEditReport && !pending && (
+          <button type="button" className="btn btn-secondary" disabled={submitting || !reportDirty} onClick={() => saveReport()}>
+            <Save size={16} aria-hidden="true" />{busy.save ? 'Salvando…' : 'Salvar relatório'}
+          </button>
+        )}
       </div>
     </footer>
   );
@@ -101,12 +107,41 @@ export function AppointmentDetailsModal({ appointment, report, canEditReport, is
         <span className={`appointment-status appointment-status-${status.tone}`}><i aria-hidden="true" />{status.label}</span>
       </div>
 
-      <dl className="appointment-meta">
-        <div><Stethoscope size={18} aria-hidden="true" /><div><dt>Dentista</dt><dd>{appointment.professional.name}</dd></div></div>
-        <div><CalendarDays size={18} aria-hidden="true" /><div><dt>Data da consulta</dt><dd>{clinicDateLabel(clinicDate(appointment.startsAt))}<small>{'Horário de Brasília'}</small></dd></div></div>
-        <div><Clock3 size={18} aria-hidden="true" /><div><dt>Horário</dt><dd><time dateTime={appointment.startsAt}>{clinicTime(appointment.startsAt)}</time></dd></div></div>
-        <div><Hourglass size={18} aria-hidden="true" /><div><dt>Duração</dt><dd>{formatAppointmentDuration(duration)}</dd></div></div>
-      </dl>
+      <ul className="appointment-meta">
+        <li>
+          <Stethoscope size={18} aria-hidden="true" />
+          <div>
+            <span className="appointment-meta-label">Dentista</span>
+            <span className="appointment-meta-value">{appointment.professional.name}</span>
+          </div>
+        </li>
+        <li>
+          <CalendarDays size={18} aria-hidden="true" />
+          <div>
+            <span className="appointment-meta-label">Data da consulta</span>
+            <span className="appointment-meta-value">
+              {clinicDateLabel(clinicDate(appointment.startsAt))}
+              <small>{'Horário de Brasília'}</small>
+            </span>
+          </div>
+        </li>
+        <li>
+          <Clock3 size={18} aria-hidden="true" />
+          <div>
+            <span className="appointment-meta-label">Horário</span>
+            <span className="appointment-meta-value">
+              <time dateTime={appointment.startsAt}>{clinicTime(appointment.startsAt)}</time>
+            </span>
+          </div>
+        </li>
+        <li>
+          <Hourglass size={18} aria-hidden="true" />
+          <div>
+            <span className="appointment-meta-label">Duração</span>
+            <span className="appointment-meta-value">{formatAppointmentDuration(duration)}</span>
+          </div>
+        </li>
+      </ul>
 
       <div className="appointment-procedure-summary">
         <div><span>Procedimento</span><strong>{appointment.procedure?.name ?? 'Não informado'}</strong></div>
@@ -122,13 +157,15 @@ export function AppointmentDetailsModal({ appointment, report, canEditReport, is
         <ArrowUpRight size={18} aria-hidden="true" />
       </Link>
 
-      <div className="appointment-report">
-        <label htmlFor={reportId}><FileText size={17} aria-hidden="true" />Relatório da consulta{!canEditReport && <span>Somente leitura</span>}</label>
-        <textarea id={reportId} rows={3} value={report} onChange={(event) => onReportChange(event.target.value)}
-          disabled={!canEditReport || submitting} aria-describedby={`${reportId}-hint`}
-          placeholder={canEditReport ? 'Procedimentos realizados, observações e orientações ao paciente…' : 'Nenhum relatório registrado.'} />
-        <p id={`${reportId}-hint`}>Disponível no histórico do paciente para a equipe clínica.</p>
-      </div>
+      {!pending && (
+        <div className="appointment-report">
+          <label htmlFor={reportId}><FileText size={17} aria-hidden="true" />Relatório da consulta{!canEditReport && <span>Somente leitura</span>}</label>
+          <textarea id={reportId} rows={3} value={report} onChange={(event) => onReportChange(event.target.value)}
+            disabled={!canEditReport || submitting} aria-describedby={`${reportId}-hint`}
+            placeholder={canEditReport ? 'Procedimentos realizados, observações e orientações ao paciente…' : 'Nenhum relatório registrado.'} />
+          <p id={`${reportId}-hint`}>Disponível no histórico do paciente para a equipe clínica.</p>
+        </div>
+      )}
 
       {saveError && <p role="alert" className="form-error">{saveError}</p>}
       {pendingExit && <div id={`${reportId}-unsaved`} className="appointment-unsaved" role="alert">

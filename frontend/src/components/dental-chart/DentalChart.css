@@ -1,8 +1,10 @@
 .odg-workspace {
-  --odg-primary: #4655e0;
-  --odg-primary-hover: #3846c7;
-  --odg-primary-soft: #eef0ff;
-  --odg-primary-ring: rgba(70, 85, 224, 0.28);
+  --odg-primary: var(--color-primary, #241d1b);
+  --odg-primary-hover: var(--color-primary-hover, #3a322f);
+  --odg-primary-soft: var(--color-secondary-container, rgba(180, 154, 112, 0.14));
+  --odg-primary-ring: var(--color-primary-glow, rgba(180, 154, 112, 0.18));
+  --odg-accent: var(--color-secondary, #b49a70);
+  --odg-accent-deep: var(--gold-text, #8a6a2f);
   --odg-stage: #eef1f6;
   --odg-border: #e3e6ee;
   --odg-text: #1f2433;
@@ -25,7 +27,7 @@
   align-items: center;
   gap: 6px;
   margin-bottom: 8px;
-  color: #4655e0;
+  color: var(--odg-accent-deep);
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
@@ -211,7 +213,7 @@
 .odg-tabs button.is-active {
   background: var(--odg-primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(70, 85, 224, 0.3);
+  box-shadow: 0 2px 8px rgba(36, 29, 27, 0.22);
 }
 
 .odg-segmented button:focus-visible,
@@ -268,7 +270,7 @@
 .odg-projected-labels { position: absolute; inset: 0; pointer-events: none; }
 .odg-projected-labels svg { position: absolute; inset: 0; overflow: hidden; }
 .odg-projected-labels path { fill: none; stroke: #94a3b8; stroke-width: 1; opacity: 0.5; }
-.odg-projected-labels path.is-selected { stroke: #4263e8; stroke-width: 1.5; opacity: 0.9; }
+.odg-projected-labels path.is-selected { stroke: var(--odg-accent-deep); stroke-width: 1.5; opacity: 0.9; }
 .odg-3d-badge {
   position: absolute;
   top: 0;
@@ -288,14 +290,15 @@
   pointer-events: auto;
   cursor: pointer;
 }
-.odg-3d-badge.is-selected { background: #4f63e7; color: #fff; border-color: #3445c4; box-shadow: 0 3px 10px #4f63e744; }
-.odg-3d-badge:hover, .odg-3d-badge.is-hovered { outline: 2px solid #aab6ff; outline-offset: 2px; }
-.odg-3d-badge:focus-visible { outline: 3px solid #3445c4; outline-offset: 3px; }
+.odg-3d-badge.is-selected { background: var(--odg-primary); color: #fff; border-color: var(--odg-primary-hover); box-shadow: 0 3px 10px rgba(36, 29, 27, 0.28); }
+.odg-3d-badge:hover, .odg-3d-badge.is-hovered { outline: 2px solid var(--odg-accent); outline-offset: 2px; }
+.odg-3d-badge:focus-visible { outline: 3px solid var(--odg-accent-deep); outline-offset: 3px; }
 .odg-fallback-notice { margin: 0; padding: 0 12px 8px; text-align: center; font-size: 0.73rem; color: #65718a; }
 .odg-anatomical { width: 100%; height: 100%; max-height: 600px; }
 .odg-anatomical-tooth { cursor: pointer; outline: none; }
 .odg-anatomical-tooth:hover .odg-anatomical-crown,
-.odg-anatomical-tooth:focus-visible .odg-anatomical-crown { stroke: #4f63e7; stroke-width: 2.5; }
+.odg-anatomical-tooth:focus-visible .odg-anatomical-crown { stroke: var(--odg-accent-deep); stroke-width: 2.5; }
+.odg-anatomical-hit { pointer-events: all; }
 .odg-anatomical-label text { text-anchor: middle; font: 600 11px sans-serif; }
 .odg-anatomical-label text { pointer-events: none; }
 .odg-arch-captions { fill: #7e8a9c; text-anchor: middle; font: 500 11px sans-serif; letter-spacing: 2px; }
@@ -361,13 +364,21 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   padding: 10px 14px 14px;
 }
 
+.odg-stage-footer .odg-tabs {
+  flex: 1 1 auto;
+  justify-content: center;
+  max-width: calc(100% - 52px);
+}
+
 .odg-fullscreen {
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
+  position: relative;
+  flex-shrink: 0;
+  margin-inline-start: auto;
   background: #fff;
   border: 1px solid var(--odg-border);
 }
@@ -392,19 +403,19 @@
 }
 
 .odg-tooth:hover .odg-tooth-shape {
-  stroke: var(--odg-primary, #4655e0);
+  stroke: var(--odg-primary);
   stroke-width: 1.8;
   filter: brightness(1.04);
 }
 
 .odg-tooth:focus-visible .odg-tooth-shape,
 .odg-tooth:focus-visible .odg-tooth-ghost {
-  stroke: #1d2bd1;
+  stroke: var(--odg-accent-deep);
   stroke-width: 3;
 }
 
 .odg-tooth.is-selected .odg-tooth-shape {
-  stroke: #3445c4;
+  stroke: var(--odg-primary-hover);
   stroke-width: 2;
 }
 
@@ -421,12 +432,12 @@
 
 .odg-badge circle {
   fill: #fff;
-  stroke: #3445c4;
+  stroke: var(--odg-primary-hover);
   stroke-width: 2;
 }
 
 .odg-badge text {
-  fill: #3445c4;
+  fill: var(--odg-primary-hover);
   font-size: 12px;
   font-weight: 700;
   text-anchor: middle;
@@ -468,11 +479,11 @@
 }
 
 .odg-label:hover text {
-  fill: var(--odg-primary, #4655e0);
+  fill: var(--odg-primary);
 }
 
 .odg-label.is-selected rect {
-  fill: #4655e0;
+  fill: var(--odg-primary);
 }
 
 .odg-label.is-selected text {
@@ -480,11 +491,11 @@
 }
 
 .odg-label.is-selected line {
-  stroke: #4655e0;
+  stroke: var(--odg-primary);
 }
 
 .odg-label.is-selected .odg-label-dot {
-  fill: #4655e0;
+  fill: var(--odg-primary);
 }
 
 /* --- 3D labels --- */
@@ -501,7 +512,7 @@
 }
 
 .odg-3d-label.is-selected {
-  background: #4655e0;
+  background: var(--odg-primary);
   color: #fff;
 }
 
@@ -534,23 +545,23 @@
 }
 
 .odg-cell:hover .odg-face {
-  stroke: #4655e0;
+  stroke: var(--odg-primary);
 }
 
 .odg-cell:focus-visible .odg-cell-halo,
 .odg-cell:focus-visible .odg-face {
-  stroke: #1d2bd1;
+  stroke: var(--odg-accent-deep);
   stroke-width: 2;
 }
 
 .odg-cell-halo {
-  fill: rgba(70, 85, 224, 0.14);
-  stroke: #4655e0;
+  fill: var(--odg-primary-soft);
+  stroke: var(--odg-primary);
   stroke-width: 2;
 }
 
 .odg-cell.is-selected .odg-cell-number {
-  fill: #4655e0;
+  fill: var(--odg-primary);
   font-weight: 800;
 }
 
@@ -593,8 +604,8 @@
 }
 
 .odg-faces-switch button.is-active {
-  background: #4655e0;
-  border-color: #4655e0;
+  background: var(--odg-primary);
+  border-color: var(--odg-primary);
   color: #fff;
 }
 
@@ -632,21 +643,21 @@
 
 .odg-face-option:hover polygon {
   fill-opacity: 0.8;
-  stroke: #4655e0;
+  stroke: var(--odg-primary);
 }
 
 .odg-face-option.is-picked polygon {
-  stroke: #3445c4;
+  stroke: var(--odg-primary-hover);
   stroke-width: 4;
 }
 
 .odg-face-option.is-picked text {
-  fill: #3445c4;
+  fill: var(--odg-primary-hover);
   font-weight: 800;
 }
 
 .odg-face-option:focus-visible polygon {
-  stroke: #1d2bd1;
+  stroke: var(--odg-accent-deep);
   stroke-width: 4;
 }
 
@@ -828,7 +839,7 @@
 }
 
 .odg-chips button:hover {
-  background: rgba(70, 85, 224, 0.15);
+  background: var(--odg-primary-ring);
 }
 
 .odg-chips button:focus-visible {
@@ -854,18 +865,18 @@
 }
 
 .odg-face-toggles button:hover:not(:disabled) {
-  border-color: #4655e0;
-  color: #4655e0;
+  border-color: var(--odg-primary);
+  color: var(--odg-primary);
 }
 
 .odg-face-toggles button.is-active {
-  background: #4655e0;
-  border-color: #4655e0;
+  background: var(--odg-primary);
+  border-color: var(--odg-primary);
   color: #fff;
 }
 
 .odg-face-toggles button:focus-visible {
-  outline: 2px solid #4655e0;
+  outline: 2px solid var(--odg-primary);
   outline-offset: 2px;
 }
 
@@ -928,7 +939,7 @@
   font-size: 0.92rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(70, 85, 224, 0.3);
+  box-shadow: 0 6px 16px rgba(36, 29, 27, 0.22);
   transition: background 0.15s, transform 0.1s;
 }
 
@@ -1156,6 +1167,27 @@
   margin: 0 0 12px;
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+@media (max-width: 800px) {
+  .odg-anatomical {
+    width: 100%;
+    height: auto;
+    max-height: none;
+  }
+
+  .odg-anatomical.is-stacked {
+    min-height: 420px;
+  }
+
+  .odg-canvas-wrap {
+    padding: 64px 8px 0;
+    min-height: 320px;
+  }
+
+  .odg-stage-footer .odg-tabs {
+    max-width: calc(100% - 48px);
+  }
 }
 
 @media (max-width: 720px) {

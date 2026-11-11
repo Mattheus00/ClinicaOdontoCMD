@@ -128,6 +128,7 @@ export type PatientInsurance = {
 export type BillingSummary = {
   approved: number;
   pending: number;
+  draft?: number;
   paid: number;
   overdue: number;
   openBalance: number;
@@ -220,4 +221,33 @@ export type Appointment = {
 export type ConversationStatus = 'BOT_ACTIVE' | 'TRANSFERRED' | 'COMPLETED';
 export type Conversation = { id: string; patientName?: string; phone: string; lastMessage: string; updatedAt: string; status: ConversationStatus; unreadCount: number; takenOverByCurrentUser?: boolean };
 export type Invoice = { id: string; issuedAt: string; amount: number; status: 'PAID' | 'PENDING' | 'FAILED'; invoiceUrl?: string };
-export type Subscription = { planName: string; status: 'TRIAL' | 'ACTIVE' | 'SUSPENDED'; price: number; currency?: string; nextBillingAt?: string | null; trialEndsAt?: string | null; features: string[] };
+export type BillingPlan = {
+  id?: string;
+  slug: string;
+  name: string;
+  description?: string;
+  priceCents: number;
+  listPriceCents?: number | null;
+  currency?: string;
+  maxProfessionals?: number;
+  maxTeamUsers?: number;
+  includesWhatsapp?: boolean;
+  features: string[];
+  highlighted?: boolean;
+  checkoutEnabled?: boolean;
+  comingSoon?: boolean;
+};
+export type Subscription = {
+  planName: string;
+  planSlug?: string | null;
+  status: 'TRIAL' | 'ACTIVE' | 'SUSPENDED';
+  canCancel?: boolean;
+  price: number;
+  priceCents?: number;
+  listPriceCents?: number | null;
+  currency?: string;
+  nextBillingAt?: string | null;
+  trialEndsAt?: string | null;
+  features: string[];
+  maxProfessionals?: number | null;
+};

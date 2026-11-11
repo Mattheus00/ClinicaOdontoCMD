@@ -1,10 +1,6 @@
 import {
-  BellRing,
   CalendarDays,
-  CircleDollarSign,
   ClipboardList,
-  Link2,
-  Package,
   Sparkles,
   Stethoscope,
   UsersRound,
@@ -33,112 +29,44 @@ type TourStep = {
 const STEPS: TourStep[] = [
   {
     icon: Sparkles,
-    title: 'Boas-vindas ao portal Velora',
+    title: 'Primeiros passos',
     description:
-      'Em poucos passos você vai conhecer as áreas do sistema. Você pode pular agora e rever este tutorial quando quiser pelo botão "Tutorial" no menu.',
-    roles: ['ADMIN', 'SECRETARY', 'DENTIST'],
-  },
-  {
-    icon: CalendarDays,
-    title: 'Agenda',
-    description: 'É a tela principal: mostra as consultas da semana e de cada dentista.',
-    tips: [
-      'Clique em "Novo agendamento" para marcar uma consulta.',
-      'Clique em uma consulta para confirmar, cancelar ou enviar a confirmação pelo WhatsApp.',
-      'Solicitações vindas do link da bio aparecem como "Aguardando aceite".',
-    ],
-    to: '/agenda',
-    roles: ['ADMIN', 'SECRETARY'],
-  },
-  {
-    icon: CalendarDays,
-    title: 'Sua agenda',
-    description: 'Aqui ficam as suas consultas da semana.',
-    tips: [
-      'Clique em uma consulta para ver os dados do paciente.',
-      'Ao concluir o atendimento, preencha o relatório e conclua a consulta do que foi feito.',
-      'O relatório fica no histórico do paciente para qualquer dentista consultar depois.',
-    ],
-    to: '/agenda',
-    roles: ['DENTIST'],
-  },
-  {
-    icon: UsersRound,
-    title: 'Pacientes',
-    description: 'Cadastro completo de cada paciente, com prontuário.',
-    tips: [
-      'Use a busca por nome, telefone ou CPF.',
-      'Na ficha ficam cadastro, anamnese, odontograma, histórico de consultas e financeiro.',
-      'Quando marcarem uma consulta com você, o sino de notificações avisa na hora.',
-    ],
-    to: '/patients',
+      'Este checklist rápido mostra o essencial para colocar a clínica em funcionamento no Velora.',
     roles: ['ADMIN', 'SECRETARY', 'DENTIST'],
   },
   {
     icon: Stethoscope,
-    title: 'Dentistas',
-    description: 'Monte a equipe da clínica.',
-    tips: [
-      'Cadastre o dentista e envie o link de primeiro acesso para ele criar a senha.',
-      'O dentista só aparece no agendamento online depois de concluir esse primeiro acesso.',
-    ],
+    title: 'Cadastre um dentista',
+    description: 'Adicione a equipe e envie o link de primeiro acesso para cada profissional.',
+    tips: ['O dentista só entra na agenda online depois de criar a senha pelo convite.'],
     to: '/dentists',
     roles: ['ADMIN', 'SECRETARY'],
   },
   {
     icon: ClipboardList,
-    title: 'Procedimentos',
-    description: 'Lista de tratamentos oferecidos e seus valores.',
-    tips: ['Os procedimentos aparecem na hora de agendar e no link da bio.'],
+    title: 'Defina os procedimentos',
+    description: 'Cadastre os tratamentos e valores usados na agenda e no link da bio.',
     to: '/procedures',
     roles: ['ADMIN', 'SECRETARY'],
   },
   {
-    icon: Package,
-    title: 'Estoque',
-    description: 'Controle de materiais odontológicos e dos demais itens da clínica.',
-    tips: [
-      'Use "Entrada" quando chegar material e "Saída" quando ele for usado.',
-      'Itens abaixo do estoque mínimo aparecem com o aviso "Repor".',
-    ],
-    to: '/estoque',
-    roles: ['ADMIN', 'SECRETARY'],
-  },
-  {
-    icon: Package,
-    title: 'Estoque',
-    description: 'Registre os materiais que você usar nos atendimentos.',
-    tips: ['Clique em "Saída" no material usado e informe a quantidade.'],
-    to: '/estoque',
-    roles: ['DENTIST'],
-  },
-  {
-    icon: CircleDollarSign,
-    title: 'Financeiro',
-    description: 'Acompanhe o faturamento e os pagamentos das consultas realizadas.',
-    to: '/financial',
+    icon: UsersRound,
+    title: 'Cadastre um paciente',
+    description: 'Na ficha ficam cadastro, anamnese, odontograma e financeiro do paciente.',
+    to: '/patients',
     roles: ['ADMIN', 'SECRETARY', 'DENTIST'],
   },
   {
-    icon: Link2,
-    title: 'Link da bio',
-    description: 'Link de agendamento online para colocar no Instagram.',
-    tips: [
-      'O paciente escolhe dentista, procedimento e horário.',
-      'Cada pedido chega no sino de "Solicitações online" para a equipe aceitar ou recusar.',
-    ],
-    to: '/booking-link',
-    roles: ['ADMIN', 'SECRETARY'],
-  },
-  {
-    icon: BellRing,
-    title: 'Tudo pronto!',
-    description: 'Comece pela agenda. Se precisar, abra o tutorial de novo pelo botão "Tutorial" no menu.',
+    icon: CalendarDays,
+    title: 'Primeiro agendamento',
+    description: 'Marque a primeira consulta na agenda — é o centro do dia a dia da clínica.',
+    tips: ['Use "Novo agendamento" para escolher paciente, dentista, procedimento e horário.'],
+    to: '/agenda',
     roles: ['ADMIN', 'SECRETARY', 'DENTIST'],
   },
 ];
 
-const TUTORIAL_VERSION = 1;
+const TUTORIAL_VERSION = 2;
 
 export default function WelcomeTour() {
   const { role, userId } = useAuth();

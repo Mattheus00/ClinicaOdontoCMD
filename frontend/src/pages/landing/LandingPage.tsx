@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -14,8 +14,9 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLandingScrollMotion } from "../../lib/useLandingScrollMotion";
+import { moneyFromCents, VELORA_PLANS } from "../../lib/velora-plans";
 import mountMoment from "./taste/word-highlight/moment.js";
 import * as momentLibrary from "./taste/lib.js";
 import { ProductMock } from "./ProductMock";
@@ -23,6 +24,11 @@ import "./LandingPage.css";
 
 const demoPath = "/cadastro";
 const loginPath = "/login";
+const CheckIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M3.5 8.5 6.5 11.5 12.5 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
 const features = [
   {
@@ -98,8 +104,6 @@ const questions: [string, string][] = [
   ],
 ];
 
-const CTA_MOTION_MS = 620;
-
 function LandingCta({
   to,
   variant = "light",
@@ -111,40 +115,15 @@ function LandingCta({
   children: string;
   onBeforeNavigate?: () => void;
 }) {
-  const navigate = useNavigate();
-  const [firing, setFiring] = useState(false);
-  const timer = useRef<number | null>(null);
-
-  useEffect(() => () => {
-    if (timer.current) window.clearTimeout(timer.current);
-  }, []);
-
-  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (firing) {
-      event.preventDefault();
-      return;
-    }
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      onBeforeNavigate?.();
-      return;
-    }
-    event.preventDefault();
-    setFiring(true);
-    onBeforeNavigate?.();
-    timer.current = window.setTimeout(() => {
-      navigate(to);
-    }, CTA_MOTION_MS);
-  };
-
   return (
     <Link
-      className={`landing-button landing-button-${variant}${firing ? " is-firing" : ""}`}
+      className={`landing-button landing-button-${variant}`}
       to={to}
-      onClick={handleClick}
+      onClick={() => onBeforeNavigate?.()}
     >
       <span className="landing-button-trail" aria-hidden="true" />
       <span className="landing-button-arrow" aria-hidden="true">
-        <ArrowUpRight size={21} strokeWidth={1.7} />
+        <ArrowUpRight size={16} strokeWidth={1.8} />
       </span>
       <span className="landing-button-label">{children}</span>
     </Link>
@@ -264,8 +243,12 @@ export default function LandingPage() {
             <a href="#faq">FAQ</a>
           </nav>
           <div className="landing-header-actions">
+            <Link className="landing-login landing-login-desktop" to={loginPath}>
+              Entrar
+              <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>
             <LandingCta to={demoPath} variant="dark">
-              Solicitar demonstração
+              Começar grátis
             </LandingCta>
             <button
               ref={menuButton}
@@ -302,7 +285,7 @@ export default function LandingPage() {
             <ArrowUpRight />
           </Link>
           <LandingCta to={demoPath} variant="dark" onBeforeNavigate={() => setMenuOpen(false)}>
-            Solicitar demonstração
+            Começar grátis
           </LandingCta>
         </nav>
       </header>
@@ -335,7 +318,7 @@ export default function LandingPage() {
               </p>
               <div className="landing-hero-actions">
                 <LandingCta to={demoPath} variant="light">
-                  Solicitar demonstração
+                  Começar grátis
                 </LandingCta>
                 <a className="landing-text-link landing-hero-secondary" href="#plataforma">
                   Ver a plataforma
@@ -536,25 +519,79 @@ export default function LandingPage() {
             </p>
             <div className="landing-demo-actions">
               <LandingCta to={demoPath} variant="dark">
-                Solicitar demonstração
+                Começar grátis
               </LandingCta>
               <Link className="landing-text-link" to={demoPath}>
                 Falar com a equipe
                 <ArrowUpRight size={20} />
               </Link>
             </div>
-            <div className="landing-plans-slot" aria-hidden="true">
-              <div />
-              <div />
-              <div />
+          </div>
+        </section>
+
+        <section className="landing-pricing" id="planos" aria-labelledby="pricing-title">
+          <div className="landing-shell landing-pricing-inner" data-enter="true">
+            <span className="landing-section-number">07 / Planos</span>
+            <p className="landing-kicker">PLANOS E PREÇOS</p>
+            <h2 id="pricing-title">
+              Escolha o plano certo
+              <br />
+              para a sua clínica.
+            </h2>
+            <p className="landing-pricing-lead">
+              Comece com Solo ou Clínica. O Clínica é o melhor custo-benefício para equipes em crescimento.
+              Preços promocionais de lançamento nos primeiros 12 meses.
+            </p>
+            <div className="landing-plans-grid">
+              {VELORA_PLANS.map((plan) => {
+                const ctaPath = plan.checkoutEnabled ? `${demoPath}?plan=${plan.slug}` : demoPath;
+                return (
+                  <article
+                    key={plan.slug}
+                    className={`landing-plan-card${plan.highlighted ? " is-featured" : ""}${plan.comingSoon || !plan.checkoutEnabled ? " is-soon" : ""}`}
+                  >
+                    {plan.highlighted ? <span className="landing-plan-badge">Mais popular</span> : null}
+                    {plan.comingSoon || !plan.checkoutEnabled ? (
+                      <span className="landing-plan-badge landing-plan-badge-soon">Em breve</span>
+                    ) : null}
+                    <h3>{plan.name}</h3>
+                    <p className="landing-plan-desc">{plan.description}</p>
+                    <div className="landing-plan-price">
+                      {plan.listPriceCents > plan.priceCents ? (
+                        <span className="landing-plan-list-price">{moneyFromCents(plan.listPriceCents)}</span>
+                      ) : null}
+                      <strong>{moneyFromCents(plan.priceCents)}</strong>
+                      <span>/mês</span>
+                    </div>
+                    <ul>
+                      {plan.features.map((feature) => (
+                        <li key={feature}>
+                          <CheckIcon />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    {plan.checkoutEnabled ? (
+                      <Link className={`landing-plan-cta${plan.highlighted ? " is-primary" : ""}`} to={ctaPath}>
+                        Assinar {plan.name}
+                      </Link>
+                    ) : (
+                      <span className="landing-plan-cta is-disabled">Disponível em breve</span>
+                    )}
+                  </article>
+                );
+              })}
             </div>
+            <p className="landing-pricing-note">
+              Performance será liberado quando automações e indicadores avançados estiverem prontos.
+            </p>
           </div>
         </section>
 
         <section className="landing-faq" id="faq" aria-labelledby="faq-title">
           <div className="landing-shell landing-faq-grid">
             <div className="landing-faq-heading" data-enter="true">
-              <span className="landing-section-number">07 / FAQ</span>
+              <span className="landing-section-number">08 / FAQ</span>
               <h2 id="faq-title">
                 Tudo o que você
                 <br />
@@ -591,9 +628,6 @@ export default function LandingPage() {
               <br />
               Sua gestão também pode.
             </p>
-            <LandingCta to={demoPath} variant="light">
-              Conhecer o Velora
-            </LandingCta>
           </div>
         </section>
       </main>

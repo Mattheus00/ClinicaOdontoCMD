@@ -21,14 +21,22 @@ export function AppFeedback() {
     const onToast = (event: Event) => {
       const detail = (event as CustomEvent<{ message?: string; tone?: FeedbackTone }>).detail;
       const tone = detail?.tone === 'success' || detail?.tone === 'error' ? detail.tone : 'info';
+      if (tone === 'success') {
+        setItems((current) => current.filter((entry) => entry.tone !== 'error'));
+      }
       push(detail?.message ?? 'Atualização recebida.', tone);
+    };
+    const onClearErrors = () => {
+      setItems((current) => current.filter((entry) => entry.tone !== 'error'));
     };
 
     window.addEventListener('app:api-error', onError);
     window.addEventListener('app:toast', onToast);
+    window.addEventListener('app:toast-clear-errors', onClearErrors);
     return () => {
       window.removeEventListener('app:api-error', onError);
       window.removeEventListener('app:toast', onToast);
+      window.removeEventListener('app:toast-clear-errors', onClearErrors);
     };
   }, []);
 

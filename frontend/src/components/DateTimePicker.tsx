@@ -27,6 +27,10 @@ type Props = {
   min?: string;
   max?: string;
   clearable?: boolean;
+  /** Times "HH:mm" that cannot be selected (occupied). */
+  occupiedTimes?: string[];
+  /** If set, only these times are enabled (working hours). */
+  availableTimes?: string[];
 };
 
 function pad(value: number) {
@@ -96,6 +100,8 @@ export default function DateTimePicker({
   min,
   max,
   clearable = true,
+  occupiedTimes = [],
+  availableTimes,
 }: Props) {
   const dateOnly = mode === 'date';
   const rootRef = useRef<HTMLDivElement>(null);
@@ -114,9 +120,28 @@ export default function DateTimePicker({
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
 
-  const timeSlots = useMemo(() => buildTimeSlots(), []);
+  const occupiedSet = useMemo(() => new Set(occupiedTimes), [occupiedTimes]);
+  const availableSet = useMemo(
+    () => (availableTimes ? new Set(availableTimes) : null),
+    [availableTimes],
+  );
+  const timeSlots = useMemo(() => {
+    const base = availableTimes?.length ? availableTimes : buildTimeSlots();
+    return base;
+  }, [availableTimes]);
   const calendarDays = useMemo(() => buildCalendarDays(visibleMonth), [visibleMonth]);
   const todayKey = toDateKey(new Date());
+
+  const isTimeDisabled = (slot: string, dateKey: string) => {
+    if (occupiedSet.has(slot)) return true;
+    if (availableSet && !availableSet.has(slot)) return true;
+    if (!min || !dateKey) return false;
+    const minDate = min.slice(0, 10);
+    const minTime = min.includes('T') ? min.slice(11, 16) : '';
+    if (dateKey < minDate) return true;
+    if (dateKey === minDate && minTime && slot < minTime) return true;
+    return false;
+  };
 
   useEffect(() => {
     const next = parseValue(value, dateOnly);
@@ -334,19 +359,26 @@ export default function DateTimePicker({
                 Horários
               </div>
               <div className="dtp-times-list">
-                {timeSlots.map((slot) => (
-                  <button
-                    key={slot}
-                    type="button"
-                    className={`dtp-time ${selectedTime === slot ? 'is-selected' : ''}`}
-                    onClick={() => {
-                      if (selectedDate) commitDateTime(selectedDate, slot);
-                      else setSelectedTime(slot);
-                    }}
-                  >
-                    {slot}
-                  </button>
-                ))}
+                {timeSlots.map((slot) => {
+                  const disabled = isTimeDisabled(slot, selectedDate || todayKey);
+                  const occupied = occupiedSet.has(slot);
+                  return (
+                    <button
+                      key={slot}
+                      type="button"
+                      disabled={disabled}
+                      title={occupied ? 'Horário ocupado' : undefined}
+                      className={`dtp-time ${selectedTime === slot ? 'is-selected' : ''} ${occupied ? 'is-occupied' : ''} ${disabled ? 'is-disabled' : ''}`}
+                      onClick={() => {
+                        if (disabled) return;
+                        if (selectedDate) commitDateTime(selectedDate, slot);
+                        else setSelectedTime(slot);
+                      }}
+                    >
+                      {slot}{occupied ? ' · ocupado' : ''}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

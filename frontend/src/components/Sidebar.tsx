@@ -3,6 +3,7 @@ import {
   CircleDollarSign,
   CircleHelp,
   ClipboardList,
+  CreditCard,
   Link2,
   LogOut,
   Package,
@@ -37,6 +38,7 @@ const allNavItems: Array<{
   { to: '/procedures', label: 'Procedimentos', shortLabel: 'Proced.', icon: ClipboardList, roles: ['ADMIN', 'SECRETARY'] },
   { to: '/estoque', label: 'Estoque', shortLabel: 'Estoque', icon: Package, roles: ['ADMIN', 'SECRETARY', 'DENTIST'] },
   { to: '/booking-link', label: 'Link da bio', shortLabel: 'Link bio', icon: Link2, roles: ['ADMIN', 'SECRETARY'] },
+  { to: '/billing', label: 'Assinatura', shortLabel: 'Plano', icon: CreditCard, roles: ['ADMIN'] },
 ];
 
 export default function Sidebar() {
@@ -68,7 +70,7 @@ export default function Sidebar() {
           <img src={LOGO} alt="" />
           <strong>Velora</strong>
         </div>
-        <small>{role === 'DENTIST' ? 'Portal do dentista' : 'Portal de gestão'}</small>
+        <small>{role === 'DENTIST' ? 'Dentista' : 'Gestão'}</small>
       </div>
 
       {showNotifications ? (

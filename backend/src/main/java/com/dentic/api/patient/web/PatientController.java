@@ -82,10 +82,13 @@ public class PatientController {
     ) {
         int pageSize = Math.min(Math.max(size, 1), 50);
         int pageNumber = Math.max(page, 0);
+        String term = search == null ? "" : search.trim();
+        String phoneDigits = PhoneNormalizer.normalize(term);
         Page<Patient> found = patients.searchPaged(
                 clinicId(),
-                search == null ? "" : search.trim(),
-                PageRequest.of(pageNumber, pageSize, Sort.by("name"))
+                term,
+                phoneDigits,
+                PageRequest.of(pageNumber, pageSize)
         );
         List<PatientResponse> content = found.getContent().stream().map(PatientResponse::from).toList();
         return new PageResponse<>(content, found.getTotalPages(), (int) found.getTotalElements(), found.getNumber(), found.getSize());
@@ -106,7 +109,11 @@ public class PatientController {
         logAccess(patient.getId(), "VIEW", "summary");
         BillingSummary billing = billingSummary(patient.getId());
         Optional<PatientAnamnesis> anamnesis = anamneses.findByPatientId(patient.getId());
-        OffsetDateTime lastVisit = appointments.findLatestRelevantVisit(patient.getId(), PageRequest.of(0, 1))
+        OffsetDateTime lastVisit = appointments.findLatestRelevantVisit(
+                        patient.getId(),
+                        OffsetDateTime.now(),
+                        PageRequest.of(0, 1)
+                )
                 .stream().findFirst().orElse(null);
         return new PatientSummaryResponse(
                 PatientResponse.from(patient),
@@ -365,8 +372,9 @@ public class PatientController {
     private BillingSummary billingSummary(UUID patientId) {
         var totals = plans.summarize(patientId, LocalDate.now());
         BigDecimal paid = payments.sumPaid(patientId);
+        BigDecimal draft = totals.getDraft() == null ? BigDecimal.ZERO : totals.getDraft();
         BigDecimal open = totals.getApproved().add(totals.getPending()).subtract(paid).max(BigDecimal.ZERO);
-        return new BillingSummary(totals.getApproved(), totals.getPending(), paid, totals.getOverdue(), open);
+        return new BillingSummary(totals.getApproved(), totals.getPending(), draft, paid, totals.getOverdue(), open);
     }
 
     private void apply(Patient patient, PatientRequest request) {
@@ -546,7 +554,14 @@ public class PatientController {
         }
     }
 
-    public record BillingSummary(BigDecimal approved, BigDecimal pending, BigDecimal paid, BigDecimal overdue, BigDecimal openBalance) {}
+    public record BillingSummary(
+            BigDecimal approved,
+            BigDecimal pending,
+            BigDecimal draft,
+            BigDecimal paid,
+            BigDecimal overdue,
+            BigDecimal openBalance
+    ) {}
     public record PatientSummaryResponse(PatientResponse patient, OffsetDateTime lastVisitAt, boolean pregnantFlag, boolean hasAllergies, BillingSummary billing) {}
     public record AppointmentHistoryResponse(
             UUID id,

@@ -20,11 +20,21 @@ export type BookingPage = {
   procedures: BookingProcedure[];
 };
 
+export type BookingReadiness = {
+  ready: boolean;
+  totalDentists: number;
+  activeDentists: number;
+  procedureCount: number;
+  hasCustomWorkingHours: boolean;
+  workingHoursLabel: string;
+};
+
 export type BookingLink = {
   slug: string;
   path: string;
   caption: string;
   clinicName: string;
+  readiness: BookingReadiness;
 };
 
 export type PublicBookInput = {

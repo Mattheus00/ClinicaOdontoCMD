@@ -1,0 +1,66 @@
+.velora-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.velora-search-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 220px;
+  min-width: 0;
+  color: var(--color-text-muted);
+}
+
+.velora-search-input:focus-within {
+  color: var(--color-secondary);
+}
+
+.velora-search-input .input-field {
+  border: 0;
+  min-height: 36px;
+  padding-inline: 0;
+  box-shadow: none;
+}
+
+.velora-search-input .input-field:focus {
+  box-shadow: none;
+}
+
+.velora-filter-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.velora-filter-chips button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.velora-filter-chips button:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.velora-filter-chips button.is-active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fafaf9;
+}

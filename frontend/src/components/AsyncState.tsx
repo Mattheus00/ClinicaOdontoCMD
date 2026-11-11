@@ -1,12 +1,37 @@
 import type { ReactNode } from 'react';
 
 export function RefreshState({ fetching, error, onRetry }: { fetching: boolean; error: boolean; onRetry: () => void }) {
-  if (error) return <div className="refresh-state" role="status">Não foi possível atualizar. Exibindo os últimos dados. <button type="button" className="btn btn-secondary" onClick={onRetry}>Tentar novamente</button></div>;
-  return fetching ? <div className="refresh-state" role="status">Atualizando…</div> : null;
+  if (!fetching && !error) return null;
+  if (error) {
+    return (
+      <div className="refresh-state-layer" role="status">
+        <div className="refresh-state">
+          Não foi possível atualizar. Exibindo os últimos dados.{' '}
+          <button type="button" className="btn btn-secondary" onClick={onRetry}>
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="refresh-state-layer" role="status">
+      <div className="refresh-state">Atualizando…</div>
+    </div>
+  );
 }
 
-export function LoadingState({ label = 'Carregando dados...' }: { label?: string }) {
-  return <div className="async-state" role="status">{label}</div>;
+export function LoadingState({ label = 'Carregando...' }: { label?: string }) {
+  return (
+    <div className="async-state async-state-loading" role="status" aria-label={label}>
+      <div className="async-skeleton" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+      <span className="async-state-label">{label}</span>
+    </div>
+  );
 }
 
 export function ErrorState({ message, onRetry }: { message?: string; onRetry?: () => void }) {

@@ -1,5 +1,5 @@
 import { clinicDate, clinicDateTime, clinicTime } from '../../lib/clinic-time';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Appointment } from '../../api/types';
 import { layoutConcurrentAppointments } from './schedule-layout';
 import './AgendaScheduleGrid.css';
@@ -89,6 +89,7 @@ export default function AgendaScheduleGrid({
   isRescheduling = false,
 }: Props) {
   const slots = useMemo(() => buildSlots(), []);
+  const gridRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
   const canEdit = Boolean(onSlotClick || onReschedule);
@@ -113,6 +114,34 @@ export default function AgendaScheduleGrid({
     }
     return map;
   }, [appointmentsByDay]);
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    const todayKey = toLocalDateKey(new Date());
+    const todayVisible = weekDays.some((day) => day.date === todayKey);
+    let slotIndex = 0;
+
+    if (todayVisible) {
+      const now = new Date();
+      slotIndex = slotIndexFromDate(now);
+    } else {
+      const upcoming = appointments
+        .filter((item) => !['CANCELLED', 'COMPLETED', 'NO_SHOW'].includes(item.status))
+        .filter((item) => weekDays.some((day) => day.date === toLocalDateKey(item.startsAt)))
+        .sort((a, b) => clinicDateTime(a.startsAt).localeCompare(clinicDateTime(b.startsAt)));
+      const first = upcoming[0];
+      if (first) {
+        slotIndex = slotIndexFromDate(wallDate(first.startsAt));
+      }
+    }
+
+    if (slotIndex < 0) slotIndex = 0;
+    const visibleRows = Math.max(1, Math.floor(grid.clientHeight / ROW_HEIGHT) - 1);
+    const targetIndex = Math.max(0, slotIndex - Math.floor(visibleRows / 3));
+    grid.scrollTop = targetIndex * ROW_HEIGHT;
+  }, [weekDays, appointments]);
 
   const handleDrop = (dayDate: string, slotValue: string) => {
     if (!draggingId || isRescheduling) return;
@@ -147,7 +176,11 @@ export default function AgendaScheduleGrid({
           : 'Clique em um agendamento para ver detalhes e confirmar atendimento.'}
       </div>
 
-      <div className="schedule-grid" style={{ '--schedule-cols': weekDays.length } as React.CSSProperties}>
+      <div
+        ref={gridRef}
+        className="schedule-grid"
+        style={{ '--schedule-cols': weekDays.length } as React.CSSProperties}
+      >
         <div className="schedule-corner" />
         {weekDays.map((day) => (
           <div key={day.date} className={`schedule-header ${day.isToday ? 'is-today' : ''}`}>

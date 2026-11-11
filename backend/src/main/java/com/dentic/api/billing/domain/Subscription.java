@@ -27,8 +27,18 @@ public class Subscription {
     @JoinColumn(name = "clinic_id", nullable = false)
     private Clinic clinic;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id")
+    private Plan plan;
+
     @Column(name = "gateway_subscription_id")
     private String gatewaySubscriptionId;
+
+    @Column(name = "gateway_customer_id", length = 100)
+    private String gatewayCustomerId;
+
+    @Column(name = "gateway_checkout_id", length = 100)
+    private String gatewayCheckoutId;
 
     @Column(nullable = false)
     private String status;

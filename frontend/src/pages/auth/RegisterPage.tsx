@@ -1,6 +1,7 @@
 import {
   ArrowRight,
   Building2,
+  Check,
   CheckCircle2,
   Eye,
   EyeOff,
@@ -11,13 +12,15 @@ import {
   UsersRound,
   type LucideIcon,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { maskPhone, withMask } from '../../lib/masks';
+import { readApiError } from '../../lib/api-error';
 import { api } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 import { AuthBrand, AuthShell } from './AuthShell';
 
 const phoneSchema = z
@@ -27,15 +30,25 @@ const phoneSchema = z
     'Informe um telefone válido.',
   );
 
+const PASSWORD_RULES = [
+  { id: 'length', label: 'Ao menos 12 caracteres', test: (value: string) => value.length >= 12 },
+  { id: 'upper', label: 'Uma letra maiúscula', test: (value: string) => /[A-Z]/.test(value) },
+  { id: 'digit', label: 'Um número', test: (value: string) => /[0-9]/.test(value) },
+] as const;
+
+const passwordSchema = z.string().superRefine((value, context) => {
+  for (const rule of PASSWORD_RULES) {
+    if (!rule.test(value)) {
+      context.addIssue({ code: 'custom', message: rule.label });
+    }
+  }
+});
+
 const schema = z.object({
   clinicName: z.string().min(2, 'Informe o nome da clínica.'),
   phone: phoneSchema,
   email: z.string().email('Informe um e-mail válido.'),
-  password: z
-    .string()
-    .min(12, 'Use ao menos 12 caracteres.')
-    .regex(/[A-Z]/, 'Inclua uma maiúscula.')
-    .regex(/[0-9]/, 'Inclua um número.'),
+  password: passwordSchema,
 });
 
 type RegisterData = z.infer<typeof schema>;
@@ -48,21 +61,49 @@ const fields: [keyof RegisterData, string, LucideIcon, string][] = [
 ];
 
 export default function RegisterPage() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [sent, setSent] = useState(false);
+  const [autoLoginFailed, setAutoLoginFailed] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<RegisterData>({
     resolver: zodResolver(schema),
     defaultValues: { clinicName: '' },
   });
+  const passwordValue = form.watch('password') ?? '';
+
+  useEffect(() => {
+    const plan = searchParams.get('plan')?.trim().toLowerCase();
+    if (plan === 'solo' || plan === 'clinica') {
+      sessionStorage.setItem('velora.preferredPlan', plan);
+    }
+  }, [searchParams]);
 
   const submit = form.handleSubmit(async (data) => {
     setError('');
     try {
       await api.post('/auth/register', data);
+      try {
+        const response = await api.post<{ accessToken?: string }>('/auth/login', {
+          email: data.email,
+          password: data.password,
+          rememberMe: true,
+        });
+        if (response.data.accessToken) {
+          login(response.data.accessToken);
+          const next = searchParams.get('next');
+          const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : '/billing';
+          navigate(safeNext, { replace: true });
+          return;
+        }
+      } catch {
+        setAutoLoginFailed(true);
+      }
       setSent(true);
-    } catch {
-      setError('Não foi possível criar a conta. Tente outro e-mail.');
+    } catch (cause: unknown) {
+      setError(readApiError(cause, 'Não foi possível criar a conta. Tente outro e-mail.'));
     }
   });
 
@@ -74,8 +115,15 @@ export default function RegisterPage() {
             <CheckCircle2 size={34} />
           </span>
           <h1>Conta criada com sucesso</h1>
-          <p>Seu acesso já está pronto. Faça login para organizar a agenda e a equipe da clínica.</p>
-          <Link className="auth-shell-submit" to="/login">
+          {autoLoginFailed ? (
+            <p>
+              Sua clínica já está cadastrada. Entre com o e-mail e a senha que você acabou de definir para começar a
+              configurar plano e equipe.
+            </p>
+          ) : (
+            <p>Seu acesso já está pronto. Faça login para organizar a agenda e a equipe da clínica.</p>
+          )}
+          <Link className="auth-shell-submit" to={`/login?next=${encodeURIComponent('/billing')}`}>
             Ir para o login
             <ArrowRight size={18} strokeWidth={1.8} />
           </Link>
@@ -92,7 +140,7 @@ export default function RegisterPage() {
         <div className="auth-shell-copy">
           <p className="auth-shell-kicker">PORTAL VELORA</p>
           <h1>
-            Gestão dedicada para a nossa <em>clínica.</em>
+            Gestão dedicada para a sua <em>clínica.</em>
           </h1>
           <p className="auth-shell-desc">
             Organize pacientes, dentistas, consultas e financeiro com praticidade no dia a dia.
@@ -112,11 +160,8 @@ export default function RegisterPage() {
 
       <section className="auth-shell-panel" aria-labelledby="register-title">
         <div className="auth-shell-card">
-          <p className="auth-shell-eyebrow">PRIMEIRO ACESSO</p>
-          <h2 id="register-title">Vamos começar</h2>
-          <p className="auth-shell-lead">
-            Preencha os dados abaixo para criar seu acesso à plataforma.
-          </p>
+          <h2 id="register-title">Criar conta</h2>
+          <p className="auth-shell-lead">Preencha os dados para começar.</p>
 
           <form className="auth-shell-form" onSubmit={submit} noValidate>
             {fields.map(([field, label, Icon, placeholder]) => {
@@ -147,9 +192,7 @@ export default function RegisterPage() {
                       }
                       placeholder={placeholder}
                       aria-invalid={Boolean(form.formState.errors[field])}
-                      aria-describedby={
-                        form.formState.errors[field] ? `${field}-error` : undefined
-                      }
+                      aria-describedby={isPassword ? 'register-password-rules' : form.formState.errors[field] ? `${field}-error` : undefined}
                       {...registration}
                       onChange={
                         field === 'phone'
@@ -168,9 +211,25 @@ export default function RegisterPage() {
                       </button>
                     ) : null}
                   </span>
-                  <small id={`${field}-error`}>
-                    {form.formState.errors[field]?.message}
-                  </small>
+                  {isPassword ? (
+                    <ul
+                      id="register-password-rules"
+                      className="auth-shell-password-rules"
+                      aria-live="polite"
+                    >
+                      {PASSWORD_RULES.map((rule) => {
+                        const met = rule.test(passwordValue);
+                        return (
+                          <li key={rule.id} className={met ? 'is-met' : undefined}>
+                            <Check size={14} aria-hidden="true" />
+                            {rule.label}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <small id={`${field}-error`}>{form.formState.errors[field]?.message}</small>
+                  )}
                 </div>
               );
             })}

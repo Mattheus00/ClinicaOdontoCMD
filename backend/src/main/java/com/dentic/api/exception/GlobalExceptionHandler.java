@@ -1,5 +1,6 @@
 package com.dentic.api.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,6 +32,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleResponseStatus(ResponseStatusException ex) {
         String message = ex.getReason() != null ? ex.getReason() : "Não foi possível concluir a operação.";
         return ResponseEntity.status(ex.getStatusCode()).body(Map.of("message", message));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrity(DataIntegrityViolationException ex) {
+        String raw = String.valueOf(ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage());
+        if (raw != null && (raw.contains("no_overlapping_appointments") || raw.contains("EXCLUDE"))) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Este horário não está mais disponível. Escolha outro."));
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("message", "Não foi possível salvar: conflito de dados."));
     }
 
     @ExceptionHandler(Exception.class)

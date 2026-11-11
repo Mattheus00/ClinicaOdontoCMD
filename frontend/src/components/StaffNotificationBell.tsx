@@ -2,7 +2,9 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Bell, CalendarDays, CheckCheck, ChevronRight, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { ConfirmDialog } from './ConfirmDialog';
 import { useAuth } from '../contexts/AuthContext';
+import { notifySuccess } from '../lib/notify';
 import {
   useClearStaffNotifications,
   useMarkAllNotificationsRead,
@@ -35,6 +37,7 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
   const navigate = useNavigate();
   const { role } = useAuth();
   const [open, setOpen] = useState(false);
+  const [clearConfirm, setClearConfirm] = useState(false);
   const [panelCoords, setPanelCoords] = useState<PanelCoords | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -165,7 +168,11 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
                     aria-label="Marcar todas as notificações como lidas"
                     title="Marcar todas como lidas"
                     disabled={markAllRead.isPending || clearAll.isPending}
-                    onClick={() => markAllRead.mutate()}
+                    onClick={() =>
+                      markAllRead.mutate(undefined, {
+                        onSuccess: () => notifySuccess('Notificações marcadas como lidas.'),
+                      })
+                    }
                   >
                     <CheckCheck size={15} aria-hidden="true" />
                     Marcar lidas
@@ -178,20 +185,7 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
                     aria-label="Limpar notificações"
                     title="Limpar notificações"
                     disabled={clearAll.isPending}
-                    onClick={() => {
-                      if (window.confirm('Limpar todas as notificações desta lista?')) {
-                        clearAll.mutate(undefined, {
-                          onSuccess: () => {
-                            previousUnread.current = 0;
-                            window.dispatchEvent(
-                              new CustomEvent('app:toast', {
-                                detail: { message: 'Notificações limpas.' },
-                              }),
-                            );
-                          },
-                        });
-                      }
-                    }}
+                    onClick={() => setClearConfirm(true)}
                   >
                     <Trash2 size={16} strokeWidth={1.8} />
                   </button>
@@ -260,6 +254,25 @@ export default function StaffNotificationBell({ enabled = true }: { enabled?: bo
         {unreadCount > 0 ? <span className="staff-bell-badge" aria-hidden="true">{unreadCount > 9 ? '9+' : unreadCount}</span> : null}
       </button>
       {panel}
+      {clearConfirm ? (
+        <ConfirmDialog
+          title="Limpar notificações"
+          danger
+          confirmLabel="Limpar"
+          busy={clearAll.isPending}
+          message={<p>Limpar todas as notificações desta lista?</p>}
+          onCancel={() => setClearConfirm(false)}
+          onConfirm={() =>
+            clearAll.mutate(undefined, {
+              onSuccess: () => {
+                previousUnread.current = 0;
+                setClearConfirm(false);
+                notifySuccess('Notificações limpas.');
+              },
+            })
+          }
+        />
+      ) : null}
     </div>
   );
 }

@@ -1,14 +1,14 @@
 /* Shared photographic auth shell — Velora login + register. */
 .auth-shell {
-  --auth-espresso: #1c1612;
-  --auth-brown: #3a2a20;
-  --auth-paper: #f7f4ec;
-  --auth-ink: #252923;
-  --auth-champagne: #c9a970;
-  --auth-muted: #d8cfc3;
-  --auth-glass: rgba(48, 32, 24, 0.75);
-  --auth-line: rgba(222, 193, 155, 0.2);
-  --auth-input: rgba(28, 18, 14, 0.55);
+  --auth-espresso: #241d1b;
+  --auth-brown: #3a322f;
+  --auth-paper: #fafaf9;
+  --auth-ink: #1c1c1c;
+  --auth-champagne: #b49a70;
+  --auth-muted: #d4d4d4;
+  --auth-glass: rgba(36, 29, 27, 0.78);
+  --auth-line: rgba(180, 154, 112, 0.22);
+  --auth-input: rgba(28, 28, 28, 0.55);
   position: relative;
   isolation: isolate;
   min-height: 100svh;
@@ -332,6 +332,37 @@
   font-size: 12px;
   font-weight: 500;
   color: #f0a8a0;
+}
+
+.auth-shell-password-rules {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(222, 193, 155, 0.65);
+}
+
+.auth-shell-password-rules li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-shell-password-rules li svg {
+  flex-shrink: 0;
+  opacity: 0.35;
+}
+
+.auth-shell-password-rules li.is-met {
+  color: rgba(222, 193, 155, 0.95);
+}
+
+.auth-shell-password-rules li.is-met svg {
+  opacity: 1;
+  color: #7dd3a8;
 }
 
 .auth-shell-remember {

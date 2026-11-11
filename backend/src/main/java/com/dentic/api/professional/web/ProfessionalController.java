@@ -1,8 +1,10 @@
 package com.dentic.api.professional.web;
 
+import com.dentic.api.billing.domain.Plan;
 import com.dentic.api.multitenant.TenantContext;
 import com.dentic.api.appointment.repository.AppointmentRepository;
 import com.dentic.api.odontogram.repository.ToothProcedureRepository;
+import com.dentic.api.onboarding.domain.Clinic;
 import com.dentic.api.onboarding.repository.ClinicRepository;
 import com.dentic.api.onboarding.repository.UserRepository;
 import com.dentic.api.patient.repository.OdontogramEntryRepository;
@@ -96,6 +98,7 @@ public class ProfessionalController {
         String email = normalizeEmail(request.email());
         UUID clinicId = tenant();
         assertEmailAvailable(clinicId, email, null);
+        assertWithinPlanLimit(clinicId);
 
         Professional value = new Professional();
         value.setClinic(clinics.getReferenceById(clinicId));
@@ -180,6 +183,22 @@ public class ProfessionalController {
 
     private static String normalizeEmail(String email) {
         return email.trim().toLowerCase();
+    }
+
+    private void assertWithinPlanLimit(UUID clinicId) {
+        Clinic clinic = clinics.findById(clinicId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Clínica não encontrada"));
+        Plan plan = clinic.getPlan();
+        if (plan == null || plan.getMaxProfessionals() == null) {
+            return;
+        }
+        long current = professionals.findByClinicId(clinicId).size();
+        if (current >= plan.getMaxProfessionals()) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Limite de dentistas do plano " + plan.getName() + " atingido (" + plan.getMaxProfessionals() + ")."
+            );
+        }
     }
 
     private void assertEmailAvailable(UUID clinicId, String email, UUID ignoreProfessionalId) {

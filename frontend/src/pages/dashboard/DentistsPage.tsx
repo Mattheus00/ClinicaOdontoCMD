@@ -2,6 +2,7 @@ import { useDataReadyMetric } from '../../lib/performance';
 import { useState, type FormEvent } from 'react';
 import { Plus } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Modal } from '../../components/Modal';
 import { PageHeader } from '../../components/panel/PageHeader';
 import { useAuth } from '../../contexts/AuthContext';
@@ -12,7 +13,9 @@ import {
   useRegenerateProfessionalInvite,
 } from '../../features/professionals/api';
 import { readApiError } from '../../lib/api-error';
+import { notifyError, notifySuccess } from '../../lib/notify';
 import type { Professional } from '../../api/types';
+import { professionalInitial } from '../../lib/personInitials';
 import './DentistsPage.css';
 
 type DeleteTarget = Pick<Professional, 'id' | 'name' | 'appointmentCount'>;
@@ -24,6 +27,7 @@ export default function DentistsPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [specialty, setSpecialty] = useState('');
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [latestInviteUrl, setLatestInviteUrl] = useState('');
   const [latestInviteName, setLatestInviteName] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
@@ -37,7 +41,7 @@ export default function DentistsPage() {
     if (!url) return;
     setLatestInviteName(dentistName);
     setLatestInviteUrl(url);
-    setCreateOpen(true);
+    setInviteOpen(true);
   };
 
   const closeCreateModal = () => {
@@ -45,13 +49,15 @@ export default function DentistsPage() {
     setName('');
     setEmail('');
     setSpecialty('');
+  };
+
+  const closeInviteModal = () => {
+    setInviteOpen(false);
     setLatestInviteUrl('');
     setLatestInviteName('');
   };
 
   const openCreateModal = () => {
-    setLatestInviteUrl('');
-    setLatestInviteName('');
     setCreateOpen(true);
   };
 
@@ -62,15 +68,11 @@ export default function DentistsPage() {
       { name: dentistName, email, specialty },
       {
         onSuccess: (data) => {
-          setName('');
-          setEmail('');
-          setSpecialty('');
+          closeCreateModal();
           showInvite(data.name || dentistName, data.inviteUrl);
         },
         onError: (error: unknown) => {
-          window.dispatchEvent(new CustomEvent('app:api-error', {
-            detail: { message: readApiError(error, 'Não foi possível cadastrar o dentista.') },
-          }));
+          notifyError(readApiError(error, 'Não foi possível cadastrar o dentista.'));
         },
       },
     );
@@ -78,7 +80,7 @@ export default function DentistsPage() {
 
   const copyInvite = async (url: string) => {
     await navigator.clipboard.writeText(url);
-    window.dispatchEvent(new CustomEvent('app:api-error', { detail: { message: 'Link copiado.' } }));
+    notifySuccess('Link copiado.');
   };
 
   const handleRegenerateInvite = (dentist: { id: string; name: string; email?: string | null }) => {
@@ -94,9 +96,7 @@ export default function DentistsPage() {
           showInvite(dentist.name, data.inviteUrl);
         },
         onError: (error: unknown) => {
-          window.dispatchEvent(new CustomEvent('app:api-error', {
-            detail: { message: readApiError(error, 'Não foi possível gerar o convite.') },
-          }));
+          notifyError(readApiError(error, 'Não foi possível gerar o convite.'));
         },
       },
     );
@@ -107,33 +107,26 @@ export default function DentistsPage() {
     remove.mutate(deleteTarget.id, {
       onSuccess: () => {
         setDeleteTarget(null);
-        window.dispatchEvent(new CustomEvent('app:api-error', { detail: { message: 'Dentista excluído.' } }));
+        notifySuccess('Dentista excluído.');
       },
       onError: (error: unknown) => {
-        window.dispatchEvent(new CustomEvent('app:api-error', {
-          detail: { message: readApiError(error, 'Não foi possível excluir o dentista.') },
-        }));
+        notifyError(readApiError(error, 'Não foi possível excluir o dentista.'));
       },
     });
   };
 
   const appointmentCount = deleteTarget?.appointmentCount ?? 0;
+  const createModalDirty = Boolean(name.trim() || email.trim() || specialty.trim());
 
   return (
     <div className="dentists-page">
       <RefreshState fetching={dentists.isRefetching} error={dentists.isError && Boolean(dentists.data)} onRetry={() => dentists.refetch()} />
       <PageHeader
-        eyebrow="EQUIPE DA CLÍNICA"
         title="Dentistas"
-        description={
-          canManage
-            ? 'Cadastre a equipe e envie o link de primeiro acesso.'
-            : 'Consulte a equipe de dentistas da clínica.'
-        }
         actions={
           canManage ? (
             <button className="btn btn-primary" type="button" onClick={openCreateModal}>
-              <Plus size={18} /> Novo dentista
+              <Plus size={18} /> Novo
             </button>
           ) : null
         }
@@ -161,7 +154,7 @@ export default function DentistsPage() {
                   <tr key={dentist.id}>
                     <td className="dentist-name">
                       <span className="dentist-avatar" aria-hidden="true">
-                        {dentist.name.trim().charAt(0).toUpperCase() || 'D'}
+                        {professionalInitial(dentist.name)}
                       </span>
                       <strong>{dentist.name}</strong>
                     </td>
@@ -268,7 +261,7 @@ export default function DentistsPage() {
       )}
 
       {createOpen && canManage ? (
-        <Modal title="Adicionar dentista" onClose={closeCreateModal}>
+        <Modal title="Adicionar dentista" onClose={closeCreateModal} isDirty={createModalDirty}>
           <form className="form-grid" onSubmit={submit}>
             <label>
               Nome completo
@@ -301,63 +294,68 @@ export default function DentistsPage() {
               />
             </label>
 
-            {latestInviteUrl ? (
-              <div id="dentist-invite-link" className="dentist-invite-field full-width">
-                <span className="dentist-invite-label">Link de primeiro acesso</span>
-                {latestInviteName ? (
-                  <p className="dentist-invite-success">
-                    Link gerado para <strong>{latestInviteName}</strong>. Envie para o dentista concluir o cadastro.
-                  </p>
-                ) : null}
-                <div className="dentist-invite-row">
-                  <input className="input-field" readOnly value={latestInviteUrl} aria-label="Link de convite" />
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => copyInvite(latestInviteUrl)}>
-                    Copiar link
-                  </button>
-                </div>
-              </div>
-            ) : null}
-
             <div className="modal-actions full-width">
               <button className="btn btn-secondary" type="button" onClick={closeCreateModal}>
-                {latestInviteUrl ? 'Fechar' : 'Cancelar'}
+                Cancelar
               </button>
-              {!latestInviteUrl ? (
-                <button className="btn btn-primary" disabled={create.isPending}>
-                  {create.isPending ? 'Salvando...' : 'Cadastrar e gerar link'}
-                </button>
-              ) : null}
+              <button className="btn btn-primary" disabled={create.isPending}>
+                {create.isPending ? 'Salvando...' : 'Cadastrar e gerar link'}
+              </button>
             </div>
           </form>
         </Modal>
       ) : null}
 
-      {deleteTarget && (
-        <Modal title="Excluir dentista" onClose={() => setDeleteTarget(null)}>
-          <div className="dentist-delete-modal">
-            <p>
-              Tem certeza que deseja excluir <strong>{deleteTarget.name}</strong>?
+      {inviteOpen && latestInviteUrl ? (
+        <Modal title="Link de primeiro acesso" onClose={closeInviteModal}>
+          <div className="dentist-invite-modal">
+            <p className="dentist-invite-success">
+              Envie o link abaixo para <strong>{latestInviteName}</strong> concluir o cadastro e criar a senha.
             </p>
-            {appointmentCount > 0 ? (
-              <p className="dentist-delete-warning">
-                Este dentista possui <strong>{appointmentCount}</strong>{' '}
-                {appointmentCount === 1 ? 'agendamento' : 'agendamentos'}. Ao confirmar,{' '}
-                {appointmentCount === 1 ? 'ele será removido' : 'eles serão removidos'} permanentemente.
-              </p>
-            ) : (
-              <p className="dentist-delete-note">Esta ação não pode ser desfeita.</p>
-            )}
-          </div>
-          <div className="modal-actions">
-            <button type="button" className="btn btn-secondary" onClick={() => setDeleteTarget(null)}>
-              Cancelar
-            </button>
-            <button type="button" className="btn btn-danger" disabled={remove.isPending} onClick={confirmDelete}>
-              {remove.isPending ? 'Excluindo...' : 'Excluir dentista'}
-            </button>
+            <div id="dentist-invite-link" className="dentist-invite-field full-width">
+              <span className="dentist-invite-label">Link de convite</span>
+              <div className="dentist-invite-row">
+                <input className="input-field" readOnly value={latestInviteUrl} aria-label="Link de convite" />
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => copyInvite(latestInviteUrl)}>
+                  Copiar link
+                </button>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn btn-primary" onClick={closeInviteModal}>
+                Fechar
+              </button>
+            </div>
           </div>
         </Modal>
-      )}
+      ) : null}
+
+      {deleteTarget ? (
+        <ConfirmDialog
+          title="Excluir dentista"
+          danger
+          confirmLabel="Excluir dentista"
+          busy={remove.isPending}
+          message={
+            <>
+              <p>
+                Tem certeza que deseja excluir <strong>{deleteTarget.name}</strong>?
+              </p>
+              {appointmentCount > 0 ? (
+                <p className="dentist-delete-warning">
+                  Este dentista possui <strong>{appointmentCount}</strong>{' '}
+                  {appointmentCount === 1 ? 'agendamento' : 'agendamentos'}. Ao confirmar,{' '}
+                  {appointmentCount === 1 ? 'ele será removido' : 'eles serão removidos'} permanentemente.
+                </p>
+              ) : (
+                <p className="dentist-delete-note">Esta ação não pode ser desfeita.</p>
+              )}
+            </>
+          }
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={confirmDelete}
+        />
+      ) : null}
     </div>
   );
 }

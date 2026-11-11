@@ -2,6 +2,8 @@ import { useDataReadyMetric } from '../../lib/performance';
 import { useState, type FormEvent } from 'react';
 import { Plus } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { MoneyInput } from '../../components/MoneyInput';
 import { Modal } from '../../components/Modal';
 import { PageHeader } from '../../components/panel/PageHeader';
 import { useAuth } from '../../contexts/AuthContext';
@@ -12,6 +14,7 @@ import {
   useUpdateProcedure,
 } from '../../features/procedures/api';
 import { money } from '../../lib/money';
+import { notifySuccess } from '../../lib/notify';
 import type { Procedure } from '../../api/types';
 import './ProceduresPage.css';
 
@@ -20,38 +23,44 @@ export default function ProceduresPage() {
   const canDelete = role === 'ADMIN';
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState<number | null>(null);
   const [editing, setEditing] = useState<Procedure | null>(null);
   const [editName, setEditName] = useState('');
-  const [editPrice, setEditPrice] = useState('');
+  const [editPrice, setEditPrice] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Procedure | null>(null);
 
   const procedures = useProcedures();
-  useDataReadyMetric("ProceduresPage", Boolean(procedures.data));
+  useDataReadyMetric('ProceduresPage', Boolean(procedures.data));
   const create = useCreateProcedure();
   const update = useUpdateProcedure();
   const remove = useDeleteProcedure();
 
   const openCreateModal = () => {
     setName('');
-    setPrice('');
+    setPrice(null);
     setCreateOpen(true);
   };
 
   const closeCreateModal = () => {
     setCreateOpen(false);
     setName('');
-    setPrice('');
+    setPrice(null);
   };
+
+  const createDirty = Boolean(name.trim() || price != null);
+  const editDirty = Boolean(
+    editing && (editName.trim() !== editing.name || (editPrice ?? 0) !== editing.price),
+  );
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    const parsedPrice = Number(price);
-    if (!name.trim() || Number.isNaN(parsedPrice) || parsedPrice < 0) return;
+    if (!name.trim() || price == null || Number.isNaN(price) || price < 0) return;
 
     create.mutate(
-      { name: name.trim(), price: parsedPrice },
+      { name: name.trim(), price },
       {
         onSuccess: () => {
+          notifySuccess(`Procedimento "${name.trim()}" cadastrado.`);
           closeCreateModal();
         },
       },
@@ -61,36 +70,33 @@ export default function ProceduresPage() {
   const openEdit = (procedure: Procedure) => {
     setEditing(procedure);
     setEditName(procedure.name);
-    setEditPrice(String(procedure.price));
+    setEditPrice(procedure.price);
   };
 
   const submitEdit = (event: FormEvent) => {
     event.preventDefault();
     if (!editing) return;
-    const parsedPrice = Number(editPrice);
-    if (!editName.trim() || Number.isNaN(parsedPrice) || parsedPrice < 0) return;
+    if (!editName.trim() || editPrice == null || Number.isNaN(editPrice) || editPrice < 0) return;
 
     update.mutate(
-      { id: editing.id, name: editName.trim(), price: parsedPrice },
-      { onSuccess: () => setEditing(null) },
+      { id: editing.id, name: editName.trim(), price: editPrice },
+      {
+        onSuccess: () => {
+          notifySuccess('Procedimento atualizado.');
+          setEditing(null);
+        },
+      },
     );
-  };
-
-  const handleDelete = (procedure: Procedure) => {
-    if (!window.confirm(`Excluir o procedimento "${procedure.name}"?`)) return;
-    remove.mutate(procedure.id);
   };
 
   return (
     <div className="procedures-page">
       <RefreshState fetching={procedures.isRefetching} error={procedures.isError && Boolean(procedures.data)} onRetry={() => procedures.refetch()} />
       <PageHeader
-        eyebrow="CATÁLOGO DE SERVIÇOS"
         title="Procedimentos"
-        description="Gerencie os procedimentos e valores utilizados nos agendamentos."
         actions={
           <button className="btn btn-primary" type="button" onClick={openCreateModal}>
-            <Plus size={18} /> Cadastrar procedimento
+            <Plus size={18} /> Novo
           </button>
         }
       />
@@ -125,7 +131,7 @@ export default function ProceduresPage() {
                             type="button"
                             className="btn btn-ghost btn-sm procedure-delete"
                             disabled={remove.isPending}
-                            onClick={() => handleDelete(procedure)}
+                            onClick={() => setDeleteTarget(procedure)}
                           >
                             Excluir
                           </button>
@@ -154,7 +160,7 @@ export default function ProceduresPage() {
                       type="button"
                       className="btn btn-ghost btn-sm procedure-delete"
                       disabled={remove.isPending}
-                      onClick={() => handleDelete(procedure)}
+                      onClick={() => setDeleteTarget(procedure)}
                     >
                       Excluir
                     </button>
@@ -177,7 +183,7 @@ export default function ProceduresPage() {
       )}
 
       {createOpen ? (
-        <Modal title="Adicionar procedimento" onClose={closeCreateModal}>
+        <Modal title="Adicionar procedimento" onClose={closeCreateModal} isDirty={createDirty}>
           <form className="form-grid" onSubmit={submit}>
             <label className="full-width">
               Nome do procedimento
@@ -191,15 +197,12 @@ export default function ProceduresPage() {
             </label>
             <label className="full-width">
               Valor (R$)
-              <input
+              <MoneyInput
                 required
-                type="number"
-                min="0"
-                step="0.01"
                 className="input-field"
                 placeholder="0,00"
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onValueChange={setPrice}
               />
             </label>
             <div className="modal-actions full-width">
@@ -215,7 +218,7 @@ export default function ProceduresPage() {
       ) : null}
 
       {editing && (
-        <Modal title="Editar procedimento" onClose={() => setEditing(null)}>
+        <Modal title="Editar procedimento" onClose={() => setEditing(null)} isDirty={editDirty}>
           <form className="form-grid" onSubmit={submitEdit}>
             <label className="full-width">
               Nome do procedimento
@@ -228,14 +231,11 @@ export default function ProceduresPage() {
             </label>
             <label className="full-width">
               Valor (R$)
-              <input
+              <MoneyInput
                 required
-                type="number"
-                min="0"
-                step="0.01"
                 className="input-field"
                 value={editPrice}
-                onChange={(e) => setEditPrice(e.target.value)}
+                onValueChange={setEditPrice}
               />
             </label>
             <div className="modal-actions full-width">
@@ -249,6 +249,25 @@ export default function ProceduresPage() {
           </form>
         </Modal>
       )}
+
+      {deleteTarget ? (
+        <ConfirmDialog
+          title="Excluir procedimento"
+          message={`Excluir o procedimento "${deleteTarget.name}"?`}
+          confirmLabel="Excluir"
+          danger
+          busy={remove.isPending}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => {
+            remove.mutate(deleteTarget.id, {
+              onSuccess: () => {
+                notifySuccess('Procedimento excluído.');
+                setDeleteTarget(null);
+              },
+            });
+          }}
+        />
+      ) : null}
     </div>
   );
 }

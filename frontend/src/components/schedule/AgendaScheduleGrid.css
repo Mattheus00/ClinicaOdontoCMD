@@ -5,7 +5,7 @@
 
 .schedule-hint {
   padding: 10px 14px;
-  border: 1px solid rgba(196, 199, 199, 0.45);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-surface);
   color: var(--color-text-secondary);
@@ -15,11 +15,11 @@
 .schedule-grid {
   display: grid;
   grid-template-columns: 72px repeat(var(--schedule-cols), minmax(120px, 1fr));
-  border: 1px solid rgba(228, 221, 212, 0.95);
-  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
   background: #fff;
   overflow: auto;
-  max-height: min(720px, calc(100dvh - 340px));
+  max-height: min(720px, calc(100dvh - 300px));
   overscroll-behavior: contain;
 }
 
@@ -28,8 +28,8 @@
   top: 0;
   z-index: 4;
   background: var(--color-surface);
-  border-bottom: 1px solid rgba(196, 199, 199, 0.35);
-  border-right: 1px solid rgba(196, 199, 199, 0.35);
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
 }
 
 .schedule-header {
@@ -41,8 +41,8 @@
   gap: 4px;
   padding: 12px 8px;
   background: var(--color-surface);
-  border-bottom: 1px solid rgba(196, 199, 199, 0.35);
-  border-right: 1px solid rgba(196, 199, 199, 0.35);
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
   text-align: center;
 }
 
@@ -83,8 +83,8 @@
   position: sticky;
   left: 0;
   z-index: 3;
-  background: #faf8f5;
-  border-right: 1px solid #ebe4db;
+  background: #fafaf9;
+  border-right: 1px solid var(--color-border);
 }
 
 .schedule-time-label {
@@ -92,11 +92,11 @@
   align-items: flex-start;
   justify-content: flex-end;
   padding: 6px 10px 0 0;
-  color: #6f6861;
+  color: var(--color-text-muted);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 550;
   font-variant-numeric: tabular-nums;
-  border-bottom: 1px solid #f0ebe4;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .schedule-column {
@@ -130,7 +130,7 @@
 
 .schedule-slot.is-drop-target {
   background: rgba(201, 169, 112, 0.16);
-  outline: 2px dashed #c9a970;
+  outline: 2px dashed var(--color-secondary);
   outline-offset: -2px;
 }
 
@@ -181,7 +181,7 @@
 .schedule-event em {
   font-size: 11px;
   font-style: normal;
-  color: #6f8798;
+  color: var(--muted-text);
 }
 
 .schedule-procedure {
@@ -198,13 +198,13 @@
 .schedule-event-pending {
   background: linear-gradient(180deg, #fff8ee, #fff1dc);
   border-color: #ead2a6;
-  border-left-color: #c9a970;
+  border-left-color: var(--color-secondary);
 }
 
 .schedule-event-scheduled {
   background: linear-gradient(180deg, #f4f7fa, #eef3f7);
   border-color: #d5dde5;
-  border-left-color: #6f8798;
+  border-left-color: var(--muted-text);
 }
 
 .schedule-event-confirmed,

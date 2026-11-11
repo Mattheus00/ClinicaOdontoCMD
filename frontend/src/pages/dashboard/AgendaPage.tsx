@@ -1,12 +1,10 @@
 import { useDataReadyMetric } from "../../lib/performance";
 import {
-  CalendarDays,
   ChevronLeft,
   ChevronRight,
   List,
   LayoutGrid,
   Plus,
-  Clock3,
 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
@@ -20,7 +18,11 @@ import {
   RefreshState,
 } from "../../components/AsyncState";
 import DateTimePicker from "../../components/DateTimePicker";
+import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { Modal } from "../../components/Modal";
+import { readApiError } from "../../lib/api-error";
+import { notifyClearErrors, notifySuccess } from "../../lib/notify";
+import type { Appointment } from "../../api/types";
 import AgendaScheduleGrid, {
   getWeekDays,
 } from "../../components/schedule/AgendaScheduleGrid";
@@ -29,6 +31,7 @@ import { AppointmentDetailsModal } from "../../components/schedule/AppointmentDe
 import {
   useAcceptAppointment,
   useAppointments,
+  useAvailability,
   useCancelAppointment,
   useConfirmAppointment,
   useCreateAppointment,
@@ -104,6 +107,29 @@ const formatWeekRange = (from: string, to: string, compact = false) => {
 };
 
 const toDateTimeLocalValue = clinicDateTime;
+
+function occupiedTimesForProfessional(
+  list: Appointment[],
+  professionalId: string,
+  date: string,
+  excludeId?: string,
+): string[] {
+  return list
+    .filter(
+      (item) =>
+        item.status !== "CANCELLED" &&
+        item.professional.id === professionalId &&
+        clinicDate(item.startsAt) === date &&
+        item.id !== excludeId,
+    )
+    .map((item) => clinicTime(item.startsAt));
+}
+
+type AgendaConfirm =
+  | { kind: "accept" }
+  | { kind: "cancel" }
+  | { kind: "confirm" }
+  | { kind: "confirmEarly" };
 const STATUS_OPTIONS = [
   ["", "Todas as situações"],
   ["PENDING", "Aguardando aceite"],
@@ -187,6 +213,9 @@ function AgendaWorkspace() {
     patientName: string;
     url: string;
   } | null>(null);
+  const [createError, setCreateError] = useState("");
+  const [rescheduleFormError, setRescheduleFormError] = useState("");
+  const [confirmDialog, setConfirmDialog] = useState<AgendaConfirm | null>(null);
 
   useEffect(() => {
     if (!deepLinkAppointmentId && !deepLinkDate) return;
@@ -257,6 +286,7 @@ function AgendaWorkspace() {
   const appointments = useAppointments(filters);
   useDataReadyMetric("AgendaPage", Boolean(appointments.data));
   const dentists = useProfessionals(isAdmin);
+  const dentistsList = dentists.data?.content ?? [];
   const procedureList = useProcedures(isAdmin && open);
   const create = useCreateAppointment(filters);
   const cancel = useCancelAppointment(filters);
@@ -272,10 +302,50 @@ function AgendaWorkspace() {
     },
   });
 
+  const watchProfessionalId = form.watch("professionalId");
+  const watchStartsAt = form.watch("startsAt");
+  const minDateTime = clinicDateTime(new Date());
+  const allAppointments = appointments.data?.content ?? [];
+
+  const createDay = watchStartsAt ? clinicDate(watchStartsAt) : "";
+  const rescheduleDay = rescheduleStart ? clinicDate(rescheduleStart) : "";
+  const createAvailability = useAvailability(
+    watchProfessionalId || undefined,
+    createDay || undefined,
+    open && Boolean(watchProfessionalId && createDay),
+  );
+  const rescheduleAvailability = useAvailability(
+    rescheduleProfessional || undefined,
+    rescheduleDay || undefined,
+    rescheduleOpen && Boolean(rescheduleProfessional && rescheduleDay),
+  );
+
+  const createOccupiedTimes = useMemo(
+    () =>
+      occupiedTimesForProfessional(
+        allAppointments,
+        watchProfessionalId ?? "",
+        createDay,
+      ),
+    [allAppointments, watchProfessionalId, createDay],
+  );
+
+  const rescheduleOccupiedTimes = useMemo(
+    () =>
+      occupiedTimesForProfessional(
+        allAppointments,
+        rescheduleProfessional,
+        rescheduleDay,
+        selectedAppointmentId ?? undefined,
+      ),
+    [allAppointments, rescheduleProfessional, rescheduleDay, selectedAppointmentId],
+  );
+
   const openCreateModal = (defaults?: {
     startsAt?: string;
     professionalId?: string;
   }) => {
+    setCreateError("");
     form.reset({
       patientId: "",
       professionalId: defaults?.professionalId ?? selectedProfessionalId ?? "",
@@ -289,9 +359,18 @@ function AgendaWorkspace() {
   };
 
   const submit = form.handleSubmit(async (data) => {
-    await create.mutateAsync(data);
-    setOpen(false);
-    form.reset();
+    setCreateError("");
+    try {
+      await create.mutateAsync(data);
+      notifyClearErrors();
+      notifySuccess("Consulta agendada");
+      setOpen(false);
+      form.reset();
+    } catch (error) {
+      setCreateError(
+        readApiError(error, "Não foi possível salvar o agendamento."),
+      );
+    }
   });
 
   const visibleAppointments = (appointments.data?.content ?? []).filter(
@@ -305,11 +384,19 @@ function AgendaWorkspace() {
   const selectedAppointment = appointments.data?.content.find(
     (item) => item.id === selectedAppointmentId,
   );
+
+  const rescheduleDirty = useMemo(() => {
+    if (!selectedAppointment) return false;
+    return (
+      rescheduleStart !== toDateTimeLocalValue(selectedAppointment.startsAt) ||
+      rescheduleProfessional !== selectedAppointment.professional.id
+    );
+  }, [rescheduleStart, rescheduleProfessional, selectedAppointment]);
+
   const [reportDraft, setReportDraft] = useReportDraft(
     selectedAppointment,
     userId,
   );
-  const dentistsList = dentists.data?.content ?? [];
   const proceduresList = procedureList.data?.content ?? [];
 
   const canEditReport =
@@ -347,19 +434,16 @@ function AgendaWorkspace() {
         onRetry={() => appointments.refetch()}
       />
       <PageHeader
-        eyebrow="ORGANIZAÇÃO DO ATENDIMENTO"
         title="Agenda"
-        description={
-          isDentist
-            ? `Sua agenda — ${weekRangeLabel}.`
-            : selectedDentist
-              ? `Agenda de ${selectedDentist.name} — ${weekRangeLabel}.`
-              : `${weekRangeLabel} · Horário de Brasília.`
-        }
+        description={weekRangeLabel}
         actions={
           isAdmin ? (
-            <button className="btn btn-primary" onClick={() => openCreateModal()}>
-              <Plus size={18} /> Novo agendamento
+            <button
+              className="btn btn-primary"
+              disabled={!dentistsList.length}
+              onClick={() => openCreateModal()}
+            >
+              <Plus size={18} /> Novo
             </button>
           ) : null
         }
@@ -390,42 +474,28 @@ function AgendaWorkspace() {
           }
         />
       ) : (
-        <>
+        <div className="agenda-body">
           <section className="agenda-overview" aria-label="Resumo do período">
-            <article className="agenda-metric">
-              <span className="agenda-metric-icon" aria-hidden="true">
-                <CalendarDays size={18} />
-              </span>
-              <div className="agenda-metric-copy">
-                <span className="agenda-metric-label">Consultas no período</span>
-                <strong className="agenda-metric-value">{visibleAppointments.length}</strong>
-              </div>
-            </article>
-            <article className="agenda-metric">
-              <span className="agenda-metric-icon" aria-hidden="true">
-                <Clock3 size={18} />
-              </span>
-              <div className="agenda-metric-copy">
-                <span className="agenda-metric-label">Aguardando aceite</span>
-                <strong className="agenda-metric-value">
-                  {visibleAppointments.filter((item) => item.status === "PENDING").length}
-                </strong>
-              </div>
-            </article>
-            <article className="agenda-metric agenda-metric-wide">
-              <span className="agenda-metric-icon" aria-hidden="true">
-                <CalendarDays size={18} />
-              </span>
-              <div className="agenda-metric-copy">
-                <span className="agenda-metric-label">Primeira consulta ativa</span>
-                <strong className="agenda-metric-value agenda-metric-value-sm">
-                  {firstAppointment
-                    ? `${clinicTime(firstAppointment.startsAt)} · ${firstAppointment.patient.name}`
-                    : "Nenhuma neste período"}
-                </strong>
-              </div>
-            </article>
+            <div className="agenda-stat">
+              <span>Consultas</span>
+              <strong>{visibleAppointments.length}</strong>
+            </div>
+            <div className="agenda-stat">
+              <span>Aguardando</span>
+              <strong>
+                {visibleAppointments.filter((item) => item.status === "PENDING").length}
+              </strong>
+            </div>
+            <div className="agenda-stat agenda-stat-wide">
+              <span>Próxima</span>
+              <strong>
+                {firstAppointment
+                  ? `${clinicTime(firstAppointment.startsAt)} · ${firstAppointment.patient.name}`
+                  : "—"}
+              </strong>
+            </div>
           </section>
+          <div className="agenda-main">
           <details className="agenda-filter-details" open={!isMobile}>
             <summary>
               Alterar data e filtros{" "}
@@ -600,11 +670,7 @@ function AgendaWorkspace() {
                         { ...payload, professional },
                         {
                           onSuccess: (updated) => {
-                            window.dispatchEvent(
-                              new CustomEvent("app:toast", {
-                                detail: { message: "Consulta remarcada." },
-                              }),
-                            );
+                            notifySuccess("Consulta remarcada.");
                             const message = buildAppointmentRescheduleMessage({
                               patientName: updated.patient.name,
                               previousStartsAt,
@@ -641,7 +707,8 @@ function AgendaWorkspace() {
               isRescheduling={reschedule.isPending}
             />
           )}
-        </>
+          </div>
+        </div>
       )}
 
       {selectedAppointment && (
@@ -663,6 +730,7 @@ function AgendaWorkspace() {
             isAdmin &&
             ["SCHEDULED", "CONFIRMED"].includes(selectedAppointment.status)
               ? () => {
+                  setRescheduleFormError("");
                   setRescheduleStart(
                     toDateTimeLocalValue(selectedAppointment.startsAt),
                   );
@@ -673,35 +741,13 @@ function AgendaWorkspace() {
                 }
               : undefined
           }
-          onAccept={() => {
-            if (
-              window.confirm(
-                "Aceitar esta solicitação e confirmar o horário na agenda?",
-              )
-            ) {
-              accept.mutate(selectedAppointment.id, {
-                onSuccess: () => {
-                  window.dispatchEvent(
-                    new CustomEvent("app:toast", {
-                      detail: {
-                        message:
-                          "Agendamento aceito. Envie a confirmação pelo WhatsApp.",
-                      },
-                    }),
-                  );
-                },
-              });
-            }
-          }}
+          onAccept={() => setConfirmDialog({ kind: "accept" })}
           onConfirm={() => {
-            const label =
-              "Concluir o atendimento e salvar o relatório? Nenhum recebimento será registrado automaticamente.";
-            if (window.confirm(label)) {
-              confirm.mutate(
-                { id: selectedAppointment.id, report: reportDraft },
-                { onSuccess: () => setSelectedAppointmentId(null) },
-              );
-            }
+            const startsInFuture =
+              new Date(selectedAppointment.startsAt).getTime() > Date.now();
+            setConfirmDialog({
+              kind: startsInFuture ? "confirmEarly" : "confirm",
+            });
           }}
           onSaveReport={async () => {
             const updated = await updateReport.mutateAsync({
@@ -715,18 +761,86 @@ function AgendaWorkspace() {
               }),
             );
           }}
-          onCancel={() => {
-            if (
-              window.confirm(
-                selectedAppointment.status === "PENDING"
+          onCancel={() => setConfirmDialog({ kind: "cancel" })}
+        />
+      )}
+
+      {confirmDialog && selectedAppointment && (
+        <ConfirmDialog
+          title={
+            confirmDialog.kind === "accept"
+              ? "Aceitar agendamento?"
+              : confirmDialog.kind === "cancel"
+                ? selectedAppointment.status === "PENDING"
+                  ? "Recusar solicitação?"
+                  : "Cancelar agendamento?"
+                : confirmDialog.kind === "confirmEarly"
+                  ? "Horário ainda não chegou"
+                  : "Concluir atendimento?"
+          }
+          message={
+            confirmDialog.kind === "accept"
+              ? "Aceitar esta solicitação e confirmar o horário na agenda?"
+              : confirmDialog.kind === "cancel"
+                ? selectedAppointment.status === "PENDING"
                   ? "Recusar esta solicitação de agendamento?"
-                  : "Cancelar este agendamento?",
-              )
-            ) {
-              cancel.mutate(selectedAppointment.id, {
-                onSuccess: () => setSelectedAppointmentId(null),
-              });
+                  : "Cancelar este agendamento?"
+                : confirmDialog.kind === "confirmEarly"
+                  ? "O horário ainda não chegou. Concluir mesmo assim?"
+                  : "Concluir o atendimento e salvar o relatório? Nenhum recebimento será registrado automaticamente."
+          }
+          confirmLabel={
+            confirmDialog.kind === "accept"
+              ? "Aceitar"
+              : confirmDialog.kind === "cancel"
+                ? selectedAppointment.status === "PENDING"
+                  ? "Recusar"
+                  : "Cancelar agendamento"
+                : "Concluir"
+          }
+          danger={confirmDialog.kind === "cancel"}
+          busy={accept.isPending || cancel.isPending || confirm.isPending}
+          onCancel={() => setConfirmDialog(null)}
+          onConfirm={() => {
+            if (confirmDialog.kind === "confirmEarly") {
+              setConfirmDialog({ kind: "confirm" });
+              return;
             }
+            if (confirmDialog.kind === "accept") {
+              accept.mutate(selectedAppointment.id, {
+                onSuccess: () => {
+                  notifySuccess(
+                    "Agendamento aceito. Envie a confirmação pelo WhatsApp.",
+                  );
+                  setConfirmDialog(null);
+                },
+              });
+              return;
+            }
+            if (confirmDialog.kind === "cancel") {
+              cancel.mutate(selectedAppointment.id, {
+                onSuccess: () => {
+                  notifySuccess(
+                    selectedAppointment.status === "PENDING"
+                      ? "Solicitação recusada."
+                      : "Agendamento cancelado.",
+                  );
+                  setSelectedAppointmentId(null);
+                  setConfirmDialog(null);
+                },
+              });
+              return;
+            }
+            confirm.mutate(
+              { id: selectedAppointment.id, report: reportDraft },
+              {
+                onSuccess: () => {
+                  notifySuccess("Atendimento concluído.");
+                  setSelectedAppointmentId(null);
+                  setConfirmDialog(null);
+                },
+              },
+            );
           }}
         />
       )}
@@ -734,33 +848,35 @@ function AgendaWorkspace() {
       {rescheduleOpen && selectedAppointment && (
         <Modal
           title="Reagendar consulta"
-          onClose={() => setRescheduleOpen(false)}
+          isDirty={rescheduleDirty}
+          onClose={() => {
+            setRescheduleOpen(false);
+            setRescheduleFormError("");
+          }}
         >
           <form
             className="form-grid"
-            onSubmit={(event) => {
+            onSubmit={async (event) => {
               event.preventDefault();
-              reschedule.mutate(
-                {
+              setRescheduleFormError("");
+              try {
+                await reschedule.mutateAsync({
                   id: selectedAppointment.id,
                   startsAt: rescheduleStart,
                   professionalId: rescheduleProfessional,
-                },
-                {
-                  onSuccess: () => {
-                    setRescheduleOpen(false);
-                    setSelectedAppointmentId(null);
-                    window.dispatchEvent(
-                      new CustomEvent("app:toast", {
-                        detail: {
-                          message: "Consulta remarcada.",
-                          tone: "success",
-                        },
-                      }),
-                    );
-                  },
-                },
-              );
+                });
+                notifyClearErrors();
+                notifySuccess("Consulta remarcada.");
+                setRescheduleOpen(false);
+                setSelectedAppointmentId(null);
+              } catch (error) {
+                setRescheduleFormError(
+                  readApiError(
+                    error,
+                    "Não foi possível reagendar. Verifique a disponibilidade e tente novamente.",
+                  ),
+                );
+              }
             }}
           >
             <p className="full-width">{selectedAppointment.patient.name}</p>
@@ -769,6 +885,13 @@ function AgendaWorkspace() {
               <DateTimePicker
                 value={rescheduleStart}
                 onChange={setRescheduleStart}
+                min={minDateTime}
+                occupiedTimes={rescheduleOccupiedTimes}
+                availableTimes={
+                  rescheduleAvailability.data?.length
+                    ? rescheduleAvailability.data
+                    : undefined
+                }
               />
             </label>
             <label className="full-width">
@@ -786,10 +909,9 @@ function AgendaWorkspace() {
                 ))}
               </select>
             </label>
-            {reschedule.isError && (
+            {rescheduleFormError && (
               <p role="alert" className="form-error full-width">
-                Não foi possível reagendar. Verifique a disponibilidade e tente
-                novamente.
+                {rescheduleFormError}
               </p>
             )}
             <div className="modal-actions full-width">
@@ -845,7 +967,14 @@ function AgendaWorkspace() {
       )}
 
       {isAdmin && open && (
-        <Modal title="Novo agendamento" onClose={() => setOpen(false)}>
+        <Modal
+          title="Novo agendamento"
+          isDirty={form.formState.isDirty}
+          onClose={() => {
+            setOpen(false);
+            setCreateError("");
+          }}
+        >
           <form className="form-grid" onSubmit={submit}>
             <div className="full-width">
               <Controller
@@ -882,6 +1011,13 @@ function AgendaWorkspace() {
                     value={field.value}
                     onChange={field.onChange}
                     error={form.formState.errors.startsAt?.message}
+                    min={minDateTime}
+                    occupiedTimes={createOccupiedTimes}
+                    availableTimes={
+                      createAvailability.data?.length
+                        ? createAvailability.data
+                        : undefined
+                    }
                   />
                 )}
               />
@@ -911,9 +1047,9 @@ function AgendaWorkspace() {
               </select>
               <small>{form.formState.errors.procedureId?.message}</small>
             </label>
-            {create.isError && (
-              <p className="form-error">
-                Não foi possível salvar o agendamento.
+            {createError && (
+              <p role="alert" className="form-error full-width">
+                {createError}
               </p>
             )}
             <div className="modal-actions full-width">

@@ -242,6 +242,13 @@
   color: var(--color-secondary);
 }
 
+.dtp-time.is-occupied,
+.dtp-time.is-disabled {
+  opacity: 0.45;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
 .dtp-time.is-selected {
   background: var(--color-secondary);
   border-color: var(--color-secondary);

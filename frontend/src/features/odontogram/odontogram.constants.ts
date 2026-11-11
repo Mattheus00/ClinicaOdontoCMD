@@ -71,6 +71,11 @@ export const ODONTOGRAM_STATUS_CHIP_CLASS: Record<OdontogramStatus, string> = {
   IN_TREATMENT: 'status-in_treatment',
 };
 
+/**
+ * Tipos clínicos do odontograma (RESTAURACAO, EXTRACAO, …) — distintos dos procedimentos
+ * financeiros em `useProcedures()` / `Procedure`. Integração futura: mapear por slug ou manter catálogo fixo.
+ * Ver `frontend/src/components/odontogram/MarcacaoToolbar.tsx` e `PainelDente.tsx`.
+ */
 export const ODONTOGRAM_PROCEDURES: Array<{ value: string; label: string }> = [
   { value: '', label: 'Nenhum' },
   { value: 'RESTAURACAO', label: 'Restauração' },

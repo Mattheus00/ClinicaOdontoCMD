@@ -1,38 +1,61 @@
 .booking-link-page {
   display: grid;
-  gap: 18px;
-  max-width: 820px;
-}
-
-.booking-link-hero {
-  display: flex;
   gap: 16px;
-  align-items: flex-start;
-  padding: 18px 20px;
+  max-width: 720px;
 }
 
-.booking-link-hero-icon {
+.booking-link-readiness {
   display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: var(--color-secondary-container);
-  color: var(--color-secondary);
+  gap: 12px;
+}
+
+.booking-link-readiness h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.booking-readiness-ok {
+  color: var(--color-success, #16a34a);
+}
+
+.booking-readiness-warn {
+  color: var(--color-warning, #d97706);
+}
+
+.booking-readiness-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.booking-readiness-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.booking-readiness-list li.is-ok svg {
+  color: var(--color-success, #16a34a);
   flex-shrink: 0;
 }
 
-.booking-link-hero h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
+.booking-readiness-list li.is-pending svg {
+  color: var(--color-danger, #dc2626);
+  flex-shrink: 0;
 }
 
-.booking-link-hero p {
-  margin: 6px 0 0;
+.booking-readiness-hint {
+  margin: 0;
+  font-size: 13px;
   color: var(--color-text-secondary);
-  line-height: 1.45;
-  font-size: 14px;
 }
 
 .booking-link-card {
@@ -45,7 +68,8 @@
   align-items: center;
   gap: 8px;
   margin: 0;
-  font-size: 1rem;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .booking-link-url-row {
@@ -107,11 +131,6 @@
 @media (max-width: 800px) {
   .booking-link-page {
     gap: 14px;
-  }
-
-  .booking-link-hero {
-    flex-direction: column;
-    padding: 16px;
   }
 
   .booking-link-url-row {

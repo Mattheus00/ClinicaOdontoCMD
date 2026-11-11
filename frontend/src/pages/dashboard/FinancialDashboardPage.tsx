@@ -104,8 +104,8 @@ export default function FinancialDashboardPage() {
   ];
 
   const composition = [
-    { label: 'Recebido', value: totals.paid, color: '#315C46' },
-    { label: 'Pendente', value: totals.pending, color: '#C9A970' },
+    { label: 'Recebido', value: totals.paid, color: '#2F6B4F' },
+    { label: 'Pendente', value: totals.pending, color: '#B49A70' },
     { label: 'Em atraso', value: totals.overdue, color: '#B74848' },
   ];
   const compositionTotal = composition.reduce((sum, item) => sum + item.value, 0);
@@ -114,13 +114,8 @@ export default function FinancialDashboardPage() {
     <div className="financial-dashboard">
       <RefreshState fetching={dashboard.isRefetching} error={dashboard.isError && Boolean(dashboard.data)} onRetry={() => dashboard.refetch()} />
       <PageHeader
-        eyebrow="GESTÃO FINANCEIRA"
         title="Financeiro"
-        description={
-          isDentist
-            ? 'Acompanhe seus recebimentos e valores em aberto.'
-            : 'Resumo da clínica e desempenho por dentista.'
-        }
+        description={formatPeriod(from, to)}
         actions={
           <div className="financial-period-filters">
             <label>

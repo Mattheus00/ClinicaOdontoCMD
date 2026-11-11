@@ -2,8 +2,8 @@
   grid-column: 1 / -1;
   padding: 16px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(117, 90, 37, 0.25);
-  background: rgba(117, 90, 37, 0.06);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
 .dentist-invite-label {
@@ -44,8 +44,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(201, 169, 112, 0.2);
-  color: var(--color-brown);
+  background: var(--color-secondary-container);
+  color: var(--color-primary);
   font-size: 13px;
   font-weight: 600;
   flex-shrink: 0;

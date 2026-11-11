@@ -1,6 +1,7 @@
 package com.dentic.api.exception;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,6 +32,16 @@ class GlobalExceptionHandlerTest {
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertEquals("Registro em uso", response.getBody().get("message"));
+    }
+
+    @Test
+    void handleDataIntegrity_overlap_shouldReturnConflict() {
+        ResponseEntity<Map<String, String>> response = handler.handleDataIntegrity(
+                new DataIntegrityViolationException("no_overlapping_appointments")
+        );
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertTrue(response.getBody().get("message").contains("horário"));
     }
 
     @Test

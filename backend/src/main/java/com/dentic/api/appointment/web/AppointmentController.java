@@ -8,7 +8,9 @@ import com.dentic.api.patient.domain.PatientPayment;
 import com.dentic.api.patient.repository.PatientPaymentRepository;
 import com.dentic.api.patient.repository.PatientRepository;
 import com.dentic.api.procedure.repository.ProcedureRepository;
+import com.dentic.api.professional.domain.WorkingHours;
 import com.dentic.api.professional.repository.ProfessionalRepository;
+import com.dentic.api.professional.repository.WorkingHoursRepository;
 import com.dentic.api.security.SecurityUtils;
 import com.dentic.api.staffnotification.domain.StaffNotification;
 import com.dentic.api.staffnotification.repository.StaffNotificationRepository;
@@ -20,7 +22,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -34,7 +40,12 @@ public class AppointmentController {
     private final PatientPaymentRepository payments;
     private final ClinicRepository clinics;
     private final StaffNotificationRepository staffNotifications;
+    private final WorkingHoursRepository workingHours;
     private final ZoneId clinicTimeZone;
+
+    private static final Set<String> BLOCKING_STATUSES = Set.of(
+            "PENDING", "SCHEDULED", "CONFIRMED", "pending", "confirmed"
+    );
 
     public AppointmentController(
             AppointmentRepository appointments,
@@ -44,6 +55,7 @@ public class AppointmentController {
             PatientPaymentRepository payments,
             ClinicRepository clinics,
             StaffNotificationRepository staffNotifications,
+            WorkingHoursRepository workingHours,
             @Value("${dentic.clinic-time-zone:America/Sao_Paulo}") String clinicTimeZone
     ) {
         this.appointments = appointments;
@@ -53,6 +65,7 @@ public class AppointmentController {
         this.payments = payments;
         this.clinics = clinics;
         this.staffNotifications = staffNotifications;
+        this.workingHours = workingHours;
         this.clinicTimeZone = ZoneId.of(clinicTimeZone);
     }
 
@@ -79,6 +92,58 @@ public class AppointmentController {
         return new PageResponse<>(data, data.isEmpty() ? 0 : 1, data.size(), 0, 500);
     }
 
+    @GetMapping("/availability")
+    @Transactional(readOnly = true)
+    public AvailabilityResponse availability(
+            @RequestParam UUID professionalId,
+            @RequestParam String date,
+            @RequestParam(required = false) Integer durationMinutes
+    ) {
+        UUID clinic = tenant();
+        var professional = professionals.findById(professionalId)
+                .filter(v -> v.getClinic().getId().equals(clinic))
+                .orElseThrow(() -> new IllegalArgumentException("Profissional não encontrado"));
+        if (SecurityUtils.isDentist() && !professional.getId().equals(SecurityUtils.requireProfessionalId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado.");
+        }
+        LocalDate day = LocalDate.parse(date);
+        short duration = resolveDurationMinutes(durationMinutes);
+        List<LocalTimeRange> windows = resolveWorkingWindows(professional.getId(), day.getDayOfWeek());
+        if (windows.isEmpty()) {
+            return new AvailabilityResponse(day.toString(), List.of());
+        }
+        OffsetDateTime dayStart = day.atStartOfDay(clinicTimeZone).toOffsetDateTime();
+        OffsetDateTime dayEnd = day.plusDays(1).atStartOfDay(clinicTimeZone).toOffsetDateTime();
+        List<Appointment> dayAppointments = appointments
+                .findByProfessionalIdAndScheduledAtBetween(professional.getId(), dayStart, dayEnd)
+                .stream()
+                .filter(item -> BLOCKING_STATUSES.contains(item.getStatus()))
+                .toList();
+        List<String> slots = new ArrayList<>();
+        LocalDateTime nowLocal = LocalDateTime.now(clinicTimeZone);
+        for (LocalTimeRange window : windows) {
+            LocalDateTime cursor = LocalDateTime.of(day, window.start());
+            LocalDateTime windowEnd = LocalDateTime.of(day, window.end());
+            while (!cursor.plusMinutes(duration).isAfter(windowEnd)) {
+                LocalDateTime slotStart = cursor;
+                LocalDateTime slotEnd = slotStart.plusMinutes(duration);
+                boolean past = !slotStart.isAfter(nowLocal);
+                boolean conflict = dayAppointments.stream().anyMatch(item -> {
+                    LocalDateTime existingStart = item.getScheduledAt()
+                            .atZoneSameInstant(clinicTimeZone)
+                            .toLocalDateTime();
+                    LocalDateTime existingEnd = existingStart.plusMinutes(item.getDurationMinutes());
+                    return slotStart.isBefore(existingEnd) && slotEnd.isAfter(existingStart);
+                });
+                if (!past && !conflict) {
+                    slots.add(String.format("%02d:%02d", slotStart.getHour(), slotStart.getMinute()));
+                }
+                cursor = slotStart.plusMinutes(duration);
+            }
+        }
+        return new AvailabilityResponse(day.toString(), slots);
+    }
+
     @PostMapping
     @Transactional
     public ResponseEntity<AppointmentResponse> create(@RequestBody AppointmentRequest request) {
@@ -94,6 +159,7 @@ public class AppointmentController {
                 .orElseThrow(() -> new IllegalArgumentException("Procedimento não encontrado"));
 
         OffsetDateTime start = localAppointmentTime(request.startsAt());
+        rejectPastAppointment(start);
         Appointment value = new Appointment();
         value.setClinic(clinics.getReferenceById(clinic));
         value.setPatient(patient);
@@ -112,7 +178,7 @@ public class AppointmentController {
             );
             return ResponseEntity.ok(AppointmentResponse.from(saved));
         } catch (org.springframework.dao.DataIntegrityViolationException ex) {
-            throw new IllegalArgumentException("Este horário não está mais disponível. Escolha outro.");
+            throw conflictUnavailable(professional.getName(), start);
         }
     }
 
@@ -135,6 +201,7 @@ public class AppointmentController {
         UUID previousProfessionalId = value.getProfessional() == null ? null : value.getProfessional().getId();
         OffsetDateTime previousStart = value.getScheduledAt();
         OffsetDateTime start = localAppointmentTime(request.startsAt());
+        rejectPastAppointment(start);
         value.setScheduledAt(start);
         if (request.durationMinutes() != null) {
             value.setDurationMinutes(resolveDurationMinutes(request.durationMinutes()));
@@ -168,7 +235,8 @@ public class AppointmentController {
             }
             return ResponseEntity.ok(AppointmentResponse.from(saved));
         } catch (org.springframework.dao.DataIntegrityViolationException ex) {
-            throw new IllegalArgumentException("Este horário não está mais disponível. Escolha outro.");
+            String dentistName = value.getProfessional() == null ? "O dentista" : value.getProfessional().getName();
+            throw conflictUnavailable(dentistName, start);
         }
     }
 
@@ -196,7 +264,12 @@ public class AppointmentController {
             throw new IllegalArgumentException("Somente solicitações pendentes podem ser aceitas.");
         }
         value.setStatus("SCHEDULED");
-        appointments.save(value);
+        try {
+            appointments.save(value);
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            String dentistName = value.getProfessional() == null ? "O dentista" : value.getProfessional().getName();
+            throw conflictUnavailable(dentistName, value.getScheduledAt());
+        }
         markBookingNotificationsRead(value.getId());
         notifyDentist(
                 value,
@@ -325,6 +398,42 @@ public class AppointmentController {
         return LocalDateTime.parse(value).atZone(clinicTimeZone).toOffsetDateTime();
     }
 
+    private void rejectPastAppointment(OffsetDateTime start) {
+        if (start.isBefore(OffsetDateTime.now().minusMinutes(1))) {
+            throw new IllegalArgumentException("Não é possível agendar no passado. Escolha outro horário.");
+        }
+    }
+
+    private ResponseStatusException conflictUnavailable(String dentistName, OffsetDateTime start) {
+        String when = start.atZoneSameInstant(clinicTimeZone)
+                .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+        String name = dentistName == null || dentistName.isBlank() ? "O dentista" : dentistName;
+        return new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                name + " já tem consulta às " + when + ". Escolha outro horário."
+        );
+    }
+
+    private List<LocalTimeRange> resolveWorkingWindows(UUID professionalId, DayOfWeek dayOfWeek) {
+        short day = (short) (dayOfWeek.getValue() % 7);
+        List<WorkingHours> configured = workingHours.findByProfessionalId(professionalId).stream()
+                .filter(item -> Objects.equals(item.getDayOfWeek(), day))
+                .sorted(Comparator.comparing(WorkingHours::getStartTime))
+                .toList();
+        if (!configured.isEmpty()) {
+            return configured.stream()
+                    .map(item -> new LocalTimeRange(item.getStartTime(), item.getEndTime()))
+                    .toList();
+        }
+        if (dayOfWeek == DayOfWeek.SUNDAY) return List.of();
+        if (dayOfWeek == DayOfWeek.SATURDAY) {
+            return List.of(new LocalTimeRange(LocalTime.of(9, 0), LocalTime.of(13, 0)));
+        }
+        return List.of(new LocalTimeRange(LocalTime.of(9, 0), LocalTime.of(18, 0)));
+    }
+
+    private record LocalTimeRange(LocalTime start, LocalTime end) {}
+
     public record AppointmentRequest(UUID patientId, UUID professionalId, UUID procedureId, String startsAt, Integer durationMinutes) {}
 
     public record RescheduleRequest(String startsAt, UUID professionalId, Integer durationMinutes) {}
@@ -370,4 +479,6 @@ public class AppointmentController {
     }
 
     public record PageResponse<T>(List<T> content, int totalPages, int totalElements, int number, int size) {}
+
+    public record AvailabilityResponse(String date, List<String> slots) {}
 }

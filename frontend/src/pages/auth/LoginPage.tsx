@@ -8,7 +8,7 @@ import {
   LockKeyhole,
   Mail,
 } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
 import { readApiError } from '../../lib/api-error';
@@ -22,6 +22,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -61,7 +62,12 @@ export default function LoginPage() {
         localStorage.removeItem(REMEMBER_EMAIL_KEY);
       }
 
-      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? '/agenda';
+      const next = searchParams.get('next');
+      const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : null;
+      const from =
+        safeNext ||
+        (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ||
+        '/agenda';
       navigate(from, { replace: true });
     } catch (error: unknown) {
       setError(readApiError(error, 'E-mail ou senha não conferem. Tente novamente.'));
@@ -99,9 +105,8 @@ export default function LoginPage() {
 
       <section className="auth-shell-panel" aria-labelledby="login-title">
         <div className="auth-shell-card auth-shell-card--login">
-          <p className="auth-shell-eyebrow">ACESSO À PLATAFORMA</p>
-          <h2 id="login-title">Boas-vindas de volta</h2>
-          <p className="auth-shell-lead">Entre para acessar a gestão da sua clínica.</p>
+          <h2 id="login-title">Entrar</h2>
+          <p className="auth-shell-lead">Acesse a gestão da sua clínica.</p>
 
           <p className="auth-shell-hint">
             <Info size={18} strokeWidth={1.6} aria-hidden="true" />

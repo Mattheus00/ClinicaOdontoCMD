@@ -1,5 +1,7 @@
+import axios from 'axios';
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { api } from '../../services/api';
+import { readApiError } from '../../lib/api-error';
 import { asPage, type Appointment, type Professional, type PageResponse } from '../../api/types';
 
 function updateAppointmentCache(client: QueryClient, data: Appointment) {
@@ -39,7 +41,13 @@ export function useAppointments(filters: AppointmentFilters) {
 export function useCreateAppointment(_filters: AppointmentFilters) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (input: AppointmentInput) => (await api.post<Appointment>('/appointments', input, { headers: { 'Idempotency-Key': crypto.randomUUID() } })).data,
+    mutationFn: async (input: AppointmentInput) =>
+      (
+        await api.post<Appointment>('/appointments', input, {
+          headers: { 'Idempotency-Key': crypto.randomUUID() },
+          skipGlobalError: true,
+        })
+      ).data,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['appointments'] }),
   });
 }
@@ -139,13 +147,18 @@ export function useRescheduleAppointment(filters: AppointmentFilters) {
       }
       return { previous };
     },
-    onError: (_error, _input, context) => {
+    onError: (error, _input, context) => {
       if (context?.previous) {
         queryClient.setQueryData(['appointments', filters], context.previous);
       }
       window.dispatchEvent(
         new CustomEvent('app:api-error', {
-          detail: { message: 'Não foi possível remarcar o agendamento. Verifique se o horário está livre.' },
+          detail: {
+            message: readApiError(
+              error,
+              'Não foi possível remarcar o agendamento. Verifique se o horário está livre.',
+            ),
+          },
         }),
       );
     },
@@ -157,6 +170,27 @@ export function useAvailability(professionalId?: string, date?: string, enabled 
   return useQuery({
     queryKey: ['appointment-availability', professionalId, date],
     enabled: enabled && Boolean(professionalId && date),
-    queryFn: async ({ signal }) => (await api.get<string[]>('/appointments/availability', { signal, params: { professionalId, date } })).data,
+    retry: false,
+    queryFn: async ({ signal }) => {
+      try {
+        const data = (
+          await api.get<{ date: string; slots: string[] } | string[]>('/appointments/availability', {
+            signal,
+            params: { professionalId, date },
+            skipGlobalError: true,
+          })
+        ).data;
+        if (Array.isArray(data)) return data;
+        return data?.slots ?? [];
+      } catch (error) {
+        if (axios.isAxiosError(error) && (error.response?.status === 404 || error.response?.status === 501)) {
+          return [] as string[];
+        }
+        if (axios.isAxiosError(error) && error.code === 'ERR_CANCELED') {
+          throw error;
+        }
+        return [] as string[];
+      }
+    },
   });
 }

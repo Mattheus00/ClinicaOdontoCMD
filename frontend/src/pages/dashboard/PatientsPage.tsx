@@ -1,6 +1,6 @@
 import { useDataReadyMetric } from '../../lib/performance';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronRight, Phone, Plus, Search, X } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -10,6 +10,7 @@ import { Modal } from '../../components/Modal';
 import { PageHeader } from '../../components/panel/PageHeader';
 import { maskCpf, maskPhone, withMask } from '../../lib/masks';
 import { useDebouncedValue } from '../../lib/useDebouncedValue';
+import { notifySuccess } from '../../lib/notify';
 import { useCreatePatient, usePatients } from '../../features/patients/api';
 import './PatientsPage.css';
 
@@ -57,18 +58,54 @@ function PatientAvatar({ name }: { name: string }) {
 }
 
 export default function PatientsPage() {
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(0);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchFromUrl = searchParams.get('search') ?? '';
+  const pageFromUrl = Math.max(0, Number.parseInt(searchParams.get('page') ?? '0', 10) || 0);
+  const [searchInput, setSearchInput] = useState(searchFromUrl);
+  const debouncedSearch = useDebouncedValue(searchInput);
   const [open, setOpen] = useState(false);
-  const patients = usePatients(useDebouncedValue(search), page);
+  const patients = usePatients(debouncedSearch, pageFromUrl);
   useDataReadyMetric("PatientsPage", Boolean(patients.data));
   const create = useCreatePatient();
   const form = useForm<PatientForm>({ resolver: zodResolver(schema) });
   const phoneField = form.register('phone');
   const cpfField = form.register('cpf');
 
+  useEffect(() => {
+    setSearchInput(searchFromUrl);
+  }, [searchFromUrl]);
+
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    if (debouncedSearch.trim()) next.set('search', debouncedSearch.trim());
+    else next.delete('search');
+    const currentSearch = searchParams.get('search') ?? '';
+    if (debouncedSearch.trim() !== currentSearch) {
+      next.set('page', '0');
+    }
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+  }, [debouncedSearch, searchParams, setSearchParams]);
+
+  const setPage = (page: number) => {
+    const next = new URLSearchParams(searchParams);
+    if (page <= 0) next.delete('page');
+    else next.set('page', String(page));
+    setSearchParams(next, { replace: true });
+  };
+
+  const clearSearch = () => {
+    setSearchInput('');
+    const next = new URLSearchParams(searchParams);
+    next.delete('search');
+    next.delete('page');
+    setSearchParams(next, { replace: true });
+  };
+
   const submit = form.handleSubmit(async (data) => {
-    await create.mutateAsync({
+    const patient = await create.mutateAsync({
       name: data.name,
       phone: data.phone,
       email: data.email || undefined,
@@ -79,18 +116,25 @@ export default function PatientsPage() {
     });
     form.reset();
     setOpen(false);
+    notifySuccess('Paciente cadastrado com sucesso.');
+    navigate(`/patients/${patient.id}`);
   });
+
+  const closeModal = () => {
+    form.reset();
+    setOpen(false);
+  };
+
+  const hasActiveSearch = debouncedSearch.trim().length > 0;
 
   return (
     <div>
       <RefreshState fetching={patients.isRefetching} error={patients.isError && Boolean(patients.data)} onRetry={() => patients.refetch()} />
       <PageHeader
-        eyebrow="GESTÃO DE PACIENTES"
         title="Pacientes"
-        description="Cadastros, contatos e prontuário completo."
         actions={
           <button className="btn btn-primary" onClick={() => setOpen(true)}>
-            <Plus size={18} /> Novo paciente
+            <Plus size={18} /> Novo
           </button>
         }
       />
@@ -102,21 +146,15 @@ export default function PatientsPage() {
             id="patients-search"
             className="input-field search-field"
             placeholder="Buscar por nome, telefone ou CPF"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
-          {search ? (
+          {searchInput ? (
             <button
               type="button"
               className="patients-search-clear"
               aria-label="Limpar busca"
-              onClick={() => {
-                setSearch('');
-                setPage(0);
-              }}
+              onClick={clearSearch}
             >
               <X size={16} />
             </button>
@@ -161,21 +199,31 @@ export default function PatientsPage() {
           </div>
 
           <div className="pagination">
-            <button className="btn btn-secondary btn-sm" disabled={page === 0} onClick={() => setPage(page - 1)}>
+            <button className="btn btn-secondary btn-sm" disabled={pageFromUrl === 0} onClick={() => setPage(pageFromUrl - 1)}>
               Anterior
             </button>
             <span>
-              Página {page + 1} de {Math.max(patients.data.totalPages, 1)}
+              Página {pageFromUrl + 1} de {Math.max(patients.data.totalPages, 1)}
             </span>
             <button
               className="btn btn-secondary btn-sm"
-              disabled={page + 1 >= patients.data.totalPages}
-              onClick={() => setPage(page + 1)}
+              disabled={pageFromUrl + 1 >= patients.data.totalPages}
+              onClick={() => setPage(pageFromUrl + 1)}
             >
               Próxima
             </button>
           </div>
         </>
+      ) : hasActiveSearch ? (
+        <EmptyState
+          title={`Nenhum paciente para “${debouncedSearch.trim()}”`}
+          description="Tente outro termo ou limpe a busca para ver todos os cadastros."
+          action={
+            <button className="btn btn-secondary" type="button" onClick={clearSearch}>
+              Limpar busca
+            </button>
+          }
+        />
       ) : (
         <EmptyState
           title="Nenhum paciente cadastrado"
@@ -189,7 +237,7 @@ export default function PatientsPage() {
       )}
 
       {open && (
-        <Modal title="Novo paciente" onClose={() => setOpen(false)}>
+        <Modal title="Novo paciente" onClose={closeModal} isDirty={form.formState.isDirty}>
           <form className="form-grid" onSubmit={submit}>
             <label>
               Nome completo
@@ -237,7 +285,7 @@ export default function PatientsPage() {
             </label>
             {create.isError && <p className="form-error">Não foi possível cadastrar o paciente.</p>}
             <div className="modal-actions full-width">
-              <button className="btn btn-secondary" type="button" onClick={() => setOpen(false)}>
+              <button className="btn btn-secondary" type="button" onClick={closeModal}>
                 Cancelar
               </button>
               <button className="btn btn-primary" disabled={create.isPending}>

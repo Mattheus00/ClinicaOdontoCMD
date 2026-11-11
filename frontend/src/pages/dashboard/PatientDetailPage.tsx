@@ -1,11 +1,14 @@
 import { useDataReadyMetric } from '../../lib/performance';
 import { Pagination } from '../../components/Pagination';
-import { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useBlocker, useParams, useSearchParams } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { DateInput } from '../../components/DateInput';
+import { MoneyInput } from '../../components/MoneyInput';
 import { DentalChartWorkspace } from '../../components/dental-chart/DentalChartWorkspace';
 import { useProfessionals } from '../../features/professionals/api';
 import {
@@ -20,7 +23,9 @@ import {
   useUpdatePatient,
 } from '../../features/patients/api';
 import type { Anamnesis, Patient, PatientInput } from '../../api/types';
+import { validateCpf } from '../../lib/cpf';
 import { maskCpf, maskPhone, withMask } from '../../lib/masks';
+import { notifyError, notifySuccess } from '../../lib/notify';
 import './PatientDetailPage.css';
 
 const phoneSchema = z.string().refine(
@@ -28,12 +33,17 @@ const phoneSchema = z.string().refine(
   'Informe um telefone válido.',
 );
 
+const optionalCpfSchema = z
+  .string()
+  .optional()
+  .refine((value) => !value?.trim() || validateCpf(value), 'Informe um CPF válido.');
+
 const patientCadastroSchema = z.object({
   name: z.string().min(2, 'Informe o nome completo.'),
   phone: phoneSchema,
   phoneIsWhatsapp: z.boolean().optional(),
   email: z.string().email('Informe um e-mail válido.').or(z.literal('')),
-  cpf: z.string().optional(),
+  cpf: optionalCpfSchema,
   rg: z.string().optional(),
   birthDate: z.string().optional(),
   gender: z.string().optional(),
@@ -46,7 +56,7 @@ const patientCadastroSchema = z.object({
   addressZip: z.string().optional(),
   guardianName: z.string().optional(),
   guardianPhone: z.string().optional(),
-  guardianCpf: z.string().optional(),
+  guardianCpf: optionalCpfSchema,
   referralSource: z.string().optional(),
   referralNotes: z.string().optional(),
   notes: z.string().optional(),
@@ -139,10 +149,47 @@ const APPOINTMENT_STATUS: Record<string, { label: string; className: string }> =
 const money = (value?: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value ?? 0);
 
+const TREATMENT_PLAN_STATUS_LABEL: Record<string, string> = {
+  DRAFT: 'Rascunho',
+  PENDING: 'Pendente',
+  APPROVED: 'Aprovado',
+  REJECTED: 'Rejeitado',
+  CANCELLED: 'Cancelado',
+};
+
+const PAYMENT_METHOD_LABEL: Record<string, string> = {
+  PIX: 'PIX',
+  CASH: 'Dinheiro',
+  CARD: 'Cartão',
+  BOLETO: 'Boleto',
+};
+
+const PAYMENT_STATUS_LABEL: Record<string, string> = {
+  PENDING: 'Pendente',
+  PAID: 'Pago',
+  CANCELLED: 'Cancelado',
+  REFUNDED: 'Estornado',
+};
+
+function tabFromSearchParams(params: URLSearchParams): Tab {
+  const candidate = params.get('tab');
+  return TABS.some((item) => item.id === candidate) ? (candidate as Tab) : 'cadastro';
+}
+
+function writeTabToParams(params: URLSearchParams, next: Tab): URLSearchParams {
+  const copy = new URLSearchParams(params);
+  if (next === 'cadastro') copy.delete('tab');
+  else copy.set('tab', next);
+  return copy;
+}
+
 export default function PatientDetailPage() {
   const { id = '' } = useParams();
-  const [searchParams] = useSearchParams();
-  const [tab, setTab] = useState<Tab>(() => TABS.some(item => item.id === searchParams.get('tab')) ? searchParams.get('tab') as Tab : 'cadastro');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [tab, setTab] = useState<Tab>(() => tabFromSearchParams(searchParams));
+  const [pendingTab, setPendingTab] = useState<Tab | null>(null);
+  const [leaveConfirm, setLeaveConfirm] = useState(false);
+  const syncingFromUrl = useRef(false);
 
   const [paymentPage, setPaymentPage] = useState(0);
   const [historyPage, setHistoryPage] = useState(0);
@@ -174,8 +221,66 @@ export default function PatientDetailPage() {
   const guardianPhoneField = cadastroForm.register('guardianPhone');
   const guardianCpfField = cadastroForm.register('guardianCpf');
   const anamnesisForm = useForm<Anamnesis>();
-  const planForm = useForm<{ title: string; dueDate?: string; description: string; unitPrice: number; status: string }>();
-  const paymentForm = useForm<{ amount: number; method: string; notes?: string }>();
+  const planForm = useForm<{ title: string; dueDate?: string; description: string; unitPrice: number; status: string }>({
+    defaultValues: { status: 'PENDING', unitPrice: 0, title: '', description: '' },
+  });
+  const paymentForm = useForm<{ amount: number; method: string; notes?: string }>({
+    defaultValues: { method: 'PIX', amount: 0 },
+  });
+
+  const cadastroDirty = tab === 'cadastro' && cadastroForm.formState.isDirty;
+  const anamnesisDirty = tab === 'anamnese' && anamnesisForm.formState.isDirty;
+  const recordDirty = cadastroDirty || anamnesisDirty;
+
+  const blocker = useBlocker(recordDirty);
+
+  useEffect(() => {
+    if (!recordDirty) return;
+    const guard = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', guard);
+    return () => window.removeEventListener('beforeunload', guard);
+  }, [recordDirty]);
+
+  useEffect(() => {
+    if (blocker.state === 'blocked') setLeaveConfirm(true);
+  }, [blocker.state]);
+
+  const applyTab = (next: Tab) => {
+    setTab(next);
+    syncingFromUrl.current = true;
+    setSearchParams((current) => writeTabToParams(current, next), { replace: true });
+    window.setTimeout(() => {
+      syncingFromUrl.current = false;
+    }, 0);
+  };
+
+  const requestTab = (next: Tab) => {
+    if (next === tab) return;
+    if (recordDirty) {
+      setPendingTab(next);
+      return;
+    }
+    applyTab(next);
+  };
+
+  useEffect(() => {
+    if (syncingFromUrl.current) return;
+    const urlTab = tabFromSearchParams(searchParams);
+    if (urlTab === tab) return;
+    if (recordDirty) {
+      setPendingTab(urlTab);
+      syncingFromUrl.current = true;
+      setSearchParams((current) => writeTabToParams(current, tab), { replace: true });
+      window.setTimeout(() => {
+        syncingFromUrl.current = false;
+      }, 0);
+      return;
+    }
+    setTab(urlTab);
+  }, [searchParams, tab, recordDirty, setSearchParams]);
 
   useEffect(() => {
     if (patient.data) {
@@ -196,16 +301,20 @@ export default function PatientDetailPage() {
     async (values) => {
       const saved = await update.mutateAsync(buildPatientPayload(values));
       cadastroForm.reset(mapPatientToForm(saved));
-      window.dispatchEvent(new CustomEvent('app:toast', {
-        detail: { message: 'Cadastro salvo com sucesso.', tone: 'success' },
-      }));
+      notifySuccess('Cadastro salvo com sucesso.');
     },
     () => {
-      window.dispatchEvent(new CustomEvent('app:api-error', {
-        detail: { message: 'Revise os campos destacados antes de salvar.' },
-      }));
+      notifyError('Revise os campos destacados antes de salvar.');
     },
   );
+
+  const confirmDiscardTab = () => {
+    if (!pendingTab) return;
+    if (tab === 'cadastro') cadastroForm.reset(patient.data ? mapPatientToForm(patient.data) : undefined);
+    else if (tab === 'anamnese' && anamnesis.data) anamnesisForm.reset(anamnesis.data);
+    applyTab(pendingTab);
+    setPendingTab(null);
+  };
 
   return (
     <div className="patient-detail">
@@ -241,7 +350,7 @@ export default function PatientDetailPage() {
             <strong>{money(summary.data.billing.overdue)}</strong>
           </article>
           <article>
-            <span>Última consulta</span>
+            <span>Última consulta realizada</span>
             <strong>
               {summary.data.lastVisitAt
                 ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(
@@ -250,6 +359,12 @@ export default function PatientDetailPage() {
                 : '—'}
             </strong>
           </article>
+          {summary.data.billing.draft != null ? (
+            <article>
+              <span>Em rascunho</span>
+              <strong>{money(summary.data.billing.draft)}</strong>
+            </article>
+          ) : null}
         </div>
       )}
 
@@ -271,11 +386,12 @@ export default function PatientDetailPage() {
               else if (event.key === 'Home') next = 0;
               else if (event.key === 'End') next = TABS.length - 1;
               else return;
-              event.preventDefault(); setTab(TABS[next].id);
+              event.preventDefault();
+              requestTab(TABS[next].id);
               document.getElementById(`patient-tab-${TABS[next].id}`)?.focus();
             }}
             className={`patient-tab ${tab === item.id ? 'is-active' : ''}`}
-            onClick={() => setTab(item.id)}
+            onClick={() => requestTab(item.id)}
           >
             {item.label}
           </button>
@@ -287,7 +403,8 @@ export default function PatientDetailPage() {
 
         {tab === 'cadastro' && (
           <form className="form-grid patient-form" noValidate onSubmit={handleSaveCadastro}>
-            <h3 className="full-width section-title">Contato</h3>
+            <details open className="patient-form-section full-width">
+              <summary className="section-title">Contato</summary>
             <label>
               Nome completo
               <input {...cadastroForm.register('name')} />
@@ -312,8 +429,10 @@ export default function PatientDetailPage() {
               <input type="checkbox" {...cadastroForm.register('phoneIsWhatsapp')} />
               Telefone é WhatsApp
             </label>
+            </details>
 
-            <h3 className="full-width section-title">Documentos</h3>
+            <details className="patient-form-section full-width">
+              <summary className="section-title">Documentos</summary>
             <label>
               CPF
               <input
@@ -329,7 +448,17 @@ export default function PatientDetailPage() {
             </label>
             <label>
               Nascimento
-              <input type="date" {...cadastroForm.register('birthDate')} />
+              <Controller
+                name="birthDate"
+                control={cadastroForm.control}
+                render={({ field }) => (
+                  <DateInput
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                  />
+                )}
+              />
             </label>
             <label>
               Gênero
@@ -340,8 +469,10 @@ export default function PatientDetailPage() {
                 <option value="O">Outro</option>
               </select>
             </label>
+            </details>
 
-            <h3 className="full-width section-title">Endereço</h3>
+            <details className="patient-form-section full-width">
+              <summary className="section-title">Endereço</summary>
             <label className="full-width">
               Rua
               <input {...cadastroForm.register('addressStreet')} />
@@ -370,8 +501,10 @@ export default function PatientDetailPage() {
               CEP
               <input {...cadastroForm.register('addressZip')} />
             </label>
+            </details>
 
-            <h3 className="full-width section-title">Responsável (menor de idade)</h3>
+            <details className="patient-form-section full-width">
+              <summary className="section-title">Responsável (menor de idade)</summary>
             <label>
               Nome
               <input {...cadastroForm.register('guardianName')} />
@@ -394,8 +527,10 @@ export default function PatientDetailPage() {
                 onChange={withMask(maskCpf, guardianCpfField.onChange)}
               />
             </label>
+            </details>
 
-            <h3 className="full-width section-title">Origem e preferências</h3>
+            <details className="patient-form-section full-width">
+              <summary className="section-title">Origem e preferências</summary>
             <label>
               Como conheceu
               <select {...cadastroForm.register('referralSource')}>
@@ -430,11 +565,7 @@ export default function PatientDetailPage() {
               Observações
               <textarea rows={3} {...cadastroForm.register('notes')} />
             </label>
-            <div className="dashboard-form-actions full-width">
-              <button type="submit" className="btn btn-primary" disabled={update.isPending}>
-                {update.isPending ? 'Salvando...' : 'Salvar cadastro'}
-              </button>
-            </div>
+            </details>
           </form>
         )}
 
@@ -577,6 +708,12 @@ export default function PatientDetailPage() {
                 <span>Pendente</span>
                 <strong>{money(billing.data?.pending)}</strong>
               </article>
+              {billing.data?.draft != null ? (
+                <article>
+                  <span>Em rascunho</span>
+                  <strong>{money(billing.data.draft)}</strong>
+                </article>
+              ) : null}
               <article>
                 <span>Pago</span>
                 <strong>{money(billing.data?.paid)}</strong>
@@ -598,6 +735,7 @@ export default function PatientDetailPage() {
                     items: [{ description: values.description, quantity: 1, unitPrice: Number(values.unitPrice) }],
                   });
                   planForm.reset({ status: 'PENDING', unitPrice: 0, title: '', description: '' });
+                  notifySuccess('Orçamento criado com sucesso.');
                 })}
               >
                 <h3 className="full-width section-title">Novo orçamento</h3>
@@ -611,11 +749,32 @@ export default function PatientDetailPage() {
                 </label>
                 <label>
                   Valor
-                  <input type="number" step="0.01" {...planForm.register('unitPrice', { valueAsNumber: true, required: true })} />
+                  <Controller
+                    name="unitPrice"
+                    control={planForm.control}
+                    rules={{ required: true, min: 0.01 }}
+                    render={({ field }) => (
+                      <MoneyInput
+                        value={field.value}
+                        onValueChange={(next) => field.onChange(next ?? 0)}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
                 </label>
                 <label>
                   Vencimento
-                  <input type="date" {...planForm.register('dueDate')} />
+                  <Controller
+                    name="dueDate"
+                    control={planForm.control}
+                    render={({ field }) => (
+                      <DateInput
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
                 </label>
                 <label>
                   Status
@@ -625,7 +784,9 @@ export default function PatientDetailPage() {
                     <option value="APPROVED">Aprovado</option>
                   </select>
                 </label>
-                <button className="btn btn-primary">Criar orçamento</button>
+                <button className="btn btn-primary" disabled={createPlan.isPending}>
+                  {createPlan.isPending ? 'Salvando...' : 'Criar orçamento'}
+                </button>
               </form>
 
               <form
@@ -633,12 +794,24 @@ export default function PatientDetailPage() {
                 onSubmit={paymentForm.handleSubmit(async (values) => {
                   await createPayment.mutateAsync({ ...values, amount: Number(values.amount) });
                   paymentForm.reset({ method: 'PIX', amount: 0 });
+                  notifySuccess('Pagamento registrado com sucesso.');
                 })}
               >
                 <h3 className="full-width section-title">Registrar pagamento</h3>
                 <label>
                   Valor
-                  <input type="number" step="0.01" {...paymentForm.register('amount', { valueAsNumber: true, required: true })} />
+                  <Controller
+                    name="amount"
+                    control={paymentForm.control}
+                    rules={{ required: true, min: 0.01 }}
+                    render={({ field }) => (
+                      <MoneyInput
+                        value={field.value}
+                        onValueChange={(next) => field.onChange(next ?? 0)}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
                 </label>
                 <label>
                   Método
@@ -653,7 +826,9 @@ export default function PatientDetailPage() {
                   Notas
                   <input {...paymentForm.register('notes')} />
                 </label>
-                <button className="btn btn-primary">Lançar pagamento</button>
+                <button className="btn btn-primary" disabled={createPayment.isPending}>
+                  {createPayment.isPending ? 'Salvando...' : 'Lançar pagamento'}
+                </button>
               </form>
             </div>
 
@@ -666,7 +841,7 @@ export default function PatientDetailPage() {
                       {plan.title} · {money(plan.totalAmount)}
                     </strong>
                     <span>
-                      {plan.status}
+                      {TREATMENT_PLAN_STATUS_LABEL[plan.status] ?? plan.status}
                       {plan.dueDate ? ` · vence ${plan.dueDate}` : ''}
                     </span>
                   </article>
@@ -681,7 +856,8 @@ export default function PatientDetailPage() {
                   <article key={payment.id}>
                     <strong>{money(payment.amount)}</strong>
                     <span>
-                      {payment.method} · {payment.status}
+                      {PAYMENT_METHOD_LABEL[payment.method] ?? payment.method} ·{' '}
+                      {PAYMENT_STATUS_LABEL[payment.status] ?? payment.status}
                     </span>
                   </article>
                 ))}
@@ -690,6 +866,34 @@ export default function PatientDetailPage() {
           </div>
         )}
       </div>
+
+      {pendingTab ? (
+        <ConfirmDialog
+          title="Descartar alterações?"
+          message="Você tem alterações não salvas nesta aba. Se continuar, elas serão perdidas."
+          confirmLabel="Descartar e continuar"
+          danger
+          onConfirm={confirmDiscardTab}
+          onCancel={() => setPendingTab(null)}
+        />
+      ) : null}
+
+      {leaveConfirm && blocker.state === 'blocked' ? (
+        <ConfirmDialog
+          title="Sair sem salvar?"
+          message="Você tem alterações não salvas. Deseja sair sem salvar?"
+          confirmLabel="Sair sem salvar"
+          danger
+          onConfirm={() => {
+            setLeaveConfirm(false);
+            blocker.proceed?.();
+          }}
+          onCancel={() => {
+            setLeaveConfirm(false);
+            blocker.reset?.();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

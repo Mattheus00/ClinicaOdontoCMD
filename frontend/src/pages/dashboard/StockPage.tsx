@@ -1,10 +1,13 @@
 import { useDataReadyMetric } from '../../lib/performance';
 import { Pagination } from '../../components/Pagination';
 import { useDebouncedValue } from '../../lib/useDebouncedValue';
-import { ArrowDownToLine, ArrowUpFromLine, CheckCircle2, Pencil, Plus, Trash2 } from 'lucide-react';
-import { useEffect, useState, type FormEvent } from 'react';
+import { ArrowDownToLine, ArrowUpFromLine, Pencil, Plus, Trash2 } from 'lucide-react';
+import { useState, type FormEvent } from 'react';
 import { EmptyState, ErrorState, LoadingState, RefreshState } from '../../components/AsyncState';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { Modal } from '../../components/Modal';
+import { readApiError } from '../../lib/api-error';
+import { notifyError, notifySuccess } from '../../lib/notify';
 import { PageHeader } from '../../components/panel/PageHeader';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -81,14 +84,9 @@ export default function StockPage() {
   const [movementType, setMovementType] = useState<StockMovementType>('OUT');
   const [movementQty, setMovementQty] = useState('');
   const [movementNote, setMovementNote] = useState('');
-  const [entrySuccess, setEntrySuccess] = useState<string | null>(null);
+  const [movementError, setMovementError] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<StockItem | null>(null);
   const history = useStockMovements(moving?.id, historyPage);
-
-  useEffect(() => {
-    if (!entrySuccess) return;
-    const timer = window.setTimeout(() => setEntrySuccess(null), 3500);
-    return () => window.clearTimeout(timer);
-  }, [entrySuccess]);
 
   const list = items.data?.content ?? [];
   const lowCount = summary.data?.low ?? 0;
@@ -117,6 +115,7 @@ export default function StockPage() {
           setMinimum('0');
           setNotes('');
           setCreating(false);
+          notifySuccess('Material cadastrado.');
         },
       },
     );
@@ -145,7 +144,12 @@ export default function StockPage() {
         minimumQuantity: parsedMinimum,
         notes: editNotes.trim() || undefined,
       },
-      { onSuccess: () => setEditing(null) },
+      {
+        onSuccess: () => {
+          setEditing(null);
+          notifySuccess('Material atualizado.');
+        },
+      },
     );
   };
 
@@ -155,7 +159,7 @@ export default function StockPage() {
     setMovementType(type);
     setMovementQty('');
     setMovementNote('');
-    setEntrySuccess(null);
+    setMovementError('');
   };
 
   const submitMove = (event: FormEvent) => {
@@ -163,6 +167,7 @@ export default function StockPage() {
     if (!moving) return;
     const parsed = Number(movementQty);
     if (Number.isNaN(parsed) || parsed <= 0) return;
+    setMovementError('');
     const note = movementNote.trim() || undefined;
     const type = movementType;
     move.mutate(
@@ -177,30 +182,51 @@ export default function StockPage() {
           setMoving(updated);
           setMovementQty('');
           setMovementNote('');
-          if (type === 'IN') {
-            const message = `Entrada de ${formatQty(parsed)} ${updated.unit} adicionada.`;
-            setEntrySuccess(message);
-            window.dispatchEvent(
-              new CustomEvent('app:toast', {
-                detail: { message, tone: 'success' },
-              }),
-            );
-          }
+          setMovementError('');
+          notifySuccess(`${MOVEMENT_LABEL[type]} de ${formatQty(parsed)} ${updated.unit} registrada.`);
+        },
+        onError: (error: unknown) => {
+          setMovementError(readApiError(error, 'Não foi possível registrar a movimentação.'));
         },
       },
     );
   };
 
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    const itemName = deleteTarget.name;
+    remove.mutate(deleteTarget.id, {
+      onSuccess: () => {
+        setDeleteTarget(null);
+        notifySuccess(`"${itemName}" removido do estoque.`);
+      },
+      onError: (error: unknown) => {
+        notifyError(readApiError(error, 'Não foi possível excluir o material.'));
+      },
+    });
+  };
+
+  const createDirty = Boolean(
+    name.trim() || category !== 'DENTAL' || unit !== 'un' || quantity !== '0' || minimum !== '0' || notes.trim(),
+  );
+  const editDirty = Boolean(
+    editing &&
+      (editName.trim() !== editing.name ||
+        editCategory !== editing.category ||
+        editUnit !== editing.unit ||
+        Number(editMinimum) !== editing.minimumQuantity ||
+        (editNotes.trim() || '') !== (editing.notes?.trim() || '')),
+  );
+  const moveDirty = Boolean(movementQty.trim() || movementNote.trim());
+
   return (
     <div className="stock-page">
       <PageHeader
-        eyebrow="CONTROLE DE MATERIAIS"
         title="Estoque"
-        description="Controle materiais odontológicos e outros itens da clínica."
         actions={
           canManage ? (
             <button type="button" className="btn btn-primary" onClick={() => setCreating(true)}>
-              <Plus size={18} /> Registrar material
+              <Plus size={18} /> Novo material
             </button>
           ) : null
         }
@@ -236,6 +262,8 @@ export default function StockPage() {
             <button
               key={value}
               type="button"
+              role="tab"
+              aria-selected={filter === value}
               className={filter === value ? 'is-active' : undefined}
               onClick={() => { setPage(0); setFilter(value); }}
             >
@@ -306,9 +334,7 @@ export default function StockPage() {
                             aria-label="Excluir"
                             title="Excluir"
                             disabled={remove.isPending}
-                            onClick={() => {
-                              if (window.confirm(`Excluir "${item.name}" do estoque?`)) remove.mutate(item.id);
-                            }}
+                            onClick={() => setDeleteTarget(item)}
                           >
                             <Trash2 size={15} aria-hidden />
                           </button>
@@ -359,9 +385,7 @@ export default function StockPage() {
                       className="stock-action stock-action-icon stock-delete"
                       aria-label="Excluir"
                       disabled={remove.isPending}
-                      onClick={() => {
-                        if (window.confirm(`Excluir "${item.name}" do estoque?`)) remove.mutate(item.id);
-                      }}
+                      onClick={() => setDeleteTarget(item)}
                     >
                       <Trash2 size={15} aria-hidden />
                     </button>
@@ -379,7 +403,7 @@ export default function StockPage() {
       )}
 
       {creating ? (
-        <Modal title="Registrar material" onClose={() => setCreating(false)}>
+        <Modal title="Registrar material" onClose={() => setCreating(false)} isDirty={createDirty}>
           <form className="form-grid" onSubmit={submit}>
             <label className="full-width">
               Nome
@@ -454,7 +478,7 @@ export default function StockPage() {
       ) : null}
 
       {editing ? (
-        <Modal title="Editar material" onClose={() => setEditing(null)}>
+        <Modal title="Editar material" onClose={() => setEditing(null)} isDirty={editDirty}>
           <form className="form-grid" onSubmit={submitEdit}>
             <label className="full-width">
               Nome
@@ -507,13 +531,7 @@ export default function StockPage() {
       ) : null}
 
       {moving ? (
-        <Modal title={moving.name} onClose={() => setMoving(null)}>
-          {entrySuccess ? (
-            <div className="stock-entry-success" role="status">
-              <CheckCircle2 size={20} aria-hidden="true" />
-              <span>{entrySuccess}</span>
-            </div>
-          ) : null}
+        <Modal title={moving.name} onClose={() => setMoving(null)} isDirty={moveDirty}>
           <p className="stock-balance">
             Saldo atual: <strong>{formatQty(moving.quantity)} {moving.unit}</strong>
           </p>
@@ -551,6 +569,11 @@ export default function StockPage() {
                 onChange={(e) => setMovementNote(e.target.value)}
               />
             </label>
+            {movementError ? (
+              <p className="stock-movement-error full-width" role="alert">
+                {movementError}
+              </p>
+            ) : null}
             <div className="modal-actions full-width">
               <button type="button" className="btn btn-secondary" onClick={() => setMoving(null)}>
                 Fechar
@@ -586,6 +609,22 @@ export default function StockPage() {
             )}
           </div>
         </Modal>
+      ) : null}
+
+      {deleteTarget ? (
+        <ConfirmDialog
+          title="Excluir material"
+          danger
+          confirmLabel="Excluir"
+          busy={remove.isPending}
+          message={
+            <p>
+              Excluir <strong>{deleteTarget.name}</strong> do estoque? Esta ação não pode ser desfeita.
+            </p>
+          }
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={confirmDelete}
+        />
       ) : null}
     </div>
   );

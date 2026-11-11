@@ -1,51 +1,30 @@
-/* Velora Liquid Glass — refined translucent surfaces for the admin panel. */
+/* Velora surfaces — flat premium (replaces previous liquid-glass effects). */
 
 :root {
-  --glass-light: rgba(255, 252, 248, 0.58);
-  --glass-light-strong: rgba(255, 252, 248, 0.72);
-  --glass-dark: #211914;
-  --glass-border: rgba(255, 255, 255, 0.62);
-  --glass-border-soft: rgba(255, 255, 255, 0.48);
-  --glass-champagne: rgba(201, 169, 112, 0.22);
-  --glass-blur: 20px;
-  --glass-radius: 18px;
-  --glass-shadow: 0 14px 40px rgba(33, 25, 20, 0.1);
-  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.72);
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  :root {
-    --glass-light: rgba(255, 255, 255, 0.94);
-    --glass-light-strong: #ffffff;
-    --glass-dark: rgba(33, 25, 20, 0.96);
-  }
+  --gold-text: #8a6a2f;
+  --muted-text: #4a5d6a;
+  --glass-light: #ffffff;
+  --glass-light-strong: #ffffff;
+  --glass-dark: #241d1b;
+  --glass-border: #eaeaea;
+  --glass-border-soft: #eaeaea;
+  --glass-champagne: rgba(180, 154, 112, 0.14);
+  --glass-blur: 0px;
+  --glass-radius: 12px;
+  --glass-shadow: none;
+  --glass-inset: none;
 }
 
 .liquid-glass {
   position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: var(--glass-light);
-  backdrop-filter: blur(var(--glass-blur)) saturate(145%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(145%);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--glass-radius);
-  box-shadow: var(--glass-shadow), var(--glass-inset);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
 }
 
 .liquid-glass::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.28),
-    transparent 42%,
-    rgba(201, 169, 112, 0.07)
-  );
-  z-index: 0;
+  display: none;
 }
 
 .liquid-glass > * {
@@ -53,473 +32,94 @@
   z-index: 1;
 }
 
-.liquid-glass-dark {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: var(--glass-dark);
-  backdrop-filter: blur(22px) saturate(140%);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 16px 40px rgba(0, 0, 0, 0.18);
-}
-
-.liquid-glass-dark::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.1),
-    transparent 38%,
-    rgba(201, 169, 112, 0.05)
-  );
-  z-index: 0;
-}
-
-.liquid-glass-dark > * {
-  position: relative;
-  z-index: 1;
-}
-
-.liquid-glass-interactive {
-  transition:
-    transform 200ms ease,
-    box-shadow 200ms ease,
-    border-color 200ms ease,
-    background-color 200ms ease;
-}
-
-.liquid-glass-interactive:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.72);
-  box-shadow:
-    0 16px 40px rgba(33, 25, 20, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.75);
-}
-
-.liquid-glass-interactive:active {
-  transform: translateY(0);
-}
-
-/* Ambient depth behind glass surfaces (no photography). */
-.app-layout .main-content {
-  background:
-    radial-gradient(circle at 85% 10%, rgba(201, 169, 112, 0.14), transparent 38%),
-    radial-gradient(circle at 15% 90%, rgba(106, 83, 61, 0.07), transparent 40%),
-    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.35), transparent 55%),
-    #faf8f5;
-}
-
-/* ——— Sidebar espresso (solid identity + subtle glass layers) ——— */
-.app-layout > .sidebar {
-  background: linear-gradient(180deg, #211914 0%, #2a2018 48%, #3a2a20 100%);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  border-right: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow:
-    inset -1px 0 0 rgba(255, 255, 255, 0.08),
-    10px 0 28px rgba(0, 0, 0, 0.18);
-}
-
-.app-layout > .sidebar::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    165deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    transparent 34%,
-    rgba(201, 169, 112, 0.07) 100%
-  );
-  z-index: 0;
-}
-
-.app-layout > .sidebar > * {
-  position: relative;
-  z-index: 1;
-}
-
-.app-layout > .sidebar .sidebar-brand-lockup strong {
-  color: #faf8f5;
-  font-size: 21px;
-}
-
-.app-layout > .sidebar .sidebar-brand small {
-  color: rgba(250, 248, 245, 0.62);
-}
-
-.app-layout > .sidebar .sidebar-link {
-  color: rgba(250, 248, 245, 0.86);
-  font-size: 14px;
-  transition: background 200ms ease, color 200ms ease, box-shadow 200ms ease;
-}
-
-.app-layout > .sidebar .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.09);
-  color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.app-layout > .sidebar .sidebar-link:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(201, 169, 112, 0.65);
-}
-
-.app-layout > .sidebar .sidebar-link.active {
-  background: #c9a970;
-  color: #211914;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    0 8px 18px rgba(201, 169, 112, 0.28);
-}
-
-.app-layout > .sidebar .sidebar-notifications {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.app-layout > .sidebar .sidebar-logout-btn {
-  color: rgba(250, 248, 245, 0.8);
-  font-size: 14px;
-}
-
-/* ——— Shared glass card ——— */
+/* Keep class hooks used across the app, without glass aesthetics. */
 .glass-card {
   position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: var(--glass-light-strong);
-  backdrop-filter: blur(var(--glass-blur)) saturate(145%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(145%);
-  border: 1px solid var(--glass-border-soft);
-  border-radius: var(--glass-radius);
-  box-shadow: var(--glass-shadow), var(--glass-inset);
-  padding: 24px;
-  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+  padding: var(--space-6, 24px);
 }
 
 .glass-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.3),
-    transparent 45%,
-    rgba(201, 169, 112, 0.06)
-  );
-  z-index: 0;
-}
-
-.glass-card > * {
-  position: relative;
-  z-index: 1;
+  display: none;
 }
 
 .glass-card:hover {
-  border-color: rgba(201, 169, 112, 0.35);
-  box-shadow: 0 16px 40px rgba(33, 25, 20, 0.1), var(--glass-inset);
+  border-color: var(--color-border-hover);
+  box-shadow: none;
+  transform: none;
 }
 
-/* ——— Secondary buttons ——— */
 .btn-secondary {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  border-color: rgba(255, 255, 255, 0.65);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 4px 12px rgba(33, 25, 20, 0.04);
-  transition:
-    background 200ms ease,
-    border-color 200ms ease,
-    box-shadow 200ms ease,
-    transform 200ms ease;
-}
-
-.btn-secondary::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 55%);
-  opacity: 0.9;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.78);
-  border-color: rgba(201, 169, 112, 0.45);
-  color: var(--color-text);
-  transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 8px 18px rgba(33, 25, 20, 0.08);
-}
-
-.btn-secondary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-/* ——— Modals ——— */
-.modal-backdrop {
-  background: rgba(33, 25, 20, 0.42);
-  backdrop-filter: blur(10px) saturate(120%);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-}
-
-.modal {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 22px;
-  box-shadow:
-    0 24px 64px rgba(33, 25, 20, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.75);
-  animation: liquid-glass-modal-in 220ms ease both;
-}
-
-.modal::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.35),
-    transparent 40%,
-    rgba(201, 169, 112, 0.05)
-  );
-  z-index: 0;
-}
-
-.modal > * {
-  position: relative;
-  z-index: 1;
-}
-
-.modal .input-field,
-.modal .form-grid input,
-.modal .form-grid select,
-.modal .form-grid textarea,
-.modal textarea.input-field {
-  background: rgba(255, 255, 255, 0.55);
-  border-color: rgba(228, 221, 212, 0.9);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-@keyframes liquid-glass-modal-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.985);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* ——— Metric / filter surfaces by page ——— */
-.agenda-metric,
-.agenda-page .agenda-toolbar,
-.patients-toolbar,
-.stock-toolbar,
-.stock-summary article,
-.financial-summary-cards article,
-.financial-chart-card,
-.booking-link-hero,
-.booking-link-card,
-.booking-link-tips,
-.toolbar {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: var(--glass-light);
-  backdrop-filter: blur(var(--glass-blur)) saturate(155%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(155%);
-  border: 1px solid var(--glass-border-soft);
-  border-radius: var(--glass-radius);
-  box-shadow: var(--glass-shadow), var(--glass-inset);
-}
-
-.agenda-metric::before,
-.agenda-page .agenda-toolbar::before,
-.patients-toolbar::before,
-.stock-toolbar::before,
-.stock-summary article::before,
-.financial-summary-cards article::before,
-.financial-chart-card::before,
-.booking-link-hero::before,
-.booking-link-card::before,
-.booking-link-tips::before,
-.toolbar::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.42),
-    transparent 42%,
-    rgba(201, 169, 112, 0.1)
-  );
-  z-index: 0;
-}
-
-.agenda-metric > *,
-.agenda-page .agenda-toolbar > *,
-.patients-toolbar > *,
-.stock-toolbar > *,
-.stock-summary article > *,
-.financial-summary-cards article > *,
-.financial-chart-card > *,
-.booking-link-hero > *,
-.booking-link-card > *,
-.booking-link-tips > *,
-.toolbar > * {
-  position: relative;
-  z-index: 1;
-}
-
-.agenda-metric,
-.stock-summary article,
-.financial-summary-cards article {
-  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
-}
-
-.agenda-metric:hover,
-.stock-summary article:hover,
-.financial-summary-cards article:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 18px 42px rgba(33, 25, 20, 0.12), var(--glass-inset);
-}
-
-.agenda-segment {
-  background: rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 999px;
-  padding: 3px;
-}
-
-.agenda-segment button[aria-pressed='true'],
-.stock-filters button.is-active {
-  background: rgba(201, 169, 112, 0.88);
-  color: var(--color-espresso);
-  border-color: transparent;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-.stock-filters button {
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-color: rgba(255, 255, 255, 0.55);
-  transition: background 200ms ease, color 200ms ease, border-color 200ms ease, transform 200ms ease;
-}
-
-.stock-filters button:hover {
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.patient-queue-card {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border-color: rgba(255, 255, 255, 0.55);
-  box-shadow: var(--glass-shadow), var(--glass-inset);
-}
-
-.patient-queue-card:hover {
-  background: rgba(255, 255, 255, 0.88);
-  border-color: rgba(201, 169, 112, 0.4);
-  transform: translateY(-1px);
-}
-
-.booking-link-url-row code {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-color: rgba(255, 255, 255, 0.55);
-}
-
-/* Keep data-dense surfaces solid for readability */
-.data-table,
-.agenda-schedule,
-.agenda-grid,
-.financial-by-dentist,
-.financial-table-desktop,
-.procedures-table-wrap,
-.dentists-table-wrap,
-.table-wrap .data-table {
+  background: #fff;
+  border-color: var(--color-border);
+  box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
 
-.data-table {
+.btn-secondary::before {
+  display: none;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-surface);
+  border-color: var(--color-border-hover);
+  color: var(--color-text);
+  transform: none;
+  box-shadow: none;
+}
+
+.modal-backdrop {
+  background: rgba(28, 28, 28, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal {
   background: #fff;
-  border-color: var(--color-border);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl, 16px);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.modal::before {
+  display: none;
+}
+
+/* Agenda / metric surfaces used with liquid-glass class */
+.agenda-metric,
+.financial-summary-cards article,
+.stock-summary article,
+.patient-queue-card,
+.toolbar,
+.patients-toolbar,
+.stock-toolbar,
+.agenda-toolbar {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-layout > .sidebar .sidebar-notifications {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-layout > .sidebar .sidebar-logout-btn {
+  color: rgba(250, 250, 249, 0.72);
+  font-size: 13.5px;
 }
 
 @media (max-width: 800px) {
-  .app-layout > .sidebar {
-    background: rgba(255, 252, 248, 0.92);
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    border-right: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.7);
-    box-shadow: 0 -8px 28px rgba(33, 25, 20, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  }
-
-  .app-layout > .sidebar::before {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent 60%);
-  }
-
-  .app-layout > .sidebar .sidebar-link {
-    color: var(--color-text-secondary);
-  }
-
-  .app-layout > .sidebar .sidebar-link.active {
-    background: rgba(201, 169, 112, 0.28);
-    color: #211914;
-    box-shadow: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .liquid-glass-interactive,
-  .liquid-glass-interactive:hover,
-  .liquid-glass-interactive:active,
-  .btn-secondary,
-  .btn-secondary:hover:not(:disabled),
-  .btn-secondary:active:not(:disabled),
-  .agenda-overview > div,
-  .stock-summary article,
-  .financial-summary-cards article,
-  .patient-queue-card,
   .glass-card,
-  .modal {
-    transition: none !important;
-    animation: none !important;
-    transform: none !important;
+  .liquid-glass {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }

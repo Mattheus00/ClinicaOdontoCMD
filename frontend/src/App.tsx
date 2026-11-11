@@ -6,6 +6,7 @@ import MobileTopbar from './components/MobileTopbar';
 import Sidebar from './components/Sidebar';
 import WelcomeTour from './components/WelcomeTour';
 import { SessionConnectionBanner } from './components/SessionConnectionBanner';
+import { DocumentTitle } from './components/DocumentTitle';
 import './components/Sidebar.css';
 import './components/MobileTopbar.css';
 
@@ -24,6 +25,7 @@ const StockPage = lazy(() => import('./pages/dashboard/StockPage'));
 const OdontogramPage = lazy(() => import('./pages/dashboard/OdontogramPage'));
 const OnboardingPage = lazy(() => import('./pages/dashboard/OnboardingPage'));
 const BookingLinkPage = lazy(() => import('./pages/dashboard/BookingLinkPage'));
+const BillingPage = lazy(() => import('./pages/dashboard/BillingPage'));
 const PublicBookingPage = lazy(() => import('./pages/public/PublicBookingPage'));
 
 type AppRole = 'ADMIN' | 'SECRETARY' | 'DENTIST';
@@ -31,9 +33,12 @@ type AppRole = 'ADMIN' | 'SECRETARY' | 'DENTIST';
 function DashboardLayout() {
   return (
     <div className="app-layout">
+      <a className="skip-link" href="#main-content">
+        Ir para o conteúdo
+      </a>
       <MobileTopbar />
       <Sidebar />
-      <main className="main-content">
+      <main id="main-content" className="main-content" tabIndex={-1}>
         <SessionConnectionBanner />
         <Suspense fallback={<div className="app-loading">Carregando tela...</div>}>
           <Outlet />
@@ -138,6 +143,14 @@ function AppRoutes() {
               }
             />
             <Route
+              path="/billing"
+              element={
+                <RequireRole roles={['ADMIN']}>
+                  <BillingPage />
+                </RequireRole>
+              }
+            />
+            <Route
               path="/onboarding"
               element={
                 <RequireRole roles={['ADMIN', 'SECRETARY']}>
@@ -157,6 +170,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <DocumentTitle />
         <AppFeedback />
         <AppRoutes />
       </AuthProvider>

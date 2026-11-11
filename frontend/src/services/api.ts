@@ -1,5 +1,6 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { readApiError } from '../lib/api-error';
+import { notifyInfo } from '../lib/notify';
 
 const configuredApiBaseUrl = import.meta.env.VITE_API_URL ?? '/api';
 if (import.meta.env.PROD && configuredApiBaseUrl.startsWith('http:')) {
@@ -27,7 +28,17 @@ type RetriableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
   _sessionGeneration?: number;
   skipGlobalError?: boolean;
+  _slowTimer?: ReturnType<typeof setTimeout>;
+  _slowNotified?: boolean;
 };
+
+const SLOW_REQUEST_MS = 10_000;
+
+function clearSlowRequestTimer(config?: RetriableRequestConfig) {
+  if (!config?._slowTimer) return;
+  clearTimeout(config._slowTimer);
+  config._slowTimer = undefined;
+}
 
 const publicPaths = new Set([
   '/auth/login',
@@ -91,7 +102,14 @@ export async function refreshAccessToken(): Promise<string> {
 }
 
 api.interceptors.request.use((config) => {
-  (config as RetriableRequestConfig)._sessionGeneration = sessionGeneration;
+  const cfg = config as RetriableRequestConfig;
+  cfg._sessionGeneration = sessionGeneration;
+  cfg._slowTimer = setTimeout(() => {
+    if (!cfg._slowNotified) {
+      cfg._slowNotified = true;
+      notifyInfo('Ainda processando…');
+    }
+  }, SLOW_REQUEST_MS);
   if (!isPublicApiPath(config.url ?? '')) {
     const token = authHandlers?.getAccessToken();
     if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -101,12 +119,14 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => {
+    clearSlowRequestTimer(response.config as RetriableRequestConfig);
     if ((response.config as RetriableRequestConfig)._sessionGeneration !== sessionGeneration)
       return Promise.reject(new axios.CanceledError('Session changed'));
     return response;
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as RetriableRequestConfig | undefined;
+    clearSlowRequestTimer(originalRequest);
     const requestPath = originalRequest?.url ?? '';
     if (originalRequest && originalRequest._sessionGeneration !== sessionGeneration)
       return Promise.reject(new axios.CanceledError('Session changed'));
